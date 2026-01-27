@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import { X, Heart, ChevronRight, ArrowLeft, ChevronLeft, Plus, Menu, Search } from 'lucide-react'
 import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
@@ -323,7 +323,7 @@ const sampleBookings: Booking[] = [
   },
 ]
 
-export default function MapPage() {
+function MapPageContent() {
   const searchParams = useSearchParams()
   const [selectedLocation, setSelectedLocation] = useState<Location | null>(null)
   const [showBooking, setShowBooking] = useState(false)
@@ -2020,5 +2020,13 @@ function EventDetailModal({
         </div>
       </div>
     </div>
+  )
+}
+
+export default function MapPage() {
+  return (
+    <Suspense fallback={<div className="flex items-center justify-center h-screen">Загрузка карты...</div>}>
+      <MapPageContent />
+    </Suspense>
   )
 }

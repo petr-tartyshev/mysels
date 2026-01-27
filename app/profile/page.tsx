@@ -1,11 +1,11 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
 import { Settings, Calendar, BarChart3, Plus, X, Upload, MapPin, List, Map as MapIcon, LogOut, Trash2 } from 'lucide-react'
 import Link from 'next/link'
 
-export default function ProfilePage() {
+function ProfilePageContent() {
   const searchParams = useSearchParams()
   const router = useRouter()
   const viewUsername = searchParams.get('username') // Профиль для просмотра
@@ -1255,5 +1255,13 @@ export default function ProfilePage() {
         </div>
       )}
     </div>
+  )
+}
+
+export default function ProfilePage() {
+  return (
+    <Suspense fallback={<div className="flex items-center justify-center h-screen">Загрузка профиля...</div>}>
+      <ProfilePageContent />
+    </Suspense>
   )
 }
