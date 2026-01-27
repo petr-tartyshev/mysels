@@ -254,7 +254,7 @@ export default function ChatsPage() {
   // Получение собеседника
   const getOtherParticipant = (conversation: Conversation) => {
     if (!currentUser) return null
-    return conversation.participants.find((p) => p.user.id !== currentUser.id)?.user || null
+    return conversation.participants.find((p: ConversationParticipant) => p.user.id !== currentUser.id)?.user || null
   }
 
   // Автоскролл к последнему сообщению
