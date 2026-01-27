@@ -1,0 +1,238 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ============================================
+// USER & PROFILE
+// ============================================
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  password      String
+  firstName     String
+  lastName      String
+  username      String    @unique
+  avatar        String?
+  bio           String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  // Relations
+  posts         Post[]
+  sentMessages     Message[] @relation("SentMessages")
+  receivedMessages Message[] @relation("ReceivedMessages")
+  conversations    ConversationParticipant[]
+  notifications    Notification[]
+  events        Event[]
+  bookings      Booking[]
+  eventRequests EventRequest[] @relation("EventRequests")
+
+  @@map("users")
+}
+
+// ============================================
+// POSTS
+// ============================================
+
+model Post {
+  id         String   @id @default(cuid())
+  text       String
+  images     String[] // Array of image URLs
+  locationId String
+  location   Location @relation(fields: [locationId], references: [id])
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@map("posts")
+  @@index([userId])
+  @@index([locationId])
+  @@index([createdAt])
+}
+
+// ============================================
+// LOCATIONS
+// ============================================
+
+model Location {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  lat         Float
+  lng         Float
+  address     String?
+  cost        String?  // "Бесплатно" или цена
+  rating      Int      @default(0)
+  image       String?
+  type        String   @default("regular") // "featured" | "regular"
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  posts       Post[]
+  events      Event[]
+  bookings    Booking[]
+
+  @@map("locations")
+}
+
+// ============================================
+// EVENTS
+// ============================================
+
+model Event {
+  id          String   @id @default(cuid())
+  title       String
+  description String?  // Опциональное поле
+  images      String[] // Array of image URLs
+  program     String[] // Array of program items
+  date        String
+  timeStart   String
+  timeEnd     String
+  locationId  String
+  location    Location @relation(fields: [locationId], references: [id])
+  userId      String   // Organizer
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  capacity    Int?     // Max participants
+  participants Int     @default(0)
+  level       String?  // "новичок" | "любитель" | "профи"
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  bookings    Booking[]
+  requests    EventRequest[]
+
+  @@map("events")
+  @@index([locationId])
+  @@index([userId])
+  @@index([date])
+}
+
+// ============================================
+// BOOKINGS
+// ============================================
+
+model Booking {
+  id         String   @id @default(cuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  eventId    String?
+  event      Event?   @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  locationId String
+  location   Location @relation(fields: [locationId], references: [id])
+  date       String
+  timeStart  String
+  timeEnd    String
+  status     String   @default("active") // "active" | "cancelled"
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@map("bookings")
+  @@index([userId])
+  @@index([eventId])
+  @@index([locationId])
+  @@index([date])
+}
+
+// ============================================
+// EVENT REQUESTS
+// ============================================
+
+model EventRequest {
+  id          String   @id @default(cuid())
+  eventId    String
+  event      Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  requesterId String  // Пользователь, который отправил запрос
+  requester   User     @relation("EventRequests", fields: [requesterId], references: [id], onDelete: Cascade)
+  status     String   @default("pending") // "pending" | "accepted" | "rejected"
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@unique([eventId, requesterId])
+  @@map("event_requests")
+  @@index([eventId])
+  @@index([requesterId])
+  @@index([status])
+}
+
+// ============================================
+// CHAT SYSTEM
+// ============================================
+
+model Conversation {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  participants ConversationParticipant[]
+  messages     Message[]
+
+  @@map("conversations")
+}
+
+model ConversationParticipant {
+  id             String       @id @default(cuid())
+  conversationId String
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  userId         String
+  user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  joinedAt       DateTime     @default(now())
+  lastReadAt     DateTime?
+
+  @@unique([conversationId, userId])
+  @@map("conversation_participants")
+  @@index([userId])
+}
+
+model Message {
+  id             String       @id @default(cuid())
+  conversationId String
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  senderId       String
+  sender         User         @relation("SentMessages", fields: [senderId], references: [id], onDelete: Cascade)
+  receiverId     String?
+  receiver       User?        @relation("ReceivedMessages", fields: [receiverId], references: [id])
+  content        String
+  images         String[]     // Array of image URLs
+  isRead         Boolean      @default(false)
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  @@map("messages")
+  @@index([conversationId])
+  @@index([senderId])
+  @@index([createdAt])
+}
+
+// ============================================
+// NOTIFICATIONS
+// ============================================
+
+model Notification {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type      String   // "event" | "booking" | "message" | "system" | "update"
+  title     String
+  message   String
+  link      String?  // URL to navigate to
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@map("notifications")
+  @@index([userId])
+  @@index([isRead])
+  @@index([createdAt])
+}
