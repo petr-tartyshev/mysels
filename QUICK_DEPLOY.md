@@ -19,13 +19,14 @@
 ## 2. Деплой на Vercel
 
 1. https://vercel.com → Add Project → выберите репозиторий `petr-tartyshev/mysels`
-2. Environment Variables:
+2. Нажмите "Deploy" (первый деплой без переменных)
+3. После деплоя: Settings → Environment Variables → добавьте:
    ```
-   DATABASE_URL = [ваш DATABASE_URL]
-   NODE_ENV = production
-   NEXT_PUBLIC_ENV = production
+   DATABASE_URL = [ваш DATABASE_URL] (для всех окружений)
+   NODE_ENV = production (для всех окружений)
+   NEXT_PUBLIC_ENV = production (для всех окружений)
    ```
-3. Deploy
+4. Deployments → последний деплой → ⋯ → Redeploy
 
 ---
 
