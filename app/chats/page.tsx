@@ -1,7 +1,7 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import { MessageCircle, Check, X as XIcon } from 'lucide-react'
+import { useState, useEffect, useRef } from 'react'
+import { MessageCircle, Check, X as XIcon, Send, ArrowLeft } from 'lucide-react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 
@@ -39,6 +39,9 @@ export default function ChatsPage() {
   const [currentUser, setCurrentUser] = useState<User | null>(null)
   const [loading, setLoading] = useState(true)
   const [requestStatuses, setRequestStatuses] = useState<Record<string, 'pending' | 'accepted' | 'rejected'>>({})
+  const [newMessage, setNewMessage] = useState('')
+  const [sending, setSending] = useState(false)
+  const messagesEndRef = useRef<HTMLDivElement>(null)
   const router = useRouter()
 
   // Загрузка текущего пользователя
@@ -251,6 +254,88 @@ export default function ChatsPage() {
     return conversation.participants.find((p) => p.user.id !== currentUser.id)?.user || null
   }
 
+  // Автоскролл к последнему сообщению
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
+  }
+
+  useEffect(() => {
+    if (selectedConversation) {
+      scrollToBottom()
+    }
+  }, [selectedConversation?.messages])
+
+  // Отправка сообщения
+  const handleSendMessage = async () => {
+    if (!newMessage.trim() || !selectedConversation || !currentUser || sending) return
+
+    setSending(true)
+    try {
+      const otherUser = getOtherParticipant(selectedConversation)
+      const response = await fetch('/api/messages', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          conversationId: selectedConversation.id,
+          senderId: currentUser.id,
+          receiverId: otherUser?.id || null,
+          content: newMessage.trim(),
+        }),
+      })
+
+      if (response.ok) {
+        const sentMessage = await response.json()
+        setNewMessage('')
+        
+        // Обновляем беседу с новым сообщением
+        const updatedConversation = {
+          ...selectedConversation,
+          messages: [...selectedConversation.messages, sentMessage],
+        }
+        setSelectedConversation(updatedConversation)
+        
+        // Обновляем список бесед
+        const conversationsResponse = await fetch(`/api/conversations?userId=${currentUser.id}`)
+        if (conversationsResponse.ok) {
+          const updatedConversations = await conversationsResponse.json()
+          setConversations(updatedConversations)
+        }
+        
+        scrollToBottom()
+      } else {
+        const data = await response.json()
+        alert(data.error || 'Ошибка при отправке сообщения')
+      }
+    } catch (error) {
+      console.error('Ошибка отправки сообщения:', error)
+      alert('Ошибка при отправке сообщения')
+    } finally {
+      setSending(false)
+    }
+  }
+
+  // Отметка сообщений как прочитанных
+  useEffect(() => {
+    if (!selectedConversation || !currentUser) return
+
+    const markAsRead = async () => {
+      try {
+        await fetch('/api/messages', {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            conversationId: selectedConversation.id,
+            userId: currentUser.id,
+          }),
+        })
+      } catch (error) {
+        console.error('Ошибка отметки сообщений как прочитанных:', error)
+      }
+    }
+
+    markAsRead()
+  }, [selectedConversation?.id, currentUser?.id])
+
   // Проверка, является ли сообщение запросом на участие
   const isEventRequestMessage = (message: Message) => {
     return message.content.includes('хочет присоединиться к вашему событию') && message.content.includes('Запрос ID:')
@@ -338,7 +423,9 @@ export default function ChatsPage() {
       {/* Main Content */}
       <div className="flex-1 flex">
         {/* Conversations List */}
-        <div className="w-80 bg-white border-r border-gray-200 flex flex-col">
+        <div className={`w-80 bg-white border-r border-gray-200 flex flex-col transition-all ${
+          selectedConversation ? 'hidden lg:flex' : 'flex'
+        }`}>
           <div className="p-4 border-b border-gray-200">
             <h1 className="text-xl font-bold text-gray-900">Чаты</h1>
           </div>
@@ -406,16 +493,50 @@ export default function ChatsPage() {
         </div>
 
         {/* Messages */}
-        <div className="flex-1 flex flex-col">
+        <div className="flex-1 flex flex-col bg-gray-50">
           {selectedConversation ? (
             <>
-              <div className="p-4 border-b border-gray-200 bg-white">
-                <h2 className="text-lg font-bold text-gray-900">
-                  {getOtherParticipant(selectedConversation)
-                    ? `${getOtherParticipant(selectedConversation)?.firstName} ${getOtherParticipant(selectedConversation)?.lastName}`
-                    : 'Беседа'}
-                </h2>
+              {/* Header */}
+              <div className="p-4 border-b border-gray-200 bg-white sticky top-0 z-10">
+                <div className="flex items-center gap-3">
+                  <button
+                    onClick={() => setSelectedConversation(null)}
+                    className="lg:hidden p-2 hover:bg-gray-100 rounded-lg transition"
+                  >
+                    <ArrowLeft size={20} className="text-gray-600" />
+                  </button>
+                  <div className="flex items-center gap-3 flex-1">
+                    {(() => {
+                      const otherUser = getOtherParticipant(selectedConversation)
+                      return otherUser ? (
+                        <>
+                          <div className="w-10 h-10 bg-[#2F80ED] rounded-full flex items-center justify-center text-white font-bold flex-shrink-0">
+                            {otherUser.avatar ? (
+                              <img
+                                src={otherUser.avatar}
+                                alt={otherUser.firstName}
+                                className="w-full h-full rounded-full object-cover"
+                              />
+                            ) : (
+                              `${otherUser.firstName[0]}${otherUser.lastName[0]}`
+                            )}
+                          </div>
+                          <div>
+                            <h2 className="text-lg font-bold text-gray-900">
+                              {otherUser.firstName} {otherUser.lastName}
+                            </h2>
+                            <p className="text-sm text-gray-500">@{otherUser.username}</p>
+                          </div>
+                        </>
+                      ) : (
+                        <h2 className="text-lg font-bold text-gray-900">Беседа</h2>
+                      )
+                    })()}
+                  </div>
+                </div>
               </div>
+              
+              {/* Messages List */}
               <div className="flex-1 overflow-y-auto p-4 space-y-4">
                 {selectedConversation.messages.map((message) => {
                   const isOwn = message.senderId === currentUser?.id
@@ -550,6 +671,44 @@ export default function ChatsPage() {
                     </div>
                   )
                 })}
+                <div ref={messagesEndRef} />
+              </div>
+
+              {/* Message Input */}
+              <div className="p-4 border-t border-gray-200 bg-white">
+                <div className="flex items-end gap-3">
+                  <div className="flex-1">
+                    <textarea
+                      value={newMessage}
+                      onChange={(e) => setNewMessage(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' && !e.shiftKey) {
+                          e.preventDefault()
+                          handleSendMessage()
+                        }
+                      }}
+                      placeholder="Напишите сообщение..."
+                      className="w-full px-4 py-3 border border-gray-300 rounded-2xl resize-none focus:outline-none focus:ring-2 focus:ring-[#2F80ED] focus:border-transparent"
+                      rows={1}
+                      style={{
+                        minHeight: '48px',
+                        maxHeight: '120px',
+                      }}
+                      onInput={(e) => {
+                        const target = e.target as HTMLTextAreaElement
+                        target.style.height = 'auto'
+                        target.style.height = `${Math.min(target.scrollHeight, 120)}px`
+                      }}
+                    />
+                  </div>
+                  <button
+                    onClick={handleSendMessage}
+                    disabled={!newMessage.trim() || sending}
+                    className="p-3 bg-[#2F80ED] text-white rounded-full hover:bg-blue-600 transition disabled:opacity-50 disabled:cursor-not-allowed flex-shrink-0"
+                  >
+                    <Send size={20} />
+                  </button>
+                </div>
               </div>
             </>
           ) : (
