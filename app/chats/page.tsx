@@ -214,7 +214,7 @@ export default function ChatsPage() {
               // Ищем беседу с этим пользователем (не SELS ботом)
               const userConversation = data.find((c: Conversation) => {
                 const otherUser = getOtherParticipant(c)
-                const selsBot = c.participants.find((p) => p.user.email === 'sels@system.com')
+                const selsBot = c.participants.find((p: { user: User }) => p.user.email === 'sels@system.com')
                 // Это беседа между двумя пользователями (без SELS бота)
                 return otherUser && otherUser.username === requesterMatch[2] && !selsBot
               })
@@ -617,7 +617,7 @@ export default function ChatsPage() {
                                     if (requesterMatch) {
                                       const userConversation = conversations.find((c: Conversation) => {
                                         const otherUser = getOtherParticipant(c)
-                                        const selsBot = c.participants.find((p) => p.user.email === 'sels@system.com')
+                                        const selsBot = c.participants.find((p: { user: User }) => p.user.email === 'sels@system.com')
                                         // Это беседа между двумя пользователями (без SELS бота)
                                         return otherUser && otherUser.username === requesterMatch[2] && !selsBot
                                       })
