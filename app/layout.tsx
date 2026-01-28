@@ -4,6 +4,8 @@ import './globals.css'
 export const metadata: Metadata = {
   title: 'SELS - Sports Community',
   description: 'Find sports teams and build community for active life',
+  viewport: 'width=device-width, initial-scale=1',
+  themeColor: '#2F80ED',
 }
 
 export default function RootLayout({
