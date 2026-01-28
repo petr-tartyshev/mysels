@@ -14,11 +14,6 @@ const nextConfig = {
   
   // Оптимизация сборки
   swcMinify: true, // Использовать SWC для минификации
-  
-  // Экспериментальные функции
-  experimental: {
-    optimizeCss: true, // Оптимизация CSS
-  },
 }
 
 module.exports = nextConfig
