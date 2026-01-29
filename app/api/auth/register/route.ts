@@ -6,6 +6,15 @@ export const dynamic = 'force-dynamic'
 
 export async function POST(request: NextRequest) {
   try {
+    // Проверка подключения к базе данных
+    if (!process.env.DATABASE_URL) {
+      console.error('DATABASE_URL не настроен')
+      return NextResponse.json(
+        { error: 'Ошибка конфигурации сервера' },
+        { status: 500 }
+      )
+    }
+
     const body = await request.json()
     const { email, password, firstName, lastName, username } = body
 
@@ -86,8 +95,27 @@ export async function POST(request: NextRequest) {
     return response
   } catch (error) {
     console.error('Ошибка регистрации:', error)
+    
+    // Детальная информация об ошибке для отладки
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error'
+    const errorStack = error instanceof Error ? error.stack : undefined
+    
+    console.error('Детали ошибки:', {
+      message: errorMessage,
+      stack: errorStack,
+      error: error,
+    })
+    
+    // В production не показываем детали ошибки пользователю
+    // Но логируем для отладки
     return NextResponse.json(
-      { error: 'Ошибка сервера' },
+      { 
+        error: 'Ошибка сервера',
+        // В development показываем детали
+        ...(process.env.NODE_ENV === 'development' && {
+          details: errorMessage,
+        }),
+      },
       { status: 500 }
     )
   }

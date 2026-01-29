@@ -1,18 +1,23 @@
-version: '3.8'
+version: '3.9'
 
 services:
-  postgres:
-    image: postgres:15
-    container_name: sels_postgres
+  web:
+    build: .
+    container_name: sels_web
     restart: always
+    env_file:
+      - .env.production
     environment:
-      POSTGRES_USER: sels_user
-      POSTGRES_PASSWORD: sels_password
-      POSTGRES_DB: sels_db
+      # Переменная DATABASE_URL ДОЛЖНА указывать на Supabase
+      # Пример: postgresql://postgres:password@db.xxx.supabase.co:5432/postgres
+      NODE_ENV: production
     ports:
-      - "5432:5432"
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - "3000:3000"
 
-volumes:
-  postgres_data:
+    # Если понадобятся логи в stdout/stderr
+    # logging:
+    #   driver: "json-file"
+    #   options:
+    #     max-size: "10m"
+    #     max-file: "3"
+

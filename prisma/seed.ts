@@ -37,6 +37,20 @@ async function main() {
     },
   })
 
+  const user3 = await prisma.user.upsert({
+    where: { email: 'anna@sels.com' },
+    update: {},
+    create: {
+      email: 'anna@sels.com',
+      password: hashedPassword,
+      firstName: 'Анна',
+      lastName: 'Петрова',
+      username: 'annapet',
+      avatar: '/avatars/anna.jpg',
+      bio: 'Люблю бег и йогу. Организую утренние пробежки в парках Москвы.',
+    },
+  })
+
   // Создание технического аккаунта SELS
   const selsBot = await prisma.user.upsert({
     where: { email: 'sels@system.com' },
@@ -55,8 +69,14 @@ async function main() {
   console.log('✅ Пользователи созданы:', { 
     user1: user1.username, 
     user2: user2.username,
+    user3: user3.username,
     selsBot: selsBot.username,
   })
+  
+  console.log('📋 Данные для входа:')
+  console.log('1. petr@sels.com / password123')
+  console.log('2. sergey@sels.com / password123')
+  console.log('3. anna@sels.com / password123')
 
   // Создание локаций
   const location1 = await prisma.location.upsert({
