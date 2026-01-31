@@ -278,6 +278,17 @@ function ProfilePageContent() {
           })
         : []
 
+      // Преобразуем дату из формата YYYY-MM-DD (input type="date") в нужный формат
+      // Если дата уже в правильном формате, оставляем как есть
+      let formattedDate = newEventDate
+      if (newEventDate && newEventDate.includes('.')) {
+        // Если дата в формате DD.MM.YYYY, преобразуем в YYYY-MM-DD
+        const parts = newEventDate.split('.')
+        if (parts.length === 3) {
+          formattedDate = `${parts[2]}-${parts[1]}-${parts[0]}`
+        }
+      }
+
       const eventData = {
         title: newEventTitle.trim(),
         description: newEventDescription && newEventDescription.trim().length > 0 
@@ -286,14 +297,21 @@ function ProfilePageContent() {
         images: cleanImages,
         locationId: newEventLocation.id,
         userId: currentUser.id,
-        date: newEventDate,
+        date: formattedDate,
         timeStart: newEventTimeStart,
         timeEnd: newEventTimeEnd,
-        capacity: parseInt(newEventCapacity),
+        capacity: parseInt(newEventCapacity, 10),
         level: newEventLevel,
       }
 
-      console.log('Отправка события:', { ...eventData, images: eventData.images.length + ' изображений' })
+      console.log('Отправка события:', { 
+        ...eventData, 
+        images: eventData.images.length + ' изображений',
+        originalDate: newEventDate,
+        formattedDate: formattedDate,
+        capacity: eventData.capacity,
+        capacityType: typeof eventData.capacity,
+      })
 
       const response = await fetch('/api/events', {
         method: 'POST',
@@ -1293,15 +1311,16 @@ function ProfilePageContent() {
                     <span className="text-gray-600">Выбрать локацию</span>
                   </button>
                   <button
+                    type="button"
                     onClick={() => {
                       // Сохраняем состояние модального окна создания события
                       // и открываем модальное окно создания локации
                       setShowNewLocation(true)
                     }}
-                    className="flex-1 p-4 border-2 border-dashed border-gray-300 rounded-xl hover:border-[#2F80ED] transition text-center bg-gray-50"
+                    className="flex-1 p-4 border-2 border-dashed border-gray-300 rounded-xl hover:border-[#2F80ED] transition text-center bg-gray-50 hover:bg-gray-100"
                   >
                     <Plus size={32} className="mx-auto text-gray-400 mb-2" />
-                    <span className="text-gray-600">Добавить локацию</span>
+                    <span className="text-gray-600 font-medium">Добавить локацию</span>
                   </button>
                 </div>
               )}

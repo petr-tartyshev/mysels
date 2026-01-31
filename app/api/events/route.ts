@@ -78,19 +78,41 @@ export async function POST(request: NextRequest) {
       level,
     } = body
 
-    // Validation
-    if (!title || !locationId || !userId || !date || !timeStart || !timeEnd || !capacity) {
-      console.error('Отсутствуют обязательные поля:', {
+    // Validation - проверяем наличие всех обязательных полей
+    const missingFields: string[] = []
+    if (!title || !title.trim()) missingFields.push('title')
+    if (!locationId || !locationId.trim()) missingFields.push('locationId')
+    if (!userId || !userId.trim()) missingFields.push('userId')
+    if (!date || !date.trim()) missingFields.push('date')
+    if (!timeStart || !timeStart.trim()) missingFields.push('timeStart')
+    if (!timeEnd || !timeEnd.trim()) missingFields.push('timeEnd')
+    if (capacity === undefined || capacity === null || capacity === '') missingFields.push('capacity')
+
+    if (missingFields.length > 0) {
+      console.error('Отсутствуют обязательные поля:', missingFields, {
         title: !!title,
         locationId: !!locationId,
         userId: !!userId,
         date: !!date,
         timeStart: !!timeStart,
         timeEnd: !!timeEnd,
-        capacity: !!capacity,
+        capacity: capacity,
+        capacityType: typeof capacity,
       })
       return NextResponse.json(
-        { error: 'Missing required fields' },
+        { 
+          error: 'Missing required fields',
+          missingFields: missingFields,
+          details: {
+            title: !!title,
+            locationId: !!locationId,
+            userId: !!userId,
+            date: !!date,
+            timeStart: !!timeStart,
+            timeEnd: !!timeEnd,
+            capacity: capacity,
+          }
+        },
         { status: 400 }
       )
     }
