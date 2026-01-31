@@ -894,7 +894,7 @@ function ProfilePageContent() {
               <Plus size={28} />
             </button>
             
-            {/* Menu for choosing post or event */}
+            {/* Menu for choosing post, event or location */}
             {showCreateMenu && (
               <div className="fixed bottom-24 right-8 bg-white rounded-xl shadow-xl border border-gray-200 z-50 min-w-[200px]">
                 <button
