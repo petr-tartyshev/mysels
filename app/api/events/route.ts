@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 
+export const dynamic = 'force-dynamic'
+
 // GET all events or events for a location/user
 export async function GET(request: NextRequest) {
   try {
@@ -170,8 +172,12 @@ export async function POST(request: NextRequest) {
       where: { id: cleanLocationId },
     })
     if (!locationExists) {
+      console.error(`Локация не найдена: ${cleanLocationId}`)
+      // Проверяем, есть ли вообще локации в базе
+      const allLocations = await prisma.location.findMany({ take: 5 })
+      console.error(`Доступные локации в БД (первые 5):`, allLocations.map(l => ({ id: l.id, name: l.name })))
       return NextResponse.json(
-        { error: `Location with id ${cleanLocationId} not found` },
+        { error: `Локация не найдена. Пожалуйста, выберите другую локацию или создайте новую.` },
         { status: 400 }
       )
     }
@@ -225,31 +231,47 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(event, { status: 201 })
   } catch (error: any) {
     console.error('Error creating event:', error)
-    console.error('Error details:', JSON.stringify(error, null, 2))
+    console.error('Error details:', {
+      message: error?.message,
+      code: error?.code,
+      meta: error?.meta,
+      stack: error?.stack,
+    })
     
     // Если это ошибка Prisma, выводим более детальную информацию
     if (error?.code === 'P2002') {
       return NextResponse.json(
-        { error: 'Unique constraint violation', details: error.meta },
+        { error: 'Нарушение уникальности данных', details: error.meta },
         { status: 400 }
       )
     }
     
     if (error?.code === 'P2003') {
+      const field = error?.meta?.field_name || 'неизвестное поле'
       return NextResponse.json(
-        { error: 'Foreign key constraint violation', details: error.meta },
+        { error: `Локация или пользователь не найдены. Поле: ${field}` },
         { status: 400 }
       )
     }
 
-    const errorMessage = error?.message || (error instanceof Error ? error.message : 'Failed to create event')
-    const errorDetails = error?.meta || (error instanceof Error ? error.stack : undefined)
+    // Ошибка подключения к базе данных
+    if (error?.code === 'P1001' || error?.message?.includes('Can\'t reach database')) {
+      return NextResponse.json(
+        { error: 'Ошибка подключения к базе данных. Попробуйте позже.' },
+        { status: 503 }
+      )
+    }
+
+    const errorMessage = error?.message || (error instanceof Error ? error.message : 'Не удалось создать событие')
     
+    // В production не показываем детали ошибки, но логируем
     return NextResponse.json(
       { 
-        error: errorMessage, 
-        details: errorDetails,
-        code: error?.code,
+        error: process.env.NODE_ENV === 'development' ? errorMessage : 'Не удалось создать событие. Проверьте все поля и попробуйте снова.',
+        ...(process.env.NODE_ENV === 'development' && {
+          details: error?.stack,
+          code: error?.code,
+        }),
       },
       { status: 500 }
     )

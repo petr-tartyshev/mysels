@@ -4,6 +4,16 @@ import { useState, useEffect, Suspense } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
 import { Settings, Calendar, BarChart3, Plus, X, Upload, MapPin, List, Map as MapIcon, LogOut, Trash2 } from 'lucide-react'
 import Link from 'next/link'
+import dynamic from 'next/dynamic'
+import 'maplibre-gl/dist/maplibre-gl.css'
+
+const Map = dynamic(() => import('react-map-gl/maplibre'), {
+  ssr: false,
+})
+
+const Marker = dynamic(() => import('react-map-gl/maplibre').then((mod) => mod.Marker), {
+  ssr: false,
+})
 
 interface LocationOption {
   id: string
@@ -46,6 +56,16 @@ function ProfilePageContent() {
   const [newEventCapacity, setNewEventCapacity] = useState('')
   const [newEventLevel, setNewEventLevel] = useState('новичок')
 
+  // Состояние для создания локации
+  const [showNewLocation, setShowNewLocation] = useState(false)
+  const [newLocationName, setNewLocationName] = useState('')
+  const [newLocationDescription, setNewLocationDescription] = useState('')
+  const [newLocationType, setNewLocationType] = useState<'outdoor' | 'bike' | 'water' | 'gym'>('outdoor')
+  const [newLocationIsPublic, setNewLocationIsPublic] = useState(false)
+  const [newLocationCoords, setNewLocationCoords] = useState<{ lat: number; lng: number } | null>(null)
+  const [newLocationAddress, setNewLocationAddress] = useState('')
+  const [newLocationCost, setNewLocationCost] = useState('Бесплатно')
+
   // Загрузка локаций из БД
   const [availableLocations, setAvailableLocations] = useState<LocationOption[]>([
     { id: '1', name: 'Футбольное поле в парке Яуза', lat: 55.8228, lng: 37.6602, type: 'outdoor' },
@@ -55,57 +75,28 @@ function ProfilePageContent() {
     { id: '5', name: 'Воробьевы горы', lat: 55.7105, lng: 37.5420, type: 'outdoor' },
   ])
 
-  // Загрузка локаций из БД и добавление локаций с карты
+  // Загрузка локаций из БД (все локации теперь хранятся в базе данных)
   useEffect(() => {
     const fetchLocations = async () => {
       try {
         const response = await fetch('/api/locations')
-        let dbLocations: any[] = []
         
         if (response.ok) {
           const locationsData = await response.json()
-          dbLocations = locationsData.map((loc: any) => ({
+          const formattedLocations: LocationOption[] = locationsData.map((loc: any) => ({
             id: loc.id,
             name: loc.name,
             lat: loc.lat,
             lng: loc.lng,
-            type: 'outdoor', // Уличные площадки из БД
+            type: (loc.type === 'outdoor' ? 'outdoor' : 
+                   loc.type === 'bike' ? 'bike' : 
+                   loc.type === 'water' ? 'water' : 
+                   'outdoor') as LocationOption['type'],
           }))
+          setAvailableLocations(formattedLocations)
+        } else {
+          console.error('Ошибка загрузки локаций:', response.status)
         }
-
-        // Уличные площадки (outdoor)
-        const outdoorLocations = [
-          { id: 'outdoor-1', name: 'Футбольное поле в парке Яуза', lat: 55.8228, lng: 37.6602, type: 'outdoor' },
-          { id: 'outdoor-2', name: 'Спортплощадка Сокольники', lat: 55.7967, lng: 37.6700, type: 'outdoor' },
-          { id: 'outdoor-3', name: 'Стадион Лужники', lat: 55.7150, lng: 37.5550, type: 'outdoor' },
-          { id: 'outdoor-4', name: 'Парк Горького', lat: 55.7308, lng: 37.6014, type: 'outdoor' },
-          { id: 'outdoor-5', name: 'Воробьевы горы', lat: 55.7105, lng: 37.5420, type: 'outdoor' },
-        ]
-
-        // Веломаршруты (bike)
-        const bikeRoutes = [
-          { id: 'bike-1', name: 'Веломаршрут №1: Город', lat: 55.7558, lng: 37.6173, type: 'bike' },
-          { id: 'bike-2', name: 'Веломаршрут №2: Парковый', lat: 55.7308, lng: 37.6014, type: 'bike' },
-          { id: 'bike-3', name: 'Веломаршрут №3: Воробьевы горы', lat: 55.7105, lng: 37.5420, type: 'bike' },
-        ]
-
-        // Водные маршруты (water) - сапы/байдарки
-        const waterRoutes = [
-          { id: 'water-1', name: 'Водный маршрут №1: Москва-река (Парк Горького - Воробьевы горы)', lat: 55.7308, lng: 37.6014, type: 'water' },
-          { id: 'water-2', name: 'Водный маршрут №2: Яуза (Парк Яуза - Впадение)', lat: 55.8228, lng: 37.6602, type: 'water' },
-          { id: 'water-3', name: 'Водный маршрут №3: Москва-река (Серебряный бор - Крылатское)', lat: 55.7800, lng: 37.4200, type: 'water' },
-          { id: 'water-4', name: 'Водный маршрут №4: Сетунь (Кунцево - Впадение)', lat: 55.7300, lng: 37.4000, type: 'water' },
-        ]
-
-        // Объединяем все локации: сначала из БД, потом уличные площадки, вело и водные маршруты
-        const allLocations = [
-          ...dbLocations,
-          ...outdoorLocations,
-          ...bikeRoutes,
-          ...waterRoutes,
-        ]
-
-        setAvailableLocations(allLocations)
       } catch (error) {
         console.error('Ошибка загрузки локаций:', error)
       }
@@ -312,8 +303,13 @@ function ProfilePageContent() {
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({ error: 'Неизвестная ошибка' }))
-        console.error('Ошибка ответа сервера:', errorData)
-        alert(`Ошибка создания события: ${errorData.error || 'Неизвестная ошибка'}`)
+        console.error('Ошибка ответа сервера:', {
+          status: response.status,
+          statusText: response.statusText,
+          error: errorData,
+        })
+        const errorMessage = errorData.error || 'Неизвестная ошибка'
+        alert(`Ошибка создания события: ${errorMessage}`)
         return
       }
 
@@ -902,10 +898,20 @@ function ProfilePageContent() {
                     setShowCreateMenu(false)
                     setShowNewEvent(true)
                   }}
-                  className="w-full px-6 py-4 text-left hover:bg-gray-50 rounded-b-xl transition flex items-center gap-3 border-t border-gray-200"
+                  className="w-full px-6 py-4 text-left hover:bg-gray-50 transition flex items-center gap-3 border-t border-gray-200"
                 >
                   <Calendar size={20} />
                   Создать событие
+                </button>
+                <button
+                  onClick={() => {
+                    setShowCreateMenu(false)
+                    setShowNewLocation(true)
+                  }}
+                  className="w-full px-6 py-4 text-left hover:bg-gray-50 rounded-b-xl transition flex items-center gap-3 border-t border-gray-200"
+                >
+                  <MapPin size={20} />
+                  Создать локацию
                 </button>
               </div>
             )}
@@ -1369,6 +1375,359 @@ function ProfilePageContent() {
           </div>
         </div>
       )}
+
+      {/* New Location Modal */}
+      {showNewLocation && (
+        <CreateLocationModal
+          onClose={() => {
+            setShowNewLocation(false)
+            setNewLocationName('')
+            setNewLocationDescription('')
+            setNewLocationType('outdoor')
+            setNewLocationIsPublic(false)
+            setNewLocationCoords(null)
+            setNewLocationAddress('')
+            setNewLocationCost('Бесплатно')
+          }}
+          onSuccess={() => {
+            setShowNewLocation(false)
+            setNewLocationName('')
+            setNewLocationDescription('')
+            setNewLocationType('outdoor')
+            setNewLocationIsPublic(false)
+            setNewLocationCoords(null)
+            setNewLocationAddress('')
+            setNewLocationCost('Бесплатно')
+            // Обновляем список локаций
+            const fetchLocations = async () => {
+              try {
+                const response = await fetch('/api/locations')
+                if (response.ok) {
+                  const locationsData = await response.json()
+                  const formattedLocations: LocationOption[] = locationsData.map((loc: any) => ({
+                    id: loc.id,
+                    name: loc.name,
+                    lat: loc.lat,
+                    lng: loc.lng,
+                    type: (loc.type === 'outdoor' ? 'outdoor' : 
+                           loc.type === 'bike' ? 'bike' : 
+                           loc.type === 'water' ? 'water' : 
+                           'outdoor') as LocationOption['type'],
+                  }))
+                  setAvailableLocations(formattedLocations)
+                }
+              } catch (error) {
+                console.error('Ошибка загрузки локаций:', error)
+              }
+            }
+            fetchLocations()
+          }}
+        />
+      )}
+    </div>
+  )
+}
+
+// Create Location Modal Component
+function CreateLocationModal({
+  onClose,
+  onSuccess,
+}: {
+  onClose: () => void
+  onSuccess: () => void
+}) {
+  const [name, setName] = useState('')
+  const [description, setDescription] = useState('')
+  const [type, setType] = useState<'outdoor' | 'bike' | 'water' | 'gym'>('outdoor')
+  const [isPublic, setIsPublic] = useState(false)
+  const [address, setAddress] = useState('')
+  const [cost, setCost] = useState('Бесплатно')
+  const [selectedCoords, setSelectedCoords] = useState<{ lat: number; lng: number } | null>(null)
+  const [viewState, setViewState] = useState({
+    latitude: 55.7558,
+    longitude: 37.6173,
+    zoom: 11,
+  })
+  const [loading, setLoading] = useState(false)
+  const [currentUser, setCurrentUser] = useState<any>(null)
+
+  useEffect(() => {
+    const fetchCurrentUser = async () => {
+      try {
+        const response = await fetch('/api/auth/me')
+        if (response.ok) {
+          const data = await response.json()
+          setCurrentUser(data.user)
+        }
+      } catch (error) {
+        console.error('Ошибка загрузки пользователя:', error)
+      }
+    }
+    fetchCurrentUser()
+  }, [])
+
+  const handleMapClick = (event: any) => {
+    const { lngLat } = event
+    setSelectedCoords({ lat: lngLat.lat, lng: lngLat.lng })
+  }
+
+  const handleSubmit = async () => {
+    if (!name.trim()) {
+      alert('Введите название локации')
+      return
+    }
+
+    if (!selectedCoords) {
+      alert('Выберите точку на карте')
+      return
+    }
+
+    if (!currentUser) {
+      alert('Необходима авторизация')
+      return
+    }
+
+    setLoading(true)
+    try {
+      const response = await fetch('/api/locations', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: name.trim(),
+          description: description.trim() || null,
+          lat: selectedCoords.lat,
+          lng: selectedCoords.lng,
+          address: address.trim() || null,
+          cost: cost || 'Бесплатно',
+          type,
+          isPublic,
+        }),
+      })
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({ error: 'Неизвестная ошибка' }))
+        alert(`Ошибка создания локации: ${errorData.error || 'Неизвестная ошибка'}`)
+        return
+      }
+
+      const savedLocation = await response.json()
+      console.log('Локация создана:', savedLocation)
+      alert('Локация успешно создана!')
+      onSuccess()
+    } catch (error) {
+      console.error('Ошибка создания локации:', error)
+      alert(`Не удалось создать локацию: ${error instanceof Error ? error.message : 'Неизвестная ошибка'}`)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  return (
+    <div
+      className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4"
+      onClick={onClose}
+    >
+      <div
+        className="bg-white rounded-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden flex flex-col"
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Header */}
+        <div className="p-6 border-b border-gray-200 flex items-center justify-between">
+          <h3 className="text-xl font-bold text-gray-900">Создать локацию</h3>
+          <button
+            onClick={onClose}
+            className="p-2 hover:bg-gray-100 rounded-lg transition"
+          >
+            <X size={24} />
+          </button>
+        </div>
+
+        {/* Content */}
+        <div className="flex-1 overflow-y-auto p-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* Left: Form */}
+            <div className="space-y-4">
+              {/* Name */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Название локации <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  placeholder="Например: Футбольное поле в парке"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:border-[#2F80ED]"
+                />
+              </div>
+
+              {/* Description */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Описание
+                </label>
+                <textarea
+                  placeholder="Опишите локацию (необязательно)"
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-xl h-32 resize-none focus:outline-none focus:border-[#2F80ED]"
+                />
+              </div>
+
+              {/* Type */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Раздел <span className="text-red-500">*</span>
+                </label>
+                <select
+                  value={type}
+                  onChange={(e) => setType(e.target.value as 'outdoor' | 'bike' | 'water' | 'gym')}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:border-[#2F80ED]"
+                >
+                  <option value="outdoor">Уличные площадки</option>
+                  <option value="bike">Веломаршруты</option>
+                  <option value="water">Сапы / байдарки</option>
+                  <option value="gym">Спортивные залы</option>
+                </select>
+              </div>
+
+              {/* Address */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Адрес
+                </label>
+                <input
+                  type="text"
+                  placeholder="Например: Парк Горького, Москва"
+                  value={address}
+                  onChange={(e) => setAddress(e.target.value)}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:border-[#2F80ED]"
+                />
+              </div>
+
+              {/* Cost */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Стоимость
+                </label>
+                <input
+                  type="text"
+                  placeholder="Например: Бесплатно или 500₽/час"
+                  value={cost}
+                  onChange={(e) => setCost(e.target.value)}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:border-[#2F80ED]"
+                />
+              </div>
+
+              {/* Public Toggle */}
+              <div className="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Сделать доступной для всех
+                  </label>
+                  <p className="text-xs text-gray-500">
+                    Локация появится на общей карте для всех пользователей
+                  </p>
+                </div>
+                <button
+                  onClick={() => setIsPublic(!isPublic)}
+                  className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+                    isPublic ? 'bg-[#2F80ED]' : 'bg-gray-300'
+                  }`}
+                >
+                  <span
+                    className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                      isPublic ? 'translate-x-6' : 'translate-x-1'
+                    }`}
+                  />
+                </button>
+              </div>
+            </div>
+
+            {/* Right: Map */}
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Выберите точку на карте <span className="text-red-500">*</span>
+                </label>
+                <div className="h-[400px] rounded-xl overflow-hidden border border-gray-300">
+                  <Map
+                    {...viewState}
+                    onMove={(evt) => setViewState(evt.viewState)}
+                    onClick={handleMapClick}
+                    style={{ width: '100%', height: '100%' }}
+                    mapStyle={{
+                      version: 8,
+                      sources: {
+                        osm: {
+                          type: 'raster',
+                          tiles: ['https://a.tile.openstreetmap.org/{z}/{x}/{y}.png'],
+                          tileSize: 256,
+                          attribution: '&copy; OpenStreetMap Contributors',
+                          maxzoom: 19,
+                        },
+                      },
+                      layers: [
+                        {
+                          id: 'osm',
+                          type: 'raster',
+                          source: 'osm',
+                        },
+                      ],
+                    }}
+                  >
+                    {selectedCoords && (
+                      <Marker
+                        latitude={selectedCoords.lat}
+                        longitude={selectedCoords.lng}
+                        anchor="bottom"
+                      >
+                        <div className="relative">
+                          <svg
+                            width="32"
+                            height="42"
+                            viewBox="0 0 32 42"
+                            fill="none"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <path
+                              d="M16 0C7.163 0 0 7.163 0 16C0 28 16 42 16 42C16 42 32 28 32 16C32 7.163 24.837 0 16 0Z"
+                              fill="#DC2626"
+                            />
+                            <circle cx="16" cy="16" r="6" fill="white" />
+                          </svg>
+                        </div>
+                      </Marker>
+                    )}
+                  </Map>
+                </div>
+                {selectedCoords && (
+                  <p className="text-sm text-gray-600 mt-2">
+                    Координаты: {selectedCoords.lat.toFixed(6)}, {selectedCoords.lng.toFixed(6)}
+                  </p>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Footer */}
+        <div className="p-6 border-t border-gray-200 flex items-center justify-end gap-3">
+          <button
+            onClick={onClose}
+            className="px-6 py-2 border border-gray-300 rounded-xl font-medium text-gray-700 hover:bg-gray-50 transition"
+          >
+            Отмена
+          </button>
+          <button
+            onClick={handleSubmit}
+            disabled={!name.trim() || !selectedCoords || loading}
+            className="px-6 py-2 bg-[#2F80ED] text-white rounded-xl font-medium hover:bg-blue-600 transition disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {loading ? 'Создание...' : 'Создать локацию'}
+          </button>
+        </div>
+      </div>
     </div>
   )
 }

@@ -1,17 +1,15 @@
-# Команды для отправки изменений в GitHub
-
-Выполни эти команды в терминале:
-
-```bash
+#!/bin/bash
 cd /Users/petr/sels
 
-# Проверь статус
+echo "=== Checking git status ==="
 git status
 
-# Добавь все изменения
+echo ""
+echo "=== Adding all changes ==="
 git add -A
 
-# Создай коммит
+echo ""
+echo "=== Committing changes ==="
 git commit -m "feat: Add user location creation with map picker
 
 - Add isPublic and userId fields to Location model
@@ -22,11 +20,9 @@ git commit -m "feat: Add user location creation with map picker
 - Update /map to show only public locations
 - Add migration for location isPublic and userId fields"
 
-# Отправь в GitHub
+echo ""
+echo "=== Pushing to GitHub ==="
 git push origin main
-```
 
-Если push не работает, проверь SSH ключ:
-```bash
-ssh -T git@github.com
-```
+echo ""
+echo "=== Done ==="

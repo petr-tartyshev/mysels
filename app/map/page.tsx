@@ -343,11 +343,11 @@ function MapPageContent() {
     water: 'Сапы / байдарки',
   }
 
-  // Загрузка локаций из БД
+  // Загрузка локаций из БД (только публичные для карты)
   useEffect(() => {
     const fetchLocations = async () => {
       try {
-        const response = await fetch('/api/locations')
+        const response = await fetch('/api/locations?public=true')
         if (response.ok) {
           const locationsData = await response.json()
           // Преобразуем локации из БД в формат Location
@@ -359,6 +359,7 @@ function MapPageContent() {
             type: (loc.type === 'outdoor' ? 'outdoor' : 
                    loc.type === 'gym' ? 'gym' : 
                    loc.type === 'water' ? 'water' : 
+                   loc.type === 'bike' ? 'bike' :
                    loc.type === 'featured' ? 'featured' : 'regular') as Location['type'],
             description: loc.description || '',
             price: loc.cost || 'Бесплатно',

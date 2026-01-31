@@ -8,12 +8,9 @@ let prismaClient: PrismaClient
 if (globalForPrisma.prisma) {
   prismaClient = globalForPrisma.prisma
 } else {
-  // Проверка DATABASE_URL перед созданием клиента
-  if (!process.env.DATABASE_URL) {
-    console.error('⚠️ DATABASE_URL не настроен!')
-    throw new Error('DATABASE_URL environment variable is not set')
-  }
-
+  // Не проверяем DATABASE_URL при создании клиента
+  // Проверка будет только при реальном использовании (в API routes)
+  // Это позволяет Next.js собрать проект без DATABASE_URL
   prismaClient = new PrismaClient({
     log: process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'],
   })
@@ -21,11 +18,6 @@ if (globalForPrisma.prisma) {
   if (process.env.NODE_ENV !== 'production') {
     globalForPrisma.prisma = prismaClient
   }
-}
-
-// Проверяем, что Prisma Client инициализирован
-if (!prismaClient) {
-  throw new Error('Prisma Client не инициализирован')
 }
 
 export const prisma = prismaClient
