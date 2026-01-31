@@ -1284,13 +1284,26 @@ function ProfilePageContent() {
                   </button>
                 </div>
               ) : (
-                <button
-                  onClick={() => setShowLocationPicker(true)}
-                  className="w-full p-4 border-2 border-dashed border-gray-300 rounded-xl hover:border-[#2F80ED] transition text-center"
-                >
-                  <MapPin size={32} className="mx-auto text-gray-400 mb-2" />
-                  <span className="text-gray-600">Выбрать локацию</span>
-                </button>
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => setShowLocationPicker(true)}
+                    className="flex-1 p-4 border-2 border-dashed border-gray-300 rounded-xl hover:border-[#2F80ED] transition text-center"
+                  >
+                    <MapPin size={32} className="mx-auto text-gray-400 mb-2" />
+                    <span className="text-gray-600">Выбрать локацию</span>
+                  </button>
+                  <button
+                    onClick={() => {
+                      // Сохраняем состояние модального окна создания события
+                      // и открываем модальное окно создания локации
+                      setShowNewLocation(true)
+                    }}
+                    className="flex-1 p-4 border-2 border-dashed border-gray-300 rounded-xl hover:border-[#2F80ED] transition text-center bg-gray-50"
+                  >
+                    <Plus size={32} className="mx-auto text-gray-400 mb-2" />
+                    <span className="text-gray-600">Добавить локацию</span>
+                  </button>
+                </div>
               )}
             </div>
 
@@ -1367,7 +1380,17 @@ function ProfilePageContent() {
             {/* Submit Button */}
             <button
               onClick={handleCreateEvent}
-              disabled={!newEventTitle || !newEventLocation || !newEventDate || !newEventTimeStart || !newEventTimeEnd || !newEventCapacity || !newEventLevel}
+              disabled={
+                !newEventTitle?.trim() || 
+                !newEventLocation || 
+                !newEventDate || 
+                !newEventTimeStart || 
+                !newEventTimeEnd || 
+                !newEventCapacity || 
+                newEventCapacity === '' || 
+                parseInt(newEventCapacity) < 1 ||
+                !newEventLevel
+              }
               className="w-full py-3 bg-[#2F80ED] text-white rounded-xl font-semibold hover:bg-blue-600 transition disabled:opacity-50 disabled:cursor-not-allowed"
             >
               Создать событие
@@ -1388,8 +1411,10 @@ function ProfilePageContent() {
             setNewLocationCoords(null)
             setNewLocationAddress('')
             setNewLocationCost('Бесплатно')
+            // Если модальное окно создания события было открыто, возвращаемся к нему
+            // (showNewEvent уже true, просто закрываем модальное окно локации)
           }}
-          onSuccess={() => {
+          onSuccess={(createdLocation) => {
             setShowNewLocation(false)
             setNewLocationName('')
             setNewLocationDescription('')
@@ -1398,6 +1423,12 @@ function ProfilePageContent() {
             setNewLocationCoords(null)
             setNewLocationAddress('')
             setNewLocationCost('Бесплатно')
+            
+            // Если создана локация и открыто модальное окно создания события, выбираем созданную локацию
+            if (createdLocation && showNewEvent) {
+              setNewEventLocation({ id: createdLocation.id, name: createdLocation.name })
+            }
+            
             // Обновляем список локаций
             const fetchLocations = async () => {
               try {
@@ -1434,7 +1465,7 @@ function CreateLocationModal({
   onSuccess,
 }: {
   onClose: () => void
-  onSuccess: () => void
+  onSuccess: (location?: { id: string; name: string }) => void
 }) {
   const [name, setName] = useState('')
   const [description, setDescription] = useState('')
@@ -1513,7 +1544,7 @@ function CreateLocationModal({
       const savedLocation = await response.json()
       console.log('Локация создана:', savedLocation)
       alert('Локация успешно создана!')
-      onSuccess()
+      onSuccess({ id: savedLocation.id, name: savedLocation.name })
     } catch (error) {
       console.error('Ошибка создания локации:', error)
       alert(`Не удалось создать локацию: ${error instanceof Error ? error.message : 'Неизвестная ошибка'}`)
