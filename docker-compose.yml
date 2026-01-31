@@ -11,6 +11,7 @@ services:
       # Переменная DATABASE_URL ДОЛЖНА указывать на Supabase
       # Пример: postgresql://postgres:password@db.xxx.supabase.co:5432/postgres
       NODE_ENV: production
+      # DATABASE_URL должен быть установлен через .env.production на сервере
     ports:
       - "3000:3000"
 
