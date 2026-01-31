@@ -28,26 +28,9 @@ if [ -z "$LOCAL_CHANGES" ]; then
     exit 0
 fi
 
-# Исключаем workflow файлы из коммита
-WORKFLOW_FILES=$(echo "$LOCAL_CHANGES" | grep "\.github/workflows" || true)
-
-if [ -n "$WORKFLOW_FILES" ]; then
-    echo "⚠️  Обнаружены изменения в .github/workflows/"
-    echo "⚠️  Токен не имеет права 'workflow', пропускаю эти файлы"
-fi
-
-# Добавляем все изменения
+# Добавляем все изменения (включая workflow файлы, так как токен обновлен)
+echo "📝 Добавляю все изменения..."
 git add -A
-
-# Исключаем workflow файлы из staging
-if [ -n "$WORKFLOW_FILES" ]; then
-    echo "$WORKFLOW_FILES" | while read -r line; do
-        FILE=$(echo "$line" | awk '{print $2}')
-        if [ -n "$FILE" ] && [ -f "$FILE" ]; then
-            git reset "$FILE" 2>/dev/null || true
-        fi
-    done
-fi
 
 # Проверяем, остались ли изменения после исключения workflow
 STAGED_CHANGES=$(git diff --cached --name-only)
