@@ -5,6 +5,14 @@ import { useSearchParams, useRouter } from 'next/navigation'
 import { Settings, Calendar, BarChart3, Plus, X, Upload, MapPin, List, Map as MapIcon, LogOut, Trash2 } from 'lucide-react'
 import Link from 'next/link'
 
+interface LocationOption {
+  id: string
+  name: string
+  lat: number
+  lng: number
+  type?: 'outdoor' | 'bike' | 'water'
+}
+
 function ProfilePageContent() {
   const searchParams = useSearchParams()
   const router = useRouter()
@@ -39,29 +47,65 @@ function ProfilePageContent() {
   const [newEventLevel, setNewEventLevel] = useState('новичок')
 
   // Загрузка локаций из БД
-  const [availableLocations, setAvailableLocations] = useState([
-    { id: '1', name: 'Футбольное поле в парке Яуза', lat: 55.8228, lng: 37.6602 },
-    { id: '2', name: 'Спортплощадка Сокольники', lat: 55.7967, lng: 37.6700 },
-    { id: '3', name: 'Стадион Лужники', lat: 55.7150, lng: 37.5550 },
-    { id: '4', name: 'Парк Горького', lat: 55.7308, lng: 37.6014 },
-    { id: '5', name: 'Воробьевы горы', lat: 55.7105, lng: 37.5420 },
+  const [availableLocations, setAvailableLocations] = useState<LocationOption[]>([
+    { id: '1', name: 'Футбольное поле в парке Яуза', lat: 55.8228, lng: 37.6602, type: 'outdoor' },
+    { id: '2', name: 'Спортплощадка Сокольники', lat: 55.7967, lng: 37.6700, type: 'outdoor' },
+    { id: '3', name: 'Стадион Лужники', lat: 55.7150, lng: 37.5550, type: 'outdoor' },
+    { id: '4', name: 'Парк Горького', lat: 55.7308, lng: 37.6014, type: 'outdoor' },
+    { id: '5', name: 'Воробьевы горы', lat: 55.7105, lng: 37.5420, type: 'outdoor' },
   ])
 
-  // Загрузка локаций из БД
+  // Загрузка локаций из БД и добавление локаций с карты
   useEffect(() => {
     const fetchLocations = async () => {
       try {
         const response = await fetch('/api/locations')
+        let dbLocations: any[] = []
+        
         if (response.ok) {
           const locationsData = await response.json()
-          const formattedLocations = locationsData.map((loc: any) => ({
+          dbLocations = locationsData.map((loc: any) => ({
             id: loc.id,
             name: loc.name,
             lat: loc.lat,
             lng: loc.lng,
+            type: 'outdoor', // Уличные площадки из БД
           }))
-          setAvailableLocations(formattedLocations)
         }
+
+        // Уличные площадки (outdoor)
+        const outdoorLocations = [
+          { id: 'outdoor-1', name: 'Футбольное поле в парке Яуза', lat: 55.8228, lng: 37.6602, type: 'outdoor' },
+          { id: 'outdoor-2', name: 'Спортплощадка Сокольники', lat: 55.7967, lng: 37.6700, type: 'outdoor' },
+          { id: 'outdoor-3', name: 'Стадион Лужники', lat: 55.7150, lng: 37.5550, type: 'outdoor' },
+          { id: 'outdoor-4', name: 'Парк Горького', lat: 55.7308, lng: 37.6014, type: 'outdoor' },
+          { id: 'outdoor-5', name: 'Воробьевы горы', lat: 55.7105, lng: 37.5420, type: 'outdoor' },
+        ]
+
+        // Веломаршруты (bike)
+        const bikeRoutes = [
+          { id: 'bike-1', name: 'Веломаршрут №1: Город', lat: 55.7558, lng: 37.6173, type: 'bike' },
+          { id: 'bike-2', name: 'Веломаршрут №2: Парковый', lat: 55.7308, lng: 37.6014, type: 'bike' },
+          { id: 'bike-3', name: 'Веломаршрут №3: Воробьевы горы', lat: 55.7105, lng: 37.5420, type: 'bike' },
+        ]
+
+        // Водные маршруты (water) - сапы/байдарки
+        const waterRoutes = [
+          { id: 'water-1', name: 'Водный маршрут №1: Москва-река (Парк Горького - Воробьевы горы)', lat: 55.7308, lng: 37.6014, type: 'water' },
+          { id: 'water-2', name: 'Водный маршрут №2: Яуза (Парк Яуза - Впадение)', lat: 55.8228, lng: 37.6602, type: 'water' },
+          { id: 'water-3', name: 'Водный маршрут №3: Москва-река (Серебряный бор - Крылатское)', lat: 55.7800, lng: 37.4200, type: 'water' },
+          { id: 'water-4', name: 'Водный маршрут №4: Сетунь (Кунцево - Впадение)', lat: 55.7300, lng: 37.4000, type: 'water' },
+        ]
+
+        // Объединяем все локации: сначала из БД, потом уличные площадки, вело и водные маршруты
+        const allLocations = [
+          ...dbLocations,
+          ...outdoorLocations,
+          ...bikeRoutes,
+          ...waterRoutes,
+        ]
+
+        setAvailableLocations(allLocations)
       } catch (error) {
         console.error('Ошибка загрузки локаций:', error)
       }
@@ -1021,28 +1065,99 @@ function ProfilePageContent() {
 
             <div className="flex-1 overflow-y-auto p-6">
               {locationPickerMode === 'list' ? (
-                <div className="space-y-3">
-                  {availableLocations.map((location) => (
-                    <button
-                      key={location.id}
-                      onClick={() => {
-                        // Устанавливаем локацию в зависимости от того, какая форма открыта
-                        if (showNewPost) {
-                          setNewPostLocation({ name: location.name, id: location.id })
-                        }
-                        if (showNewEvent) {
-                          setNewEventLocation({ name: location.name, id: location.id })
-                        }
-                        setShowLocationPicker(false)
-                      }}
-                      className="w-full p-4 border-2 border-gray-200 rounded-xl hover:border-[#2F80ED] hover:bg-blue-50 transition text-left"
-                    >
-                      <div className="flex items-center gap-3">
-                        <MapPin size={24} className="text-[#2F80ED]" />
-                        <span className="font-medium text-gray-900">{location.name}</span>
+                <div className="space-y-6">
+                  {/* Уличные площадки */}
+                  {availableLocations.filter(loc => loc.type === 'outdoor' || !loc.type).length > 0 && (
+                    <div>
+                      <h4 className="text-sm font-semibold text-gray-500 uppercase mb-3">Уличные площадки</h4>
+                      <div className="space-y-3">
+                        {availableLocations
+                          .filter(loc => loc.type === 'outdoor' || !loc.type)
+                          .map((location) => (
+                            <button
+                              key={location.id}
+                              onClick={() => {
+                                if (showNewPost) {
+                                  setNewPostLocation({ name: location.name, id: location.id })
+                                }
+                                if (showNewEvent) {
+                                  setNewEventLocation({ name: location.name, id: location.id })
+                                }
+                                setShowLocationPicker(false)
+                              }}
+                              className="w-full p-4 border-2 border-gray-200 rounded-xl hover:border-[#2F80ED] hover:bg-blue-50 transition text-left"
+                            >
+                              <div className="flex items-center gap-3">
+                                <MapPin size={24} className="text-[#2F80ED]" />
+                                <span className="font-medium text-gray-900">{location.name}</span>
+                              </div>
+                            </button>
+                          ))}
                       </div>
-                    </button>
-                  ))}
+                    </div>
+                  )}
+
+                  {/* Веломаршруты */}
+                  {availableLocations.filter(loc => loc.type === 'bike').length > 0 && (
+                    <div>
+                      <h4 className="text-sm font-semibold text-gray-500 uppercase mb-3">Веломаршруты</h4>
+                      <div className="space-y-3">
+                        {availableLocations
+                          .filter(loc => loc.type === 'bike')
+                          .map((location) => (
+                            <button
+                              key={location.id}
+                              onClick={() => {
+                                if (showNewPost) {
+                                  setNewPostLocation({ name: location.name, id: location.id })
+                                }
+                                if (showNewEvent) {
+                                  setNewEventLocation({ name: location.name, id: location.id })
+                                }
+                                setShowLocationPicker(false)
+                              }}
+                              className="w-full p-4 border-2 border-gray-200 rounded-xl hover:border-[#2F80ED] hover:bg-blue-50 transition text-left"
+                            >
+                              <div className="flex items-center gap-3">
+                                <MapPin size={24} className="text-[#2563EB]" />
+                                <span className="font-medium text-gray-900">{location.name}</span>
+                              </div>
+                            </button>
+                          ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Сапы / байдарки */}
+                  {availableLocations.filter(loc => loc.type === 'water').length > 0 && (
+                    <div>
+                      <h4 className="text-sm font-semibold text-gray-500 uppercase mb-3">Сапы / байдарки</h4>
+                      <div className="space-y-3">
+                        {availableLocations
+                          .filter(loc => loc.type === 'water')
+                          .map((location) => (
+                            <button
+                              key={location.id}
+                              onClick={() => {
+                                if (showNewPost) {
+                                  setNewPostLocation({ name: location.name, id: location.id })
+                                }
+                                if (showNewEvent) {
+                                  setNewEventLocation({ name: location.name, id: location.id })
+                                }
+                                setShowLocationPicker(false)
+                              }}
+                              className="w-full p-4 border-2 border-gray-200 rounded-xl hover:border-[#2F80ED] hover:bg-blue-50 transition text-left"
+                            >
+                              <div className="flex items-center gap-3">
+                                <MapPin size={24} className="text-[#0891B2]" />
+                                <span className="font-medium text-gray-900">{location.name}</span>
+                              </div>
+                            </button>
+                          ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
               ) : (
                 <div className="h-[400px] bg-gray-100 rounded-xl flex items-center justify-center">
