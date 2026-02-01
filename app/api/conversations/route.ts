@@ -95,20 +95,9 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Находим технический аккаунт SELS
-    const selsBot = await prisma.user.findUnique({
-      where: { email: 'sels@system.com' },
-    })
-
-    // Разрешаем создание беседы между пользователями, если это запрос через кнопку "Написать"
+    // Разрешаем создание беседы между пользователями
     // Беседы между пользователями теперь создаются при клике на "Написать" в чате с SELS Support
-    const hasSelsBot = selsBot && userIds.includes(selsBot.id)
-    
-    // Если это беседа между двумя обычными пользователями (без SELS бота),
-    // разрешаем создание (это происходит при клике на "Написать" после принятия запроса)
-    // if (!hasSelsBot && userIds.length === 2) {
-    //   // Разрешаем создание беседы между пользователями
-    // }
+    // после принятия запроса на участие в событии
 
     // Check if conversation already exists between these users
     const existingConversation = await prisma.conversation.findFirst({
