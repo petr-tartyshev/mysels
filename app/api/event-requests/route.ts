@@ -248,12 +248,21 @@ export async function POST(request: NextRequest) {
     console.log('SELS bot found:', selsBot.id, selsBot.email)
 
     // Создаем или находим беседу между организатором и SELS ботом
-    // Проверяем, есть ли уже беседа с обоими участниками
-    const existingConversations = await prisma.conversation.findMany({
+    // Используем точный поиск с AND условием для обоих участников
+    let conversation = await prisma.conversation.findFirst({
       where: {
-        participants: {
-          some: { userId: event.userId },
-        },
+        AND: [
+          {
+            participants: {
+              some: { userId: event.userId },
+            },
+          },
+          {
+            participants: {
+              some: { userId: selsBot.id },
+            },
+          },
+        ],
       },
       include: {
         participants: {
@@ -264,33 +273,72 @@ export async function POST(request: NextRequest) {
       },
     })
 
-    let conversation = existingConversations.find((conv) => {
-      const participantIds = conv.participants.map((p) => p.userId)
-      return participantIds.includes(event.userId) && participantIds.includes(selsBot.id)
-    })
-
     if (!conversation) {
-      console.log('Создаем новую беседу между организатором и SELS ботом')
-      conversation = await prisma.conversation.create({
-        data: {
-          participants: {
-            create: [
-              { userId: event.userId },
-              { userId: selsBot.id },
-            ],
-          },
-        },
-        include: {
-          participants: {
-            include: {
-              user: true,
+      console.log('Создаем новую беседу между организатором и SELS ботом', {
+        organizerId: event.userId,
+        selsBotId: selsBot.id,
+      })
+      try {
+        conversation = await prisma.conversation.create({
+          data: {
+            participants: {
+              create: [
+                { userId: event.userId },
+                { userId: selsBot.id },
+              ],
             },
           },
-        },
-      })
-      console.log('Беседа создана:', conversation.id)
+          include: {
+            participants: {
+              include: {
+                user: true,
+              },
+            },
+          },
+        })
+        console.log('Беседа создана:', conversation.id, {
+          participantIds: conversation.participants.map((p) => p.userId),
+        })
+      } catch (createError: any) {
+        console.error('Ошибка создания беседы:', createError)
+        console.error('Error details:', {
+          message: createError?.message,
+          code: createError?.code,
+        })
+        // Продолжаем выполнение, даже если беседа не создана
+        // Попробуем найти беседу еще раз
+        conversation = await prisma.conversation.findFirst({
+          where: {
+            AND: [
+              {
+                participants: {
+                  some: { userId: event.userId },
+                },
+              },
+              {
+                participants: {
+                  some: { userId: selsBot.id },
+                },
+              },
+            ],
+          },
+          include: {
+            participants: {
+              include: {
+                user: true,
+              },
+            },
+          },
+        })
+        if (!conversation) {
+          console.error('Не удалось создать или найти беседу')
+          return NextResponse.json(eventRequest, { status: 201 })
+        }
+      }
     } else {
-      console.log('Найдена существующая беседа:', conversation.id)
+      console.log('Найдена существующая беседа:', conversation.id, {
+        participantIds: conversation.participants.map((p) => p.userId),
+      })
     }
 
     // Формируем сообщение от SELS бота
@@ -313,6 +361,13 @@ export async function POST(request: NextRequest) {
 
     try {
       // Создаем сообщение от SELS бота организатору
+      console.log('Создаем сообщение:', {
+        conversationId: conversation.id,
+        senderId: selsBot.id,
+        receiverId: event.userId,
+        contentLength: messageContent.length,
+      })
+      
       const message = await prisma.message.create({
         data: {
           conversationId: conversation.id,
@@ -323,7 +378,13 @@ export async function POST(request: NextRequest) {
         },
       })
 
-      console.log('Сообщение создано:', message.id)
+      console.log('Сообщение создано успешно:', {
+        messageId: message.id,
+        conversationId: message.conversationId,
+        senderId: message.senderId,
+        receiverId: message.receiverId,
+        createdAt: message.createdAt,
+      })
 
       // Обновляем время обновления беседы
       await prisma.conversation.update({

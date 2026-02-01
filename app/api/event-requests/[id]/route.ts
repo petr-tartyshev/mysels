@@ -206,36 +206,61 @@ export async function PATCH(
     }
 
     // Создаем или находим беседу между запросившим пользователем и SELS ботом
+    // Используем точный поиск с AND условием для обоих участников
     let conversation = await prisma.conversation.findFirst({
       where: {
-        participants: {
-          some: { userId: eventRequest.requesterId },
-        },
-        AND: {
-          participants: {
-            some: { userId: selsBot.id },
+        AND: [
+          {
+            participants: {
+              some: { userId: eventRequest.requesterId },
+            },
           },
-        },
+          {
+            participants: {
+              some: { userId: selsBot.id },
+            },
+          },
+        ],
       },
       include: {
-        participants: true,
+        participants: {
+          include: {
+            user: true,
+          },
+        },
       },
     })
 
     if (!conversation) {
-      conversation = await prisma.conversation.create({
-        data: {
-          participants: {
-            create: [
-              { userId: eventRequest.requesterId },
-              { userId: selsBot.id },
-            ],
-          },
-        },
-        include: {
-          participants: true,
-        },
+      console.log('Создаем новую беседу между запросившим пользователем и SELS ботом', {
+        requesterId: eventRequest.requesterId,
+        selsBotId: selsBot.id,
       })
+      try {
+        conversation = await prisma.conversation.create({
+          data: {
+            participants: {
+              create: [
+                { userId: eventRequest.requesterId },
+                { userId: selsBot.id },
+              ],
+            },
+          },
+          include: {
+            participants: {
+              include: {
+                user: true,
+              },
+            },
+          },
+        })
+        console.log('Беседа создана:', conversation.id)
+      } catch (createError: any) {
+        console.error('Ошибка создания беседы:', createError)
+        // Продолжаем выполнение
+      }
+    } else {
+      console.log('Найдена существующая беседа:', conversation.id)
     }
 
     // Формируем сообщение от SELS бота запросившему пользователю
