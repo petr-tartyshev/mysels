@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 
 export const dynamic = 'force-dynamic'
+export const maxDuration = 30 // Увеличиваем время выполнения до 30 секунд
 
 // GET all events or events for a location/user
 export async function GET(request: NextRequest) {

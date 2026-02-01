@@ -326,6 +326,13 @@ function ProfilePageContent() {
           statusText: response.statusText,
           error: errorData,
         })
+        
+        // Специальная обработка ошибки 413 (Payload Too Large)
+        if (response.status === 413) {
+          alert('Размер данных слишком большой. Пожалуйста, уменьшите количество или размер изображений и попробуйте снова.')
+          return
+        }
+        
         const errorMessage = errorData.error || 'Неизвестная ошибка'
         alert(`Ошибка создания события: ${errorMessage}`)
         return
@@ -356,57 +363,140 @@ function ProfilePageContent() {
     }
   }
 
-  const handleEventImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  // Функция для сжатия изображения
+  const compressImage = (file: File, maxWidth: number = 1920, maxHeight: number = 1920, quality: number = 0.8): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader()
+      reader.onload = (e) => {
+        const img = new Image()
+        img.onload = () => {
+          const canvas = document.createElement('canvas')
+          let width = img.width
+          let height = img.height
+
+          // Вычисляем новые размеры с сохранением пропорций
+          if (width > height) {
+            if (width > maxWidth) {
+              height = (height * maxWidth) / width
+              width = maxWidth
+            }
+          } else {
+            if (height > maxHeight) {
+              width = (width * maxHeight) / height
+              height = maxHeight
+            }
+          }
+
+          canvas.width = width
+          canvas.height = height
+
+          const ctx = canvas.getContext('2d')
+          if (!ctx) {
+            reject(new Error('Не удалось создать контекст canvas'))
+            return
+          }
+
+          ctx.drawImage(img, 0, 0, width, height)
+          
+          // Конвертируем в base64 с качеством JPEG
+          const compressedDataUrl = canvas.toDataURL('image/jpeg', quality)
+          resolve(compressedDataUrl)
+        }
+        img.onerror = () => reject(new Error('Ошибка загрузки изображения'))
+        img.src = e.target?.result as string
+      }
+      reader.onerror = () => reject(new Error('Ошибка чтения файла'))
+      reader.readAsDataURL(file)
+    })
+  }
+
+  const handleEventImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files
     if (!files || files.length === 0) return
 
-    const MAX_FILE_SIZE = 5 * 1024 * 1024 // 5MB
+    const MAX_FILE_SIZE = 10 * 1024 * 1024 // 10MB (до сжатия)
+    const MAX_IMAGES = 5 // Максимум 5 изображений
     const imageUrls: string[] = []
     let loadedCount = 0
+    const filesToProcess = Array.from(files).slice(0, MAX_IMAGES)
 
-    Array.from(files).forEach((file) => {
+    if (files.length > MAX_IMAGES) {
+      alert(`Можно загрузить максимум ${MAX_IMAGES} изображений. Будут обработаны первые ${MAX_IMAGES}.`)
+    }
+
+    for (const file of filesToProcess) {
       // Проверка размера файла
       if (file.size > MAX_FILE_SIZE) {
-        alert(`Файл ${file.name} слишком большой. Максимальный размер: 5MB`)
-        return
-      }
-
-      const reader = new FileReader()
-      reader.onload = (e) => {
-        if (e.target?.result && typeof e.target.result === 'string') {
-          const dataUrl = e.target.result
-          // Проверяем, что это валидный data URL для изображения
-          if (/^data:image\/(jpeg|jpg|png|gif|webp|bmp);base64,/.test(dataUrl)) {
-            imageUrls.push(dataUrl)
-          } else {
-            console.error('Невалидный формат изображения:', file.name, dataUrl.substring(0, 50))
-            alert(`Ошибка: файл ${file.name} имеет невалидный формат`)
-          }
-          loadedCount++
-          
-          // Когда все файлы загружены, обновляем состояние
-          if (loadedCount === files.length) {
-            setNewEventImages((prev) => [...prev, ...imageUrls])
-          }
-        } else {
-          console.error('Ошибка чтения файла:', file.name)
-          alert(`Ошибка чтения файла: ${file.name}`)
-          loadedCount++
-          if (loadedCount === files.length && imageUrls.length > 0) {
-            setNewEventImages((prev) => [...prev, ...imageUrls])
-          }
-        }
-      }
-      reader.onerror = () => {
-        console.error('Ошибка чтения файла:', file.name)
-        alert(`Ошибка чтения файла: ${file.name}`)
+        alert(`Файл ${file.name} слишком большой. Максимальный размер: 10MB`)
         loadedCount++
-        if (loadedCount === files.length && imageUrls.length > 0) {
+        if (loadedCount === filesToProcess.length && imageUrls.length > 0) {
           setNewEventImages((prev) => [...prev, ...imageUrls])
         }
+        continue
       }
-      reader.readAsDataURL(file)
-    })
+
+      // Проверка типа файла
+      if (!file.type.startsWith('image/')) {
+        alert(`Файл ${file.name} не является изображением`)
+        loadedCount++
+        if (loadedCount === filesToProcess.length && imageUrls.length > 0) {
+          setNewEventImages((prev) => [...prev, ...imageUrls])
+        }
+        continue
+      }
+
+      try {
+        // Сжимаем изображение перед добавлением
+        const compressedDataUrl = await compressImage(file, 1920, 1920, 0.8)
+        
+        // Проверяем размер после сжатия (примерно 1.5MB на изображение для безопасности)
+        const base64Size = compressedDataUrl.length * 0.75 // Примерный размер в байтах (base64 ~33% больше)
+        const MAX_COMPRESSED_SIZE = 1.5 * 1024 * 1024 // 1.5MB
+        
+        if (base64Size > MAX_COMPRESSED_SIZE) {
+          // Пробуем сжать еще сильнее
+          const moreCompressed = await compressImage(file, 1280, 1280, 0.7)
+          const moreCompressedSize = moreCompressed.length * 0.75
+          
+          if (moreCompressedSize > MAX_COMPRESSED_SIZE) {
+            alert(`Изображение ${file.name} слишком большое даже после сжатия. Пожалуйста, выберите другое изображение.`)
+            loadedCount++
+            if (loadedCount === filesToProcess.length && imageUrls.length > 0) {
+              setNewEventImages((prev) => [...prev, ...imageUrls])
+            }
+            continue
+          }
+          
+          // Используем более сжатое изображение
+          if (/^data:image\/(jpeg|jpg|png|gif|webp|bmp);base64,/.test(moreCompressed)) {
+            imageUrls.push(moreCompressed)
+          } else {
+            console.error('Невалидный формат изображения после сжатия:', file.name)
+            alert(`Ошибка: не удалось обработать файл ${file.name}`)
+          }
+        } else {
+          // Проверяем, что это валидный data URL для изображения
+          if (/^data:image\/(jpeg|jpg|png|gif|webp|bmp);base64,/.test(compressedDataUrl)) {
+            imageUrls.push(compressedDataUrl)
+          } else {
+            console.error('Невалидный формат изображения после сжатия:', file.name)
+            alert(`Ошибка: не удалось обработать файл ${file.name}`)
+          }
+        }
+      } catch (error) {
+        console.error('Ошибка обработки изображения:', file.name, error)
+        alert(`Ошибка обработки изображения: ${file.name}`)
+      } finally {
+        loadedCount++
+        
+        // Когда все файлы обработаны, обновляем состояние
+        if (loadedCount === filesToProcess.length) {
+          if (imageUrls.length > 0) {
+            setNewEventImages((prev) => [...prev, ...imageUrls])
+          }
+        }
+      }
+    }
   }
 
   const handleCreatePost = async () => {
