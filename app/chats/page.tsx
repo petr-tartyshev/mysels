@@ -199,46 +199,16 @@ export default function ChatsPage() {
           [messageId]: action,
         }))
 
-        // Небольшая задержка, чтобы дать серверу время создать беседу
-        await new Promise((resolve) => setTimeout(resolve, 500))
-
-        // Обновляем беседы (чтобы появилась новая беседа с пользователем)
+        // Обновляем беседы
         const conversationsResponse = await fetch(`/api/conversations?userId=${currentUser.id}`)
         if (conversationsResponse.ok) {
           const data = await conversationsResponse.json()
           setConversations(data)
           
-          // Если запрос принят, находим беседу с пользователем и открываем её
-          if (action === 'accepted') {
-            // Находим пользователя из сообщения
-            const requesterMatch = message.content.match(/Пользователь (.+?) \(@(.+?)\)/)
-            if (requesterMatch) {
-              // Ищем беседу с этим пользователем (не SELS ботом)
-              const userConversation = data.find((c: Conversation) => {
-                const otherUser = getOtherParticipant(c)
-                const selsBot = c.participants.find((p: ConversationParticipant) => p.user.email === 'sels@system.com')
-                // Это беседа между двумя пользователями (без SELS бота)
-                return otherUser && otherUser.username === requesterMatch[2] && !selsBot
-              })
-              
-              if (userConversation) {
-                console.log('Найдена беседа с пользователем:', userConversation.id)
-                setSelectedConversation(userConversation)
-              } else {
-                console.log('Беседа с пользователем еще не найдена, обновляем текущую')
-                // Если беседа еще не появилась, обновляем текущую
-                const updated = data.find((c: Conversation) => c.id === selectedConversation?.id)
-                if (updated) {
-                  setSelectedConversation(updated)
-                }
-              }
-            }
-          } else {
-            // Обновляем текущую беседу
-            const updated = data.find((c: Conversation) => c.id === selectedConversation?.id)
-            if (updated) {
-              setSelectedConversation(updated)
-            }
+          // Обновляем текущую беседу (беседа с пользователем будет создана при клике на "Написать")
+          const updated = data.find((c: Conversation) => c.id === selectedConversation?.id)
+          if (updated) {
+            setSelectedConversation(updated)
           }
         }
       } else {
