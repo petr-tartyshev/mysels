@@ -605,6 +605,91 @@ export default function ChatsPage() {
 
                         <div className="whitespace-pre-wrap text-sm">{message.content}</div>
 
+                        {/* Кнопка "Написать" для участника, когда запрос принят */}
+                        {isResponse && !isOwn && message.content.includes('✅') && message.content.includes('принял') && (
+                          <div className="mt-4">
+                            <div className="bg-green-50 border border-green-200 rounded-lg p-3 text-sm text-green-800 mb-3">
+                              ✅ Ваш запрос принят! Теперь вы можете написать организатору
+                            </div>
+                            <button
+                              onClick={async () => {
+                                // Извлекаем username организатора из сообщения
+                                const organizerMatch = message.content.match(/Пользователь (.+?) \(@(.+?)\)/)
+                                if (!organizerMatch) return
+                                
+                                const organizerUsername = organizerMatch[2]
+                                
+                                // Ищем пользователя по username
+                                try {
+                                  const usersResponse = await fetch(`/api/users?username=${organizerUsername}`)
+                                  if (!usersResponse.ok) {
+                                    alert('Не удалось найти пользователя')
+                                    return
+                                  }
+                                  
+                                  const usersData = await usersResponse.json()
+                                  const organizerUser = Array.isArray(usersData) ? usersData[0] : usersData
+                                  
+                                  if (!organizerUser || !organizerUser.id) {
+                                    alert('Пользователь не найден')
+                                    return
+                                  }
+                                  
+                                  // Проверяем, есть ли уже беседа с этим пользователем
+                                  let userConversation = conversations.find((c: Conversation) => {
+                                    const otherUser = getOtherParticipant(c)
+                                    const selsBot = c.participants.find((p: ConversationParticipant) => p.user.email === 'sels@system.com')
+                                    // Это беседа между двумя пользователями (без SELS бота)
+                                    return otherUser && otherUser.id === organizerUser.id && !selsBot
+                                  })
+                                  
+                                  if (!userConversation) {
+                                    // Создаем новую беседу
+                                    try {
+                                      const createResponse = await fetch('/api/conversations', {
+                                        method: 'POST',
+                                        headers: { 'Content-Type': 'application/json' },
+                                        body: JSON.stringify({
+                                          userIds: [currentUser!.id, organizerUser.id],
+                                        }),
+                                      })
+                                      
+                                      if (createResponse.ok) {
+                                        userConversation = await createResponse.json()
+                                        // Обновляем список бесед
+                                        const conversationsResponse = await fetch(`/api/conversations?userId=${currentUser!.id}`)
+                                        if (conversationsResponse.ok) {
+                                          const updatedConversations = await conversationsResponse.json()
+                                          setConversations(updatedConversations)
+                                          userConversation = updatedConversations.find((c: Conversation) => c.id === userConversation.id)
+                                        }
+                                      } else {
+                                        const errorData = await createResponse.json()
+                                        alert(errorData.error || 'Не удалось создать беседу')
+                                        return
+                                      }
+                                    } catch (error) {
+                                      console.error('Ошибка создания беседы:', error)
+                                      alert('Ошибка при создании беседы')
+                                      return
+                                    }
+                                  }
+                                  
+                                  if (userConversation) {
+                                    setSelectedConversation(userConversation)
+                                  }
+                                } catch (error) {
+                                  console.error('Ошибка при открытии беседы:', error)
+                                  alert('Ошибка при открытии беседы')
+                                }
+                              }}
+                              className="w-full py-2 px-4 bg-[#2F80ED] text-white rounded-lg font-semibold hover:bg-blue-600 transition"
+                            >
+                              Написать организатору
+                            </button>
+                          </div>
+                        )}
+
                         {isRequest && !isOwn && message.content.includes('Запрос ID:') && (
                           <div className="mt-4">
                             {requestStatuses[message.id] === 'accepted' ? (
@@ -613,22 +698,75 @@ export default function ChatsPage() {
                                   ✅ Вы приняли запрос на участие и можете написать пользователю
                                 </div>
                                 <button
-                                  onClick={() => {
-                                    // Находим беседу с пользователем, который отправил запрос
+                                  onClick={async () => {
+                                    // Извлекаем username пользователя из сообщения
                                     const requesterMatch = message.content.match(/Пользователь (.+?) \(@(.+?)\)/)
-                                    if (requesterMatch) {
-                                      const userConversation = conversations.find((c: Conversation) => {
+                                    if (!requesterMatch) return
+                                    
+                                    const requesterUsername = requesterMatch[2]
+                                    
+                                    // Ищем пользователя по username
+                                    try {
+                                      const usersResponse = await fetch(`/api/users?username=${requesterUsername}`)
+                                      if (!usersResponse.ok) {
+                                        alert('Не удалось найти пользователя')
+                                        return
+                                      }
+                                      
+                                      const usersData = await usersResponse.json()
+                                      const requesterUser = Array.isArray(usersData) ? usersData[0] : usersData
+                                      
+                                      if (!requesterUser || !requesterUser.id) {
+                                        alert('Пользователь не найден')
+                                        return
+                                      }
+                                      
+                                      // Проверяем, есть ли уже беседа с этим пользователем
+                                      let userConversation = conversations.find((c: Conversation) => {
                                         const otherUser = getOtherParticipant(c)
                                         const selsBot = c.participants.find((p: ConversationParticipant) => p.user.email === 'sels@system.com')
                                         // Это беседа между двумя пользователями (без SELS бота)
-                                        return otherUser && otherUser.username === requesterMatch[2] && !selsBot
+                                        return otherUser && otherUser.id === requesterUser.id && !selsBot
                                       })
+                                      
+                                      if (!userConversation) {
+                                        // Создаем новую беседу
+                                        try {
+                                          const createResponse = await fetch('/api/conversations', {
+                                            method: 'POST',
+                                            headers: { 'Content-Type': 'application/json' },
+                                            body: JSON.stringify({
+                                              userIds: [currentUser!.id, requesterUser.id],
+                                            }),
+                                          })
+                                          
+                                          if (createResponse.ok) {
+                                            userConversation = await createResponse.json()
+                                            // Обновляем список бесед
+                                            const conversationsResponse = await fetch(`/api/conversations?userId=${currentUser!.id}`)
+                                            if (conversationsResponse.ok) {
+                                              const updatedConversations = await conversationsResponse.json()
+                                              setConversations(updatedConversations)
+                                              userConversation = updatedConversations.find((c: Conversation) => c.id === userConversation.id)
+                                            }
+                                          } else {
+                                            const errorData = await createResponse.json()
+                                            alert(errorData.error || 'Не удалось создать беседу')
+                                            return
+                                          }
+                                        } catch (error) {
+                                          console.error('Ошибка создания беседы:', error)
+                                          alert('Ошибка при создании беседы')
+                                          return
+                                        }
+                                      }
                                       
                                       if (userConversation) {
                                         setSelectedConversation(userConversation)
-                                      } else {
-                                        alert('Беседа с пользователем еще не создана. Пожалуйста, обновите страницу.')
                                       }
+                                    } catch (error) {
+                                      console.error('Ошибка при открытии беседы:', error)
+                                      alert('Ошибка при открытии беседы')
                                     }
                                   }}
                                   className="w-full py-2 px-4 bg-[#2F80ED] text-white rounded-lg font-semibold hover:bg-blue-600 transition"

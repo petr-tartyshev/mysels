@@ -88,84 +88,9 @@ export async function PATCH(
         },
       })
 
-      // Создаем беседу между организатором и запросившим пользователем
-      // Проверяем, существует ли уже беседа между ними
-      const existingUserConversation = await prisma.conversation.findFirst({
-        where: {
-          AND: [
-            {
-              participants: {
-                some: { userId: eventRequest.event.userId },
-              },
-            },
-            {
-              participants: {
-                some: { userId: eventRequest.requesterId },
-              },
-            },
-          ],
-        },
-        include: {
-          participants: true,
-        },
-      })
-
-      if (!existingUserConversation) {
-        // Создаем новую беседу между пользователями
-        const newConversation = await prisma.conversation.create({
-          data: {
-            participants: {
-              create: [
-                { userId: eventRequest.event.userId },
-                { userId: eventRequest.requesterId },
-              ],
-            },
-          },
-          include: {
-            participants: {
-              include: {
-                user: {
-                  select: {
-                    id: true,
-                    firstName: true,
-                    lastName: true,
-                    username: true,
-                    avatar: true,
-                  },
-                },
-              },
-            },
-            messages: {
-              include: {
-                sender: {
-                  select: {
-                    id: true,
-                    firstName: true,
-                    lastName: true,
-                    username: true,
-                    avatar: true,
-                  },
-                },
-                receiver: {
-                  select: {
-                    id: true,
-                    firstName: true,
-                    lastName: true,
-                    username: true,
-                    avatar: true,
-                  },
-                },
-              },
-              orderBy: {
-                createdAt: 'asc',
-              },
-            },
-          },
-        })
-        console.log('Создана беседа между пользователями после принятия запроса:', newConversation.id)
-      } else {
-        console.log('Беседа между пользователями уже существует:', existingUserConversation.id)
-      }
+      // НЕ создаем беседу между пользователями автоматически
+      // Беседа будет создана при клике на кнопку "Написать" в чате с SELS Support
+      console.log('Запрос принят, беседа между пользователями будет создана при клике на "Написать"')
     }
 
     // Находим или создаем технический аккаунт SELS
@@ -275,7 +200,9 @@ export async function PATCH(
 📅 ${eventRequest.event.title}
 📆 Дата: ${eventRequest.event.date}
 ⏰ Время: ${eventRequest.event.timeStart} - ${eventRequest.event.timeEnd}
-📍 Место: ${eventRequest.event.location.name}`
+📍 Место: ${eventRequest.event.location.name}
+
+${status === 'accepted' ? 'Теперь вы можете написать организатору, нажав кнопку "Написать организатору" ниже.' : ''}`
 
     // Создаем сообщение от SELS бота запросившему пользователю
     try {
