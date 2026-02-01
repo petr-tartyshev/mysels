@@ -81,8 +81,9 @@ export async function GET(request: NextRequest) {
 }
 
 // POST - Create new conversation
-// ВАЖНО: Беседы между пользователями создаются автоматически только после принятия запроса на участие
-// Прямое создание бесед между пользователями запрещено
+// ВАЖНО: Беседы между пользователями создаются ТОЛЬКО при отправке первого сообщения
+// Беседа НЕ создается автоматически при принятии запроса на участие
+// Беседа создается только когда пользователь нажимает "Написать" и отправляет первое сообщение
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
@@ -96,8 +97,8 @@ export async function POST(request: NextRequest) {
     }
 
     // Разрешаем создание беседы между пользователями
-    // Беседы между пользователями теперь создаются при клике на "Написать" в чате с SELS Support
-    // после принятия запроса на участие в событии
+    // Беседы между пользователями создаются ТОЛЬКО при отправке первого сообщения
+    // после того, как пользователь нажал "Написать" в чате с SELS Support
 
     // Check if conversation already exists between these users
     const existingConversation = await prisma.conversation.findFirst({
