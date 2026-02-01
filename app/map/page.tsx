@@ -344,37 +344,41 @@ function MapPageContent() {
   }
 
   // Загрузка локаций из БД (только публичные для карты)
-  useEffect(() => {
-    const fetchLocations = async () => {
-      try {
-        const response = await fetch('/api/locations?public=true')
-        if (response.ok) {
-          const locationsData = await response.json()
-          // Преобразуем локации из БД в формат Location
-          const formattedLocations: Location[] = locationsData.map((loc: any) => ({
-            id: loc.id,
-            name: loc.name,
-            latitude: loc.lat,
-            longitude: loc.lng,
-            type: (loc.type === 'outdoor' ? 'outdoor' : 
-                   loc.type === 'gym' ? 'gym' : 
-                   loc.type === 'water' ? 'water' : 
-                   loc.type === 'bike' ? 'bike' :
-                   loc.type === 'featured' ? 'featured' : 'regular') as Location['type'],
-            description: loc.description || '',
-            price: loc.cost || 'Бесплатно',
-            rating: loc.rating || 0,
-          }))
-          setDbLocations(formattedLocations)
-        }
-      } catch (error) {
-        console.error('Ошибка загрузки локаций:', error)
-        // Используем захардкоженные локации в случае ошибки
-        setDbLocations(locations)
+  const fetchLocations = async () => {
+    try {
+      const response = await fetch('/api/locations?public=true')
+      if (response.ok) {
+        const locationsData = await response.json()
+        // Преобразуем локации из БД в формат Location
+        const formattedLocations: Location[] = locationsData.map((loc: any) => ({
+          id: loc.id,
+          name: loc.name,
+          latitude: loc.lat,
+          longitude: loc.lng,
+          type: (loc.type === 'outdoor' ? 'outdoor' : 
+                 loc.type === 'gym' ? 'gym' : 
+                 loc.type === 'water' ? 'water' : 
+                 loc.type === 'bike' ? 'bike' :
+                 loc.type === 'featured' ? 'featured' : 'regular') as Location['type'],
+          description: loc.description || '',
+          price: loc.cost || 'Бесплатно',
+          rating: loc.rating || 0,
+        }))
+        setDbLocations(formattedLocations)
       }
+    } catch (error) {
+      console.error('Ошибка загрузки локаций:', error)
+      // Используем захардкоженные локации в случае ошибки
+      setDbLocations(locations)
     }
+  }
 
+  useEffect(() => {
     fetchLocations()
+    
+    // Обновляем локации каждые 30 секунд, чтобы видеть новые публичные локации
+    const interval = setInterval(fetchLocations, 30000)
+    return () => clearInterval(interval)
   }, [])
 
   // Auto-open location from URL parameter
@@ -768,25 +772,26 @@ function MapPageContent() {
           {/* Map Markers */}
           {(dbLocations.length > 0 ? dbLocations : locations)
             .filter((location) => {
-              // Не показывать точки, если нет активного фильтра и нет поискового запроса
-              if (!activeFilter && !searchQuery.trim()) return false
-              
               // Если есть поисковый запрос, фильтруем по нему
               if (searchQuery.trim()) {
                 const query = searchQuery.toLowerCase()
                 const matchesSearch = location.name.toLowerCase().includes(query) ||
                                      location.description.toLowerCase().includes(query)
                 if (!matchesSearch) return false
+                
+                // Если есть поисковый запрос без фильтра, показываем все совпадения
+                if (!activeFilter) return true
               }
               
-              // Фильтрация по типу
+              // Фильтрация по типу (разделу)
               if (activeFilter === 'outdoor') return location.type === 'outdoor'
               if (activeFilter === 'gym') return location.type === 'gym'
               if (activeFilter === 'water') return location.type === 'water'
-              if (activeFilter === 'bike') return false // Веломаршруты отображаются отдельно
+              if (activeFilter === 'bike') return location.type === 'bike' // Показываем веломаршруты из БД (точки локаций)
               
-              // Если есть только поисковый запрос без фильтра, показываем все совпадения
-              if (searchQuery.trim() && !activeFilter) return true
+              // Если нет активного фильтра и нет поискового запроса, не показываем точки
+              // (чтобы карта не была перегружена)
+              if (!activeFilter && !searchQuery.trim()) return false
               
               return false
             })
