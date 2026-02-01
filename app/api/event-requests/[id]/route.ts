@@ -205,6 +205,11 @@ export async function PATCH(
 ${status === 'accepted' ? 'Теперь вы можете написать организатору, нажав кнопку "Написать организатору" ниже.' : ''}`
 
     // Создаем сообщение от SELS бота запросившему пользователю
+    if (!conversation) {
+      console.error('Не удалось создать или найти беседу с SELS ботом для запросившего')
+      return NextResponse.json(updatedRequest, { status: 200 })
+    }
+
     try {
       await prisma.message.create({
         data: {
