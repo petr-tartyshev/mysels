@@ -44,6 +44,8 @@ export default function ChatsPage() {
   const [requestStatuses, setRequestStatuses] = useState<Record<string, 'pending' | 'accepted' | 'rejected'>>({})
   const [newMessage, setNewMessage] = useState('')
   const [sending, setSending] = useState(false)
+  const [pendingConversationUserId, setPendingConversationUserId] = useState<string | null>(null)
+  const [pendingConversationUsername, setPendingConversationUsername] = useState<string | null>(null)
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const router = useRouter()
 
@@ -240,18 +242,87 @@ export default function ChatsPage() {
 
   // Отправка сообщения
   const handleSendMessage = async () => {
-    if (!newMessage.trim() || !selectedConversation || !currentUser || sending) return
+    if (!newMessage.trim() || !currentUser || sending) return
+
+    // Если есть pendingConversationUserId, создаем беседу при отправке первого сообщения
+    let conversationToUse = selectedConversation
+    let receiverId: string | null = null
+
+    if (pendingConversationUserId) {
+      // Проверяем, может быть беседа уже существует
+      const existingConversation = conversations.find((c: Conversation) => {
+        const otherUser = getOtherParticipant(c)
+        const selsBot = c.participants.find((p: ConversationParticipant) => p.user.email === 'sels@system.com')
+        return otherUser && otherUser.id === pendingConversationUserId && !selsBot
+      })
+
+      if (existingConversation) {
+        // Беседа уже существует, используем её
+        conversationToUse = existingConversation
+        receiverId = pendingConversationUserId
+        setPendingConversationUserId(null)
+        setPendingConversationUsername(null)
+        setSelectedConversation(existingConversation)
+      } else {
+        // Создаем беседу при отправке первого сообщения
+        try {
+          const createResponse = await fetch('/api/conversations', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              userIds: [currentUser.id, pendingConversationUserId],
+            }),
+          })
+
+          if (createResponse.ok) {
+            conversationToUse = await createResponse.json()
+            receiverId = pendingConversationUserId
+            setPendingConversationUserId(null)
+            setPendingConversationUsername(null)
+            
+            // Обновляем список бесед
+            const conversationsResponse = await fetch(`/api/conversations?userId=${currentUser.id}`)
+            if (conversationsResponse.ok) {
+              const updatedConversations = await conversationsResponse.json()
+              setConversations(updatedConversations)
+              // Находим созданную беседу
+              conversationToUse = updatedConversations.find((c: Conversation) => c.id === conversationToUse.id) || conversationToUse
+            }
+            
+            setSelectedConversation(conversationToUse)
+          } else {
+            const errorData = await createResponse.json()
+            alert(errorData.error || 'Не удалось создать беседу')
+            return
+          }
+        } catch (error) {
+          console.error('Ошибка создания беседы:', error)
+          alert('Ошибка при создании беседы')
+          return
+        }
+      }
+    } else if (selectedConversation) {
+      const otherUser = getOtherParticipant(selectedConversation)
+      receiverId = otherUser?.id || null
+    } else {
+      alert('Выберите беседу или пользователя для отправки сообщения')
+      return
+    }
+
+    if (!conversationToUse) {
+      alert('Не удалось определить беседу')
+      return
+    }
 
     setSending(true)
     try {
-      const otherUser = getOtherParticipant(selectedConversation)
       const response = await fetch('/api/messages', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          conversationId: selectedConversation.id,
+          conversationId: conversationToUse.id,
           senderId: currentUser.id,
-          receiverId: otherUser?.id || null,
+          receiverId: receiverId,
           content: newMessage.trim(),
         }),
       })
@@ -262,8 +333,8 @@ export default function ChatsPage() {
         
         // Обновляем беседу с новым сообщением
         const updatedConversation = {
-          ...selectedConversation,
-          messages: [...selectedConversation.messages, sentMessage],
+          ...conversationToUse,
+          messages: [...(conversationToUse.messages || []), sentMessage],
         }
         setSelectedConversation(updatedConversation)
         
@@ -272,6 +343,11 @@ export default function ChatsPage() {
         if (conversationsResponse.ok) {
           const updatedConversations = await conversationsResponse.json()
           setConversations(updatedConversations)
+          // Обновляем выбранную беседу
+          const updated = updatedConversations.find((c: Conversation) => c.id === conversationToUse.id)
+          if (updated) {
+            setSelectedConversation(updated)
+          }
         }
         
         scrollToBottom()
@@ -605,49 +681,16 @@ export default function ChatsPage() {
                                     return
                                   }
                                   
-                                  // Проверяем, есть ли уже беседа с этим пользователем
-                                  let userConversation = conversations.find((c: Conversation) => {
-                                    const otherUser = getOtherParticipant(c)
-                                    const selsBot = c.participants.find((p: ConversationParticipant) => p.user.email === 'sels@system.com')
-                                    // Это беседа между двумя пользователями (без SELS бота)
-                                    return otherUser && otherUser.id === organizerUser.id && !selsBot
-                                  })
+                                  // Сохраняем ID пользователя для создания беседы при отправке сообщения
+                                  // Не создаем беседу сразу, только при отправке первого сообщения
+                                  setPendingConversationUserId(organizerUser.id)
+                                  setPendingConversationUsername(organizerUsername)
                                   
-                                  if (!userConversation) {
-                                    // Создаем новую беседу
-                                    try {
-                                      const createResponse = await fetch('/api/conversations', {
-                                        method: 'POST',
-                                        headers: { 'Content-Type': 'application/json' },
-                                        body: JSON.stringify({
-                                          userIds: [currentUser!.id, organizerUser.id],
-                                        }),
-                                      })
-                                      
-                                      if (createResponse.ok) {
-                                        userConversation = await createResponse.json()
-                                        // Обновляем список бесед
-                                        const conversationsResponse = await fetch(`/api/conversations?userId=${currentUser!.id}`)
-                                        if (conversationsResponse.ok) {
-                                          const updatedConversations = await conversationsResponse.json()
-                                          setConversations(updatedConversations)
-                                          userConversation = updatedConversations.find((c: Conversation) => c.id === userConversation.id)
-                                        }
-                                      } else {
-                                        const errorData = await createResponse.json()
-                                        alert(errorData.error || 'Не удалось создать беседу')
-                                        return
-                                      }
-                                    } catch (error) {
-                                      console.error('Ошибка создания беседы:', error)
-                                      alert('Ошибка при создании беседы')
-                                      return
-                                    }
-                                  }
+                                  // Очищаем выбранную беседу, чтобы показать форму для ввода сообщения
+                                  setSelectedConversation(null)
                                   
-                                  if (userConversation) {
-                                    setSelectedConversation(userConversation)
-                                  }
+                                  // Показываем подсказку
+                                  alert(`Введите сообщение для ${organizerUser.firstName} ${organizerUser.lastName} и отправьте его. Беседа будет создана автоматически.`)
                                 } catch (error) {
                                   console.error('Ошибка при открытии беседы:', error)
                                   alert('Ошибка при открытии беседы')
@@ -691,49 +734,16 @@ export default function ChatsPage() {
                                         return
                                       }
                                       
-                                      // Проверяем, есть ли уже беседа с этим пользователем
-                                      let userConversation = conversations.find((c: Conversation) => {
-                                        const otherUser = getOtherParticipant(c)
-                                        const selsBot = c.participants.find((p: ConversationParticipant) => p.user.email === 'sels@system.com')
-                                        // Это беседа между двумя пользователями (без SELS бота)
-                                        return otherUser && otherUser.id === requesterUser.id && !selsBot
-                                      })
+                                      // Сохраняем ID пользователя для создания беседы при отправке сообщения
+                                      // Не создаем беседу сразу, только при отправке первого сообщения
+                                      setPendingConversationUserId(requesterUser.id)
+                                      setPendingConversationUsername(requesterUsername)
                                       
-                                      if (!userConversation) {
-                                        // Создаем новую беседу
-                                        try {
-                                          const createResponse = await fetch('/api/conversations', {
-                                            method: 'POST',
-                                            headers: { 'Content-Type': 'application/json' },
-                                            body: JSON.stringify({
-                                              userIds: [currentUser!.id, requesterUser.id],
-                                            }),
-                                          })
-                                          
-                                          if (createResponse.ok) {
-                                            userConversation = await createResponse.json()
-                                            // Обновляем список бесед
-                                            const conversationsResponse = await fetch(`/api/conversations?userId=${currentUser!.id}`)
-                                            if (conversationsResponse.ok) {
-                                              const updatedConversations = await conversationsResponse.json()
-                                              setConversations(updatedConversations)
-                                              userConversation = updatedConversations.find((c: Conversation) => c.id === userConversation.id)
-                                            }
-                                          } else {
-                                            const errorData = await createResponse.json()
-                                            alert(errorData.error || 'Не удалось создать беседу')
-                                            return
-                                          }
-                                        } catch (error) {
-                                          console.error('Ошибка создания беседы:', error)
-                                          alert('Ошибка при создании беседы')
-                                          return
-                                        }
-                                      }
+                                      // Очищаем выбранную беседу, чтобы показать форму для ввода сообщения
+                                      setSelectedConversation(null)
                                       
-                                      if (userConversation) {
-                                        setSelectedConversation(userConversation)
-                                      }
+                                      // Показываем подсказку
+                                      alert(`Введите сообщение для ${requesterUser.firstName} ${requesterUser.lastName} и отправьте его. Беседа будет создана автоматически.`)
                                     } catch (error) {
                                       console.error('Ошибка при открытии беседы:', error)
                                       alert('Ошибка при открытии беседы')
@@ -822,6 +832,78 @@ export default function ChatsPage() {
                 </div>
               </div>
             </>
+          ) : pendingConversationUserId ? (
+            // Показываем форму для ввода сообщения, если есть pendingConversationUserId
+            <div className="flex-1 flex flex-col">
+              {/* Header с информацией о получателе */}
+              <div className="p-4 border-b border-gray-200 bg-white">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 bg-[#2F80ED] rounded-full flex items-center justify-center text-white font-semibold">
+                    {pendingConversationUsername?.[0]?.toUpperCase() || '?'}
+                  </div>
+                  <div>
+                    <p className="font-semibold text-gray-900">Новое сообщение</p>
+                    <p className="text-sm text-gray-500">@{pendingConversationUsername}</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Пустая область для сообщений */}
+              <div className="flex-1 overflow-y-auto p-4">
+                <div className="text-center text-gray-500 mt-8">
+                  <p>Введите сообщение ниже и отправьте его</p>
+                  <p className="text-sm mt-2">Беседа будет создана автоматически при отправке</p>
+                </div>
+              </div>
+
+              {/* Message Input */}
+              <div className="p-4 border-t border-gray-200 bg-white">
+                <div className="flex items-end gap-3">
+                  <div className="flex-1">
+                    <textarea
+                      value={newMessage}
+                      onChange={(e) => setNewMessage(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' && !e.shiftKey) {
+                          e.preventDefault()
+                          handleSendMessage()
+                        }
+                      }}
+                      placeholder={`Напишите сообщение для @${pendingConversationUsername}...`}
+                      className="w-full px-4 py-3 border border-gray-300 rounded-2xl resize-none focus:outline-none focus:ring-2 focus:ring-[#2F80ED] focus:border-transparent"
+                      rows={1}
+                      style={{
+                        minHeight: '48px',
+                        maxHeight: '120px',
+                      }}
+                      onInput={(e) => {
+                        const target = e.target as HTMLTextAreaElement
+                        target.style.height = 'auto'
+                        target.style.height = `${Math.min(target.scrollHeight, 120)}px`
+                      }}
+                      autoFocus
+                    />
+                  </div>
+                  <button
+                    onClick={handleSendMessage}
+                    disabled={!newMessage.trim() || sending}
+                    className="p-3 bg-[#2F80ED] text-white rounded-full hover:bg-blue-600 transition disabled:opacity-50 disabled:cursor-not-allowed flex-shrink-0"
+                  >
+                    <Send size={20} />
+                  </button>
+                </div>
+                <button
+                  onClick={() => {
+                    setPendingConversationUserId(null)
+                    setPendingConversationUsername(null)
+                    setNewMessage('')
+                  }}
+                  className="mt-2 text-sm text-gray-500 hover:text-gray-700"
+                >
+                  Отмена
+                </button>
+              </div>
+            </div>
           ) : (
             <div className="flex-1 flex items-center justify-center">
               <div className="text-center">

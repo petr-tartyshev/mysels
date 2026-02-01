@@ -58,6 +58,30 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    // Проверяем, что беседа существует
+    const conversation = await prisma.conversation.findUnique({
+      where: { id: conversationId },
+      include: {
+        participants: true,
+      },
+    })
+
+    if (!conversation) {
+      return NextResponse.json(
+        { error: 'Conversation not found' },
+        { status: 404 }
+      )
+    }
+
+    // Проверяем, что sender является участником беседы
+    const isParticipant = conversation.participants.some((p) => p.userId === senderId)
+    if (!isParticipant) {
+      return NextResponse.json(
+        { error: 'User is not a participant of this conversation' },
+        { status: 403 }
+      )
+    }
+
     const message = await prisma.message.create({
       data: {
         conversationId,
@@ -87,15 +111,20 @@ export async function POST(request: NextRequest) {
 
     // Create notification for receiver
     if (receiverId) {
-      await prisma.notification.create({
-        data: {
-          userId: receiverId,
-          type: 'message',
-          title: 'Новое сообщение',
-          message: `${message.sender.firstName} ${message.sender.lastName} отправил вам сообщение`,
-          link: `/chats?conversation=${conversationId}`,
-        },
-      })
+      try {
+        await prisma.notification.create({
+          data: {
+            userId: receiverId,
+            type: 'message',
+            title: 'Новое сообщение',
+            message: `${message.sender.firstName} ${message.sender.lastName} отправил вам сообщение`,
+            link: `/chats?conversation=${conversationId}`,
+          },
+        })
+      } catch (notifError) {
+        console.error('Ошибка создания уведомления (не критично):', notifError)
+        // Продолжаем выполнение, даже если уведомление не создано
+      }
     }
 
     return NextResponse.json(message, { status: 201 })
