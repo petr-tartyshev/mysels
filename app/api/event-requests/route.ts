@@ -392,11 +392,43 @@ export async function POST(request: NextRequest) {
         data: { updatedAt: new Date() },
       })
 
-      console.log('Беседа обновлена')
+      console.log('Беседа обновлена:', conversation.id)
+
+      // Проверяем, что сообщение действительно создано
+      const verifyMessage = await prisma.message.findUnique({
+        where: { id: message.id },
+        include: {
+          sender: {
+            select: {
+              id: true,
+              username: true,
+              email: true,
+            },
+          },
+          receiver: {
+            select: {
+              id: true,
+              username: true,
+              email: true,
+            },
+          },
+        },
+      })
+
+      if (verifyMessage) {
+        console.log('Сообщение подтверждено в БД:', {
+          messageId: verifyMessage.id,
+          sender: verifyMessage.sender.username,
+          receiver: verifyMessage.receiver.username,
+          conversationId: verifyMessage.conversationId,
+        })
+      } else {
+        console.error('ОШИБКА: Сообщение не найдено в БД после создания!')
+      }
 
       // Создаем уведомление для организатора
       try {
-        await prisma.notification.create({
+        const notification = await prisma.notification.create({
           data: {
             userId: event.userId,
             type: 'message',
@@ -405,7 +437,7 @@ export async function POST(request: NextRequest) {
             link: `/chats?conversation=${conversation.id}`,
           },
         })
-        console.log('Уведомление создано для организатора')
+        console.log('Уведомление создано для организатора:', notification.id)
       } catch (notifError) {
         console.error('Ошибка создания уведомления (не критично):', notifError)
         // Продолжаем выполнение, даже если уведомление не создано
