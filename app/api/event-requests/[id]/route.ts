@@ -168,14 +168,41 @@ export async function PATCH(
       }
     }
 
-    // Находим технический аккаунт SELS
-    const selsBot = await prisma.user.findUnique({
+    // Находим или создаем технический аккаунт SELS
+    let selsBot = await prisma.user.findUnique({
       where: { email: 'sels@system.com' },
     })
 
     if (!selsBot) {
-      console.error('SELS bot account not found')
-      return NextResponse.json(updatedRequest, { status: 200 })
+      selsBot = await prisma.user.findUnique({
+        where: { username: 'sels_support' },
+      })
+    }
+
+    // Если аккаунт не найден, создаем его
+    if (!selsBot) {
+      console.log('SELS bot account not found, creating new one...')
+      try {
+        const bcrypt = require('bcryptjs')
+        const hashedPassword = await bcrypt.hash('system_password_' + Date.now(), 10)
+        
+        selsBot = await prisma.user.create({
+          data: {
+            email: 'sels@system.com',
+            password: hashedPassword,
+            firstName: 'SELS',
+            lastName: 'Support',
+            username: 'sels_support',
+            avatar: 'https://ui-avatars.com/api/?name=SELS&background=2F80ED&color=fff',
+            bio: 'Технический аккаунт платформы SELS. Отправляет системные уведомления и сообщения.',
+          },
+        })
+        console.log('SELS bot account created:', selsBot.id, selsBot.email)
+      } catch (createError: any) {
+        console.error('Error creating SELS bot account:', createError)
+        // Если не удалось создать, возвращаем успех без сообщения
+        return NextResponse.json(updatedRequest, { status: 200 })
+      }
     }
 
     // Создаем или находим беседу между запросившим пользователем и SELS ботом
@@ -226,15 +253,44 @@ export async function PATCH(
 📍 Место: ${eventRequest.event.location.name}`
 
     // Создаем сообщение от SELS бота запросившему пользователю
-    await prisma.message.create({
-      data: {
-        conversationId: conversation.id,
-        senderId: selsBot.id,
-        receiverId: eventRequest.requesterId,
-        content: messageContent,
-        images: [],
-      },
-    })
+    try {
+      await prisma.message.create({
+        data: {
+          conversationId: conversation.id,
+          senderId: selsBot.id,
+          receiverId: eventRequest.requesterId,
+          content: messageContent,
+          images: [],
+        },
+      })
+
+      // Обновляем время обновления беседы
+      await prisma.conversation.update({
+        where: { id: conversation.id },
+        data: { updatedAt: new Date() },
+      })
+
+      // Создаем уведомление для запросившего пользователя
+      try {
+        await prisma.notification.create({
+          data: {
+            userId: eventRequest.requesterId,
+            type: 'event',
+            title: status === 'accepted' ? 'Запрос принят' : 'Запрос отклонен',
+            message: `Ваш запрос на участие в событии "${eventRequest.event.title}" ${status === 'accepted' ? 'принят' : 'отклонен'}`,
+            link: `/chats?conversation=${conversation.id}`,
+          },
+        })
+        console.log('Уведомление создано для запросившего пользователя')
+      } catch (notifError) {
+        console.error('Ошибка создания уведомления (не критично):', notifError)
+      }
+
+      console.log('Сообщение от SELS бота создано для запросившего пользователя')
+    } catch (messageError: any) {
+      console.error('Ошибка создания сообщения от SELS бота:', messageError)
+      // Продолжаем выполнение, даже если сообщение не создано
+    }
 
     return NextResponse.json(updatedRequest, { status: 200 })
   } catch (error: any) {

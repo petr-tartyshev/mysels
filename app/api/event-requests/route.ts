@@ -199,7 +199,7 @@ export async function POST(request: NextRequest) {
       },
     })
 
-    // Находим технический аккаунт SELS
+    // Находим или создаем технический аккаунт SELS
     if (!prisma) {
       console.error('Prisma client не инициализирован')
       return NextResponse.json(
@@ -213,16 +213,36 @@ export async function POST(request: NextRequest) {
     })
 
     if (!selsBot) {
-      console.error('SELS bot account not found by email, trying username')
+      console.log('SELS bot account not found by email, trying username')
       selsBot = await prisma.user.findUnique({
         where: { username: 'sels_support' },
       })
     }
 
+    // Если аккаунт не найден, создаем его
     if (!selsBot) {
-      console.error('SELS bot account not found')
-      // Все равно возвращаем успех, но без сообщения
-      return NextResponse.json(eventRequest, { status: 201 })
+      console.log('SELS bot account not found, creating new one...')
+      try {
+        const bcrypt = require('bcryptjs')
+        const hashedPassword = await bcrypt.hash('system_password_' + Date.now(), 10)
+        
+        selsBot = await prisma.user.create({
+          data: {
+            email: 'sels@system.com',
+            password: hashedPassword,
+            firstName: 'SELS',
+            lastName: 'Support',
+            username: 'sels_support',
+            avatar: 'https://ui-avatars.com/api/?name=SELS&background=2F80ED&color=fff',
+            bio: 'Технический аккаунт платформы SELS. Отправляет системные уведомления и сообщения.',
+          },
+        })
+        console.log('SELS bot account created:', selsBot.id, selsBot.email)
+      } catch (createError: any) {
+        console.error('Error creating SELS bot account:', createError)
+        // Если не удалось создать, возвращаем успех без сообщения
+        return NextResponse.json(eventRequest, { status: 201 })
+      }
     }
 
     console.log('SELS bot found:', selsBot.id, selsBot.email)
@@ -291,26 +311,54 @@ export async function POST(request: NextRequest) {
       content: messageContent.substring(0, 100) + '...',
     })
 
-    // Создаем сообщение от SELS бота организатору
-    const message = await prisma.message.create({
-      data: {
-        conversationId: conversation.id,
-        senderId: selsBot.id,
-        receiverId: event.userId,
-        content: messageContent,
-        images: [],
-      },
-    })
+    try {
+      // Создаем сообщение от SELS бота организатору
+      const message = await prisma.message.create({
+        data: {
+          conversationId: conversation.id,
+          senderId: selsBot.id,
+          receiverId: event.userId,
+          content: messageContent,
+          images: [],
+        },
+      })
 
-    console.log('Сообщение создано:', message.id)
+      console.log('Сообщение создано:', message.id)
 
-    // Обновляем время обновления беседы
-    await prisma.conversation.update({
-      where: { id: conversation.id },
-      data: { updatedAt: new Date() },
-    })
+      // Обновляем время обновления беседы
+      await prisma.conversation.update({
+        where: { id: conversation.id },
+        data: { updatedAt: new Date() },
+      })
 
-    console.log('Беседа обновлена')
+      console.log('Беседа обновлена')
+
+      // Создаем уведомление для организатора
+      try {
+        await prisma.notification.create({
+          data: {
+            userId: event.userId,
+            type: 'message',
+            title: 'Новый запрос на участие',
+            message: `${requester.firstName} ${requester.lastName} хочет присоединиться к вашему событию "${event.title}"`,
+            link: `/chats?conversation=${conversation.id}`,
+          },
+        })
+        console.log('Уведомление создано для организатора')
+      } catch (notifError) {
+        console.error('Ошибка создания уведомления (не критично):', notifError)
+        // Продолжаем выполнение, даже если уведомление не создано
+      }
+    } catch (messageError: any) {
+      console.error('Ошибка создания сообщения от SELS бота:', messageError)
+      console.error('Error details:', {
+        message: messageError?.message,
+        code: messageError?.code,
+        stack: messageError?.stack,
+      })
+      // Продолжаем выполнение, даже если сообщение не создано
+      // Запрос на участие уже создан, это главное
+    }
 
     return NextResponse.json(eventRequest, { status: 201 })
   } catch (error: any) {
