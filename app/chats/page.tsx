@@ -286,10 +286,14 @@ export default function ChatsPage() {
               const updatedConversations = await conversationsResponse.json()
               setConversations(updatedConversations)
               // Находим созданную беседу
-              conversationToUse = updatedConversations.find((c: Conversation) => c.id === conversationToUse.id) || conversationToUse
+              if (conversationToUse) {
+                conversationToUse = updatedConversations.find((c: Conversation) => c.id === conversationToUse!.id) || conversationToUse
+              }
             }
             
-            setSelectedConversation(conversationToUse)
+            if (conversationToUse) {
+              setSelectedConversation(conversationToUse)
+            }
           } else {
             const errorData = await createResponse.json()
             alert(errorData.error || 'Не удалось создать беседу')
