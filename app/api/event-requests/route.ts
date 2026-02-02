@@ -419,7 +419,7 @@ export async function POST(request: NextRequest) {
         console.log('Сообщение подтверждено в БД:', {
           messageId: verifyMessage.id,
           sender: verifyMessage.sender.username,
-          receiver: verifyMessage.receiver.username,
+          receiver: verifyMessage.receiver?.username || 'null',
           conversationId: verifyMessage.conversationId,
         })
       } else {
