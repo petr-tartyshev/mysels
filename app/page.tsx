@@ -53,7 +53,7 @@ export default function HomePage() {
                   <br />
                   спорта,
                   <br />
-                  но сложно
+                  НО сложно
                   <br />
                   начать
                 </h1>
