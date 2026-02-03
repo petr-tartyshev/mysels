@@ -19,9 +19,9 @@ export default function HomePage() {
     <div className="min-h-screen w-full bg-white text-black">
       {/* HERO */}
       <section className="w-full bg-[#FFE8E4] flex justify-center">
-        <div className="w-full max-w-[1920px] flex">
-          {/* Левая белая колонка с логотипом (как в макете) */}
-          <div className="w-[140px] bg-white flex items-start justify-center pt-10">
+        <div className="w-full max-w-[1920px] flex relative">
+          {/* Левая белая колонка с логотипом - отступ 50px от левого края */}
+          <div className="bg-white flex items-start pt-10 pl-[50px]">
             <div className="flex items-center gap-2">
               <div className="w-7 h-7 flex flex-wrap rotate-[-45deg]">
                 <div className="w-3 h-3 bg-[#006FFD] rounded-[2px]" />
@@ -33,52 +33,56 @@ export default function HomePage() {
             </div>
           </div>
 
-          {/* Центральный синий блок */}
-          <div className="flex-1 flex items-stretch">
-            <div className="flex-1 bg-[#006FFD] rounded-[50px] h-[903px] flex flex-col justify-between px-[100px] pt-[80px] pb-[60px]">
-              {/* Заголовок */}
-              <h1
-                className="font-[700] text-white leading-[0.7] mb-8"
-                style={{
-                  fontFamily: 'Aeroport, system-ui, -apple-system, BlinkMacSystemFont',
-                  fontSize: '100px',
-                }}
-              >
-                Когда
-                <br />
-                хочется
-                <br />
-                спорта,
-                <br />
-                но сложно
-                <br />
-                начать
-              </h1>
+          {/* Центральный синий блок - gap 50px от логотипа, продлен на 100px после фотографии, скругление только слева */}
+          <div className="flex-1 flex items-stretch relative ml-[50px]">
+            {/* Синий блок - скругление только слева, продлен на 100px вправо после фотографии */}
+            <div className="flex-1 bg-[#006FFD] rounded-l-[50px] h-[903px] flex flex-col px-[100px] pt-[60px] pb-[40px] relative z-0" style={{ paddingRight: '940px' }}>
+              {/* Контент с резиновой версткой через gap - поднят вверх для одного скролла */}
+              <div className="flex flex-col gap-5">
+                {/* Заголовок - обязательно 5 строк */}
+                <h1
+                  className="font-[700] text-white leading-[0.7]"
+                  style={{
+                    fontFamily: 'Aeroport, system-ui, -apple-system, BlinkMacSystemFont',
+                    fontSize: '100px',
+                  }}
+                >
+                  Когда
+                  <br />
+                  хочется
+                  <br />
+                  спорта,
+                  <br />
+                  но сложно
+                  <br />
+                  начать
+                </h1>
 
-              {/* Подзаголовок */}
-              <p
-                className="max-w-[547px] text-white text-[20px] leading-[20px] mb-10"
-                style={{ fontFamily: 'Aeroport, system-ui, -apple-system, BlinkMacSystemFont' }}
-              >
-                Мы убрали всё лишнее между тобой и движением: поиск, сомнения, выбор. Подскажем,
-                куда пойти, с чего начать и с кем играть.
-              </p>
-
-              {/* Кнопка */}
-              <div className="flex">
-                <Link
-                  href="/register"
-                  className="inline-flex items-center justify-center gap-2 w-[360px] h-[56px] border border-white rounded-[28px] text-white text-[16px] font-medium hover:bg-white/10 transition"
+                {/* Подзаголовок */}
+                <p
+                  className="max-w-[547px] text-white text-[20px] leading-[20px]"
                   style={{ fontFamily: 'Aeroport, system-ui, -apple-system, BlinkMacSystemFont' }}
                 >
-                  <span className="text-[18px] leading-none">🏓</span>
-                  <span>Попробовать бесплатно</span>
-                </Link>
+                  Мы убрали всё лишнее между тобой и движением: поиск, сомнения, выбор. Подскажем,
+                  куда пойти, с чего начать и с кем играть.
+                </p>
+
+                {/* Кнопка */}
+                <div className="flex">
+                  <Link
+                    href="/register"
+                    className="inline-flex items-center justify-center gap-2 w-[360px] h-[56px] border border-white rounded-[28px] text-white text-[16px] font-medium hover:bg-white/10 transition"
+                    style={{ fontFamily: 'Aeroport, system-ui, -apple-system, BlinkMacSystemFont' }}
+                  >
+                    <span className="text-[18px] leading-none">🏓</span>
+                    <span>Попробовать бесплатно</span>
+                  </Link>
+                </div>
               </div>
             </div>
 
-            {/* Правая картинка с радиусом 50 */}
-            <div className="w-[800px] h-[903px] ml-[40px] mr-[40px] relative">
+            {/* Правая картинка с радиусом 50 - поверх синего блока */}
+            <div className="w-[800px] h-[903px] ml-[40px] relative z-10 flex-shrink-0" style={{ marginLeft: '-840px' }}>
               {/* Навигация поверх картинки */}
               <div className="absolute top-[24px] right-[40px] z-20 flex items-center gap-8 text-[20px] font-bold text-black">
                 <button className="flex items-center gap-2 hover:opacity-80 transition">
