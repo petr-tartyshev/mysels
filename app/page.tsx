@@ -2,236 +2,495 @@ import Link from 'next/link'
 
 export default function HomePage() {
   return (
-    <div className="min-h-screen flex flex-col lg:flex-row overflow-hidden">
-      {/* Левая секция - Синий фон */}
-      <div className="w-full lg:w-[40%] bg-[#2F80ED] relative flex flex-col justify-between p-8 lg:p-12 text-white min-h-screen lg:min-h-0">
-        {/* Логотип */}
-        <div className="flex items-center gap-3 mb-12">
-          <div className="w-8 h-8 flex flex-wrap">
-            <div className="w-3 h-3 bg-white rounded-sm"></div>
-            <div className="w-3 h-3 bg-white rounded-sm"></div>
-            <div className="w-3 h-3 bg-white rounded-sm"></div>
-            <div className="w-3 h-3 bg-white rounded-sm"></div>
-          </div>
-          <h1 className="text-2xl font-bold">SELS</h1>
-        </div>
-
-        {/* Заголовок */}
-        <div className="flex-1 flex flex-col justify-center">
-          <h2 className="text-4xl lg:text-6xl font-bold leading-tight mb-6 lg:mb-8">
-            Когда<br />
-            хочется<br />
-            спорта,<br />
-            но сложно<br />
-            начать
-          </h2>
-          
-          <p className="text-lg lg:text-xl leading-relaxed mb-6 lg:mb-8 text-white/90">
-            Мы убрали всё лишнее между тобой и движением:
-            поиск, сомнения, выбор. Подскажем, куда пойти,
-            с чего начать и с кем играть.
-          </p>
-
-          {/* Кнопка */}
-          <Link
-            href="/register"
-            className="inline-flex items-center gap-2 px-8 py-4 border-2 border-white rounded-lg font-semibold hover:bg-white hover:text-[#2F80ED] transition text-lg w-fit"
+    <div className="relative w-full min-h-screen bg-white" style={{ width: '1920px', height: '3716px' }}>
+      {/* Rectangle 16 - Синий фон с закруглением */}
+      <div 
+        className="absolute bg-[#006FFD] rounded-[100px]"
+        style={{
+          width: '1758px',
+          height: '903px',
+          left: '162px',
+          top: '0px',
+        }}
+      >
+        {/* Rectangle 17 - Внутренний синий прямоугольник */}
+        <div 
+          className="absolute bg-[#006FFD]"
+          style={{
+            width: '1620px',
+            height: '903px',
+            left: '300px',
+            top: '0px',
+          }}
+        >
+          {/* Container - Левая часть с текстом */}
+          <div 
+            className="absolute"
+            style={{
+              left: '172px',
+              right: '1038px',
+              top: '0px',
+              bottom: '2813px',
+            }}
           >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
-            </svg>
-            Попробовать бесплатно
-          </Link>
+            {/* Логотип с иконкой */}
+            <div 
+              className="absolute"
+              style={{
+                width: '22.61px',
+                height: '23.16px',
+                left: '27px',
+                top: '24px',
+                transform: 'rotate(-45deg)',
+              }}
+            >
+              <div 
+                className="absolute bg-[#006FFD]"
+                style={{
+                  left: '11.93%',
+                  right: '4.74%',
+                  top: '11.64%',
+                  bottom: '5.02%',
+                  transform: 'rotate(-45deg)',
+                }}
+              />
+            </div>
+            
+            <div 
+              className="absolute font-bold text-[20px] leading-[20px] text-[#006FFD]"
+              style={{
+                width: '50px',
+                height: '20px',
+                left: '69px',
+                top: '30.09px',
+                fontFamily: 'Inter, sans-serif',
+              }}
+            >
+              SELS
+            </div>
+
+            {/* Heading 1 - Заголовок */}
+            <div 
+              className="absolute text-white flex items-center"
+              style={{
+                width: '586px',
+                height: '351px',
+                left: '100px',
+                top: '65px',
+                fontFamily: 'Aeroport, sans-serif',
+                fontWeight: 700,
+                fontSize: '100px',
+                lineHeight: '70px',
+              }}
+            >
+              Когда<br />
+              хочется<br />
+              спорта,<br />
+              но сложно<br />
+              начать
+            </div>
+
+            {/* Heading 2 - Подзаголовок */}
+            <div 
+              className="absolute text-white flex items-center"
+              style={{
+                width: '547px',
+                height: '60px',
+                left: '100px',
+                top: '671px',
+                fontFamily: 'Aeroport, sans-serif',
+                fontWeight: 300,
+                fontSize: '20px',
+                lineHeight: '20px',
+              }}
+            >
+              Мы убрали всё лишнее между тобой и движением:
+              поиск, сомнения, выбор. Подскажем, куда пойти,
+              с чего начать и с кем играть.
+            </div>
+
+            {/* Кнопка "Попробовать бесплатно" */}
+            <Link
+              href="/register"
+              className="absolute box-border bg-[#006FFD] border border-white rounded-[20px] flex items-center justify-center"
+              style={{
+                width: '262px',
+                height: '48px',
+                left: '100px',
+                top: 'calc(50% - 48px/2 + 369.5px)',
+              }}
+            >
+              <span 
+                className="text-white text-center"
+                style={{
+                  width: '205px',
+                  height: '21px',
+                  fontFamily: 'Aeroport, sans-serif',
+                  fontWeight: 500,
+                  fontSize: '15.3px',
+                  lineHeight: '21px',
+                }}
+              >
+                🏓 Попробовать бесплатно
+              </span>
+            </Link>
+          </div>
+
+          {/* Изображение справа - fd628e190b0208d769beaa442e2bccf0 */}
+          <div 
+            className="absolute rounded-[100px] bg-cover bg-center"
+            style={{
+              width: '990px',
+              height: '903px',
+              left: '930px',
+              top: '0px',
+              backgroundImage: 'url(https://images.unsplash.com/photo-1518611012118-696072aa579a?w=990&h=903&fit=crop)',
+            }}
+          />
+          
+          <div 
+            className="absolute bg-cover bg-center"
+            style={{
+              width: '776px',
+              height: '903px',
+              left: '1144px',
+              top: '0px',
+              backgroundImage: 'url(https://images.unsplash.com/photo-1518611012118-696072aa579a?w=776&h=903&fit=crop)',
+            }}
+          />
+
+          {/* Навигация сверху справа */}
+          <div 
+            className="absolute"
+            style={{
+              width: '682px',
+              height: '39px',
+              left: '1119px',
+              top: '13px',
+            }}
+          >
+            {/* О проекте */}
+            <div 
+              className="absolute flex items-center"
+              style={{
+                width: '142px',
+                height: '21px',
+                left: '0px',
+                top: '9px',
+              }}
+            >
+              <span 
+                className="font-bold text-[20px] leading-[20px] text-black"
+                style={{
+                  width: '16px',
+                  height: '21px',
+                  fontFamily: 'Inter, sans-serif',
+                  fontSize: '16px',
+                  lineHeight: '65px',
+                }}
+              >
+                🎾
+              </span>
+              <span 
+                className="font-bold text-[20px] leading-[20px] text-black ml-2"
+                style={{
+                  width: '117px',
+                  height: '21px',
+                  fontFamily: 'Inter, sans-serif',
+                }}
+              >
+                О проекте
+              </span>
+            </div>
+
+            {/* Карта локаций */}
+            <div 
+              className="absolute flex items-center"
+              style={{
+                width: '185px',
+                height: '21px',
+                left: '183px',
+                top: '9px',
+              }}
+            >
+              <span 
+                className="font-bold text-[20px] leading-[20px] text-black"
+                style={{
+                  width: '16px',
+                  height: '21px',
+                  fontFamily: 'Inter, sans-serif',
+                  fontSize: '16px',
+                  lineHeight: '65px',
+                }}
+              >
+                🔍
+              </span>
+              <span 
+                className="font-bold text-[20px] leading-[20px] text-black ml-2"
+                style={{
+                  width: '160px',
+                  height: '21px',
+                  fontFamily: 'Inter, sans-serif',
+                }}
+              >
+                Карта локаций
+              </span>
+            </div>
+
+            {/* FAQ */}
+            <div 
+              className="absolute flex items-center"
+              style={{
+                width: '66px',
+                height: '21px',
+                left: '409px',
+                top: '9px',
+              }}
+            >
+              <span 
+                className="font-bold text-[20px] leading-[20px] text-black"
+                style={{
+                  width: '16px',
+                  height: '21px',
+                  fontFamily: 'Inter, sans-serif',
+                  fontSize: '16px',
+                  lineHeight: '65px',
+                }}
+              >
+                ❓
+              </span>
+              <span 
+                className="font-bold text-[20px] leading-[20px] text-black ml-2"
+                style={{
+                  width: '41px',
+                  height: '21px',
+                  fontFamily: 'Inter, sans-serif',
+                }}
+              >
+                FAQ
+              </span>
+            </div>
+
+            {/* Кнопка "Войти" */}
+            <Link
+              href="/login"
+              className="absolute box-border bg-[#006FFD] border border-[#006FFD] rounded-[20px] flex items-center justify-center"
+              style={{
+                width: '116px',
+                height: '39px',
+                left: '566px',
+                top: '0px',
+              }}
+            >
+              <span 
+                className="text-white text-center"
+                style={{
+                  width: '88px',
+                  height: '21px',
+                  fontFamily: 'Inter, sans-serif',
+                  fontWeight: 500,
+                  fontSize: '15.3px',
+                  lineHeight: '21px',
+                }}
+              >
+                🏓 Войти
+              </span>
+            </Link>
+          </div>
         </div>
       </div>
 
-      {/* Правая секция - Светло-голубой фон с иллюстрацией */}
-      <div className="hidden lg:flex flex-1 bg-[#E8F4FD] relative overflow-hidden">
-        {/* Навигация сверху */}
-        <div className="absolute top-0 right-0 left-0 z-20 p-6 flex items-center justify-end gap-6">
-          <button className="flex items-center gap-2 text-gray-700 hover:text-[#2F80ED] transition">
-            <div className="w-8 h-8 bg-yellow-400 rounded-full flex items-center justify-center">
-              <span className="text-sm font-bold">О</span>
-            </div>
-            <span className="text-sm font-medium">О проекте</span>
-          </button>
-          
-          <button className="flex items-center gap-2 text-gray-700 hover:text-[#2F80ED] transition">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <circle cx="11" cy="11" r="8" />
-              <path d="m21 21-4.35-4.35" />
-            </svg>
-            <span className="text-sm font-medium">Карта локаций</span>
-          </button>
-          
-          <button className="flex items-center gap-2 text-gray-700 hover:text-[#2F80ED] transition">
-            <div className="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center">
-              <span className="text-sm font-bold">?</span>
-            </div>
-            <span className="text-sm font-medium">FAQ</span>
-          </button>
-          
-          <Link
-            href="/login"
-            className="px-6 py-2 bg-gradient-to-r from-[#2F80ED] to-[#1E5FA8] text-white rounded-lg font-semibold hover:opacity-90 transition flex items-center gap-2 text-sm"
+      {/* Вторая секция - Group 421 */}
+      <div 
+        className="absolute"
+        style={{
+          width: '1596px',
+          height: '1048px',
+          left: '162px',
+          top: '1055px',
+        }}
+      >
+        {/* Group 420 */}
+        <div 
+          className="absolute"
+          style={{
+            width: '1596px',
+            height: '372px',
+            left: '0px',
+            top: '0px',
+          }}
+        >
+          {/* Заголовок слева */}
+          <div 
+            className="absolute text-black flex items-center"
+            style={{
+              width: '802px',
+              height: '210px',
+              left: '0px',
+              top: '0px',
+              fontFamily: 'Aeroport, sans-serif',
+              fontWeight: 700,
+              fontSize: '100px',
+              lineHeight: '70px',
+            }}
           >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
-            </svg>
-            Войти
+            SELS снижает порог входа и помогает сделать первый шаг
+          </div>
+
+          {/* Group 422 - Текст справа */}
+          <div 
+            className="absolute"
+            style={{
+              width: '950px',
+              height: '162px',
+              left: '646px',
+              top: '210px',
+            }}
+          >
+            <div 
+              className="absolute text-black flex items-center"
+              style={{
+                width: '950px',
+                height: '150px',
+                left: '0px',
+                top: '0px',
+                fontFamily: 'Aeroport, sans-serif',
+                fontWeight: 400,
+                fontSize: '50px',
+                lineHeight: '50px',
+              }}
+            >
+              SELS показывает спортивные активности рядом с тобой:
+              пробежки, тренировки, игры, выезды — с понятным форматом, местом и людьми.
+            </div>
+          </div>
+
+          {/* Кнопка справа */}
+          <Link
+            href="/register"
+            className="absolute box-border bg-[#006FFD] border border-[#006FFD] rounded-[30px] flex items-center justify-center"
+            style={{
+              width: '440.01px',
+              height: '55px',
+              left: '1090px',
+              top: '317px',
+            }}
+          >
+            <span 
+              className="text-white text-center underline"
+              style={{
+                width: '415px',
+                height: '61px',
+                fontFamily: 'Aeroport, sans-serif',
+                fontWeight: 400,
+                fontSize: '50px',
+                lineHeight: '50px',
+              }}
+            >
+              исследованиями
+            </span>
           </Link>
         </div>
 
-        {/* Иллюстрация баскетбольной площадки */}
-        <div className="absolute inset-0 flex items-center justify-center p-8 lg:p-12">
-          <div className="relative w-full h-full max-w-5xl">
-            {/* Баскетбольная площадка */}
-            <svg
-              viewBox="0 0 1000 750"
-              className="w-full h-full"
-              style={{ filter: 'drop-shadow(0 8px 16px rgba(0,0,0,0.15))' }}
-            >
-              {/* Фон площадки с текстурой */}
-              <defs>
-                <pattern id="courtTexture" patternUnits="userSpaceOnUse" width="4" height="4">
-                  <rect width="4" height="4" fill="#B3E5FC" />
-                  <circle cx="2" cy="2" r="0.5" fill="#90CAF9" opacity="0.3" />
-                </pattern>
-              </defs>
-              <rect x="0" y="0" width="1000" height="750" fill="url(#courtTexture)" />
-              
-              {/* Линии площадки */}
-              <rect x="0" y="0" width="1000" height="750" fill="none" stroke="#FFFFFF" strokeWidth="10" />
-              
-              {/* Центральный круг */}
-              <circle cx="500" cy="375" r="100" fill="none" stroke="#FFFFFF" strokeWidth="8" />
-              <line x1="500" y1="0" x2="500" y2="750" stroke="#FFFFFF" strokeWidth="8" />
-              
-              {/* Трехочковая линия справа */}
-              <path
-                d="M 1000 0 Q 750 200 750 375 Q 750 550 1000 750"
-                fill="none"
-                stroke="#FFFFFF"
-                strokeWidth="8"
-              />
-              
-              {/* Штрафная зона справа */}
-              <rect x="750" y="250" width="250" height="250" fill="none" stroke="#FFFFFF" strokeWidth="8" />
-              <path
-                d="M 750 300 Q 800 375 750 450"
-                fill="none"
-                stroke="#FFFFFF"
-                strokeWidth="8"
-              />
-              
-              {/* Кольцо и щит */}
-              <rect x="920" y="350" width="60" height="50" fill="#FFFFFF" stroke="#1A1A1A" strokeWidth="3" rx="2" />
-              <circle cx="950" cy="375" r="25" fill="none" stroke="#FF6B35" strokeWidth="5" />
-              <circle cx="950" cy="375" r="22" fill="none" stroke="#FFFFFF" strokeWidth="3" />
-              
-              {/* Мяч в кольце */}
-              <circle cx="950" cy="375" r="15" fill="#FF6B35" />
-              <path
-                d="M 950 360 Q 950 375 950 390"
-                stroke="#FFFFFF"
-                strokeWidth="2"
-                fill="none"
-              />
-              <path
-                d="M 940 375 Q 950 380 960 375"
-                stroke="#FFFFFF"
-                strokeWidth="1.5"
-                fill="none"
-              />
-              
-              {/* Игроки с тенями - улучшенная версия */}
-              {/* Игрок 1 - верх слева (желтая майка) */}
-              <g transform="translate(200, 120)">
-                <ellipse cx="0" cy="0" rx="25" ry="35" fill="#FFD700" />
-                <ellipse cx="0" cy="30" rx="35" ry="18" fill="#1A1A1A" />
-                <ellipse cx="-28" cy="0" rx="18" ry="30" fill="#4A90E2" />
-                <ellipse cx="28" cy="0" rx="18" ry="30" fill="#4A90E2" />
-                {/* Тень - длинная и темная */}
-                <ellipse cx="-40" cy="60" rx="50" ry="20" fill="#1565C0" opacity="0.5" />
-              </g>
-              
-              {/* Игрок 2 - центр слева (белая майка) */}
-              <g transform="translate(250, 320)">
-                <ellipse cx="0" cy="0" rx="25" ry="35" fill="#FFFFFF" />
-                <ellipse cx="0" cy="30" rx="35" ry="18" fill="#1A1A1A" />
-                <ellipse cx="-28" cy="0" rx="18" ry="30" fill="#4A90E2" />
-                <ellipse cx="28" cy="0" rx="18" ry="30" fill="#4A90E2" />
-                {/* Тень */}
-                <ellipse cx="-40" cy="60" rx="50" ry="20" fill="#1565C0" opacity="0.5" />
-              </g>
-              
-              {/* Игрок 3 - центр площадки (маленький, красная майка) */}
-              <g transform="translate(500, 240)">
-                <ellipse cx="0" cy="0" rx="18" ry="26" fill="#FF6B6B" />
-                <ellipse cx="0" cy="22" rx="26" ry="14" fill="#FFD700" />
-                <ellipse cx="-22" cy="0" rx="14" ry="24" fill="#4A90E2" />
-                <ellipse cx="22" cy="0" rx="14" ry="24" fill="#4A90E2" />
-                {/* Тень */}
-                <ellipse cx="-30" cy="45" rx="35" ry="15" fill="#1565C0" opacity="0.5" />
-              </g>
-              
-              {/* Игрок 4 - центр справа, у штрафной (белая майка) */}
-              <g transform="translate(700, 360)">
-                <ellipse cx="0" cy="0" rx="25" ry="35" fill="#FFFFFF" />
-                <ellipse cx="0" cy="30" rx="35" ry="18" fill="#1A1A1A" />
-                <ellipse cx="-28" cy="0" rx="18" ry="30" fill="#4A90E2" />
-                <ellipse cx="28" cy="0" rx="18" ry="30" fill="#4A90E2" />
-                {/* Тень */}
-                <ellipse cx="-40" cy="60" rx="50" ry="20" fill="#1565C0" opacity="0.5" />
-              </g>
-              
-              {/* Игрок 5 - справа, у кольца (белая майка) */}
-              <g transform="translate(850, 380)">
-                <ellipse cx="0" cy="0" rx="25" ry="35" fill="#FFFFFF" />
-                <ellipse cx="0" cy="30" rx="35" ry="18" fill="#1A1A1A" />
-                <ellipse cx="-28" cy="0" rx="18" ry="30" fill="#4A90E2" />
-                <ellipse cx="28" cy="0" rx="18" ry="30" fill="#4A90E2" />
-                {/* Тень */}
-                <ellipse cx="-40" cy="60" rx="50" ry="20" fill="#1565C0" opacity="0.5" />
-              </g>
-              
-              {/* Игрок 6 - низ справа, у трехочковой (желтая майка) */}
-              <g transform="translate(820, 560)">
-                <ellipse cx="0" cy="0" rx="25" ry="35" fill="#FFD700" />
-                <ellipse cx="0" cy="30" rx="35" ry="18" fill="#1A1A1A" />
-                <ellipse cx="-28" cy="0" rx="18" ry="30" fill="#4A90E2" />
-                <ellipse cx="28" cy="0" rx="18" ry="30" fill="#4A90E2" />
-                {/* Тень */}
-                <ellipse cx="-40" cy="60" rx="50" ry="20" fill="#1565C0" opacity="0.5" />
-              </g>
-            </svg>
+        {/* Три карточки внизу */}
+        {/* Frame 142 - Первая карточка (синяя) */}
+        <div 
+          className="absolute bg-[#005BFF] rounded-[50px]"
+          style={{
+            width: '465px',
+            height: '572px',
+            left: '0px',
+            top: '476px',
+          }}
+        >
+          <div 
+            className="absolute text-white flex items-center"
+            style={{
+              width: '387px',
+              height: '120px',
+              left: '26px',
+              top: '64px',
+              fontFamily: 'Aeroport, sans-serif',
+              fontWeight: 300,
+              fontSize: '20px',
+              lineHeight: '20px',
+            }}
+          >
+            Хочется заниматься спортом и быть среди единомышленников,
+            но одному тяжело: не хватает мотивации, страшно идти в новое место и знакомиться с незнакомыми людьми.
+          </div>
+          <div 
+            className="absolute text-white flex items-center"
+            style={{
+              width: '426px',
+              height: '100px',
+              left: '20px',
+              top: '448px',
+              fontFamily: 'Aeroport, sans-serif',
+              fontWeight: 500,
+              fontSize: '200px',
+              lineHeight: '100px',
+            }}
+          >
+            01
           </div>
         </div>
 
-        {/* Органическая изогнутая линия разделителя */}
-        <div className="absolute left-0 top-0 bottom-0 w-32 pointer-events-none">
-          <svg
-            viewBox="0 0 200 1000"
-            className="w-full h-full"
-            preserveAspectRatio="none"
+        {/* Frame 141 - Вторая карточка (светло-синяя) */}
+        <div 
+          className="absolute bg-[#4587FF] rounded-[50px]"
+          style={{
+            width: '465px',
+            height: '572px',
+            left: '485px',
+            top: '476px',
+          }}
+        >
+          <div 
+            className="absolute text-white flex items-center"
+            style={{
+              width: '387px',
+              height: '80px',
+              left: '26px',
+              top: '59px',
+              fontFamily: 'Aeroport, sans-serif',
+              fontWeight: 300,
+              fontSize: '20px',
+              lineHeight: '20px',
+            }}
           >
-            <path
-              d="M 0 0 Q 50 200 30 400 T 20 600 T 40 800 T 0 1000"
-              fill="#2F80ED"
-              opacity="0.1"
-            />
-            <path
-              d="M 0 0 Q 80 150 60 350 T 50 550 T 70 750 T 0 1000"
-              fill="#2F80ED"
-              opacity="0.15"
-            />
-            <path
-              d="M 0 0 Q 100 100 90 300 T 80 500 T 100 700 T 0 1000"
-              fill="#2F80ED"
-              opacity="0.2"
-            />
-          </svg>
+            Ты приходишь не знакомиться, а заниматься спортом.
+            Общение возникает само — без неловкости и давления.
+          </div>
+          <div 
+            className="absolute text-white flex items-center"
+            style={{
+              width: '400px',
+              height: '100px',
+              left: '33px',
+              top: '448px',
+              fontFamily: 'Aeroport, sans-serif',
+              fontWeight: 500,
+              fontSize: '200px',
+              lineHeight: '100px',
+            }}
+          >
+            02
+          </div>
         </div>
+
+        {/* Изображение справа - 3e2858295bd1e922d43e35c8756d9fcf */}
+        <div 
+          className="absolute rounded-[50px] bg-cover bg-center"
+          style={{
+            width: '572px',
+            height: '626px',
+            left: '970px',
+            top: '476px',
+            backgroundImage: 'url(https://images.unsplash.com/photo-1518611012118-696072aa579a?w=572&h=626&fit=crop)',
+            transform: 'rotate(-90deg)',
+          }}
+        />
       </div>
     </div>
   )
