@@ -44,7 +44,7 @@ export default function HomePage() {
                   className="font-[700] text-white leading-[0.7]"
                   style={{
                     fontFamily: 'Aeroport, system-ui, -apple-system, BlinkMacSystemFont',
-                    fontSize: '78px',
+                    fontSize: '80px',
                   }}
                 >
                   Когда
@@ -53,9 +53,7 @@ export default function HomePage() {
                   <br />
                   спорта,
                   <br />
-                  но сложно
-                  <br />
-                  начать
+                  но сложно начать
                 </h1>
 
                 {/* Подзаголовок */}
