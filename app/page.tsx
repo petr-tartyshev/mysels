@@ -18,49 +18,46 @@ export default function HomePage() {
   return (
     <div className="min-h-screen w-full bg-white text-black">
       {/* HERO */}
-      <section className="w-full flex justify-center px-4 pt-6 lg:pt-10">
-        <div className="relative w-full max-w-[1920px]">
-          {/* Синий контейнер с закруглением, как Rectangle 16 */}
-          <div className="relative mx-auto bg-[#006FFD] rounded-[70px] lg:rounded-[100px] overflow-hidden px-6 py-8 lg:px-[100px] lg:py-[65px] flex flex-col lg:flex-row gap-6 lg:gap-0">
-            {/* Левая текстовая колонка */}
-            <div className="flex-1 flex flex-col justify-between lg:pr-10">
-              {/* Логотип */}
-              <div className="flex items-center gap-3 mb-10">
-                <div className="w-7 h-7 flex flex-wrap rotate-[-45deg]">
-                  <div className="w-3 h-3 bg-[#006FFD] rounded-[2px]" />
-                  <div className="w-3 h-3 bg-[#006FFD] rounded-[2px]" />
-                  <div className="w-3 h-3 bg-[#006FFD] rounded-[2px]" />
-                  <div className="w-3 h-3 bg-[#006FFD] rounded-[2px]" />
-                </div>
-                <span className="text-[20px] font-bold text-[#006FFD] bg-white rounded-full px-3 py-1 leading-[20px]">
-                  SELS
-                </span>
+      <section className="w-full bg-[#FFE8E4] flex justify-center">
+        <div className="w-full max-w-[1920px] flex">
+          {/* Левая белая колонка с логотипом (как в макете) */}
+          <div className="w-[140px] bg-white flex items-start justify-center pt-10">
+            <div className="flex items-center gap-2">
+              <div className="w-7 h-7 flex flex-wrap rotate-[-45deg]">
+                <div className="w-3 h-3 bg-[#006FFD] rounded-[2px]" />
+                <div className="w-3 h-3 bg-[#006FFD] rounded-[2px]" />
+                <div className="w-3 h-3 bg-[#006FFD] rounded-[2px]" />
+                <div className="w-3 h-3 bg-[#006FFD] rounded-[2px]" />
               </div>
+              <span className="text-[20px] font-bold text-[#006FFD]">SELS</span>
+            </div>
+          </div>
 
+          {/* Центральный синий блок */}
+          <div className="flex-1 flex items-stretch">
+            <div className="flex-1 bg-[#006FFD] rounded-[50px] h-[903px] flex flex-col justify-between px-[100px] pt-[80px] pb-[60px]">
               {/* Заголовок */}
               <h1
                 className="font-[700] text-white leading-[0.7] mb-8"
                 style={{
                   fontFamily: 'Aeroport, system-ui, -apple-system, BlinkMacSystemFont',
-                  fontSize: '64px',
+                  fontSize: '100px',
                 }}
               >
-                <span className="block text-[64px] lg:text-[100px]">
-                  Когда
-                  <br />
-                  хочется
-                  <br />
-                  спорта,
-                  <br />
-                  но сложно
-                  <br />
-                  начать
-                </span>
+                Когда
+                <br />
+                хочется
+                <br />
+                спорта,
+                <br />
+                но сложно
+                <br />
+                начать
               </h1>
 
               {/* Подзаголовок */}
               <p
-                className="max-w-[547px] text-white text-[16px] lg:text-[20px] leading-[1.1] mb-8"
+                className="max-w-[547px] text-white text-[20px] leading-[20px] mb-10"
                 style={{ fontFamily: 'Aeroport, system-ui, -apple-system, BlinkMacSystemFont' }}
               >
                 Мы убрали всё лишнее между тобой и движением: поиск, сомнения, выбор. Подскажем,
@@ -68,20 +65,22 @@ export default function HomePage() {
               </p>
 
               {/* Кнопка */}
-              <Link
-                href="/register"
-                className="inline-flex items-center justify-center gap-2 bg-[#006FFD] border border-white rounded-[20px] px-7 py-3 text-white text-[15px] font-medium hover:bg-white/10 transition"
-                style={{ fontFamily: 'Aeroport, system-ui, -apple-system, BlinkMacSystemFont' }}
-              >
-                <span className="text-[18px] leading-none">🏓</span>
-                <span>Попробовать бесплатно</span>
-              </Link>
+              <div className="flex">
+                <Link
+                  href="/register"
+                  className="inline-flex items-center justify-center gap-2 w-[360px] h-[56px] border border-white rounded-[28px] text-white text-[16px] font-medium hover:bg-white/10 transition"
+                  style={{ fontFamily: 'Aeroport, system-ui, -apple-system, BlinkMacSystemFont' }}
+                >
+                  <span className="text-[18px] leading-none">🏓</span>
+                  <span>Попробовать бесплатно</span>
+                </Link>
+              </div>
             </div>
 
-            {/* Правая колонка с картинкой и навигацией */}
-            <div className="relative flex-1 min-h-[260px] lg:min-h-[540px] xl:min-h-[620px]">
+            {/* Правая картинка с радиусом 50 */}
+            <div className="w-[800px] h-[903px] ml-[40px] mr-[40px] relative">
               {/* Навигация поверх картинки */}
-              <div className="absolute top-3 right-6 z-20 hidden lg:flex items-center gap-6 text-[18px] font-bold text-black">
+              <div className="absolute top-[24px] right-[40px] z-20 flex items-center gap-8 text-[20px] font-bold text-black">
                 <button className="flex items-center gap-2 hover:opacity-80 transition">
                   <span className="text-[16px]">🎾</span>
                   <span>О проекте</span>
@@ -102,16 +101,13 @@ export default function HomePage() {
                 </Link>
               </div>
 
-              {/* Большая картинка справа */}
-              <div className="absolute inset-0 left-[10%] lg:left-[5%]">
-                <div
-                  className="w-full h-full rounded-[70px] lg:rounded-[100px] bg-cover bg-center"
-                  style={{
-                    backgroundImage:
-                      'url(https://images.unsplash.com/photo-1518611012118-696072aa579a?auto=format&fit=crop&w=1600&q=80)',
-                  }}
-                />
-              </div>
+              <div
+                className="w-full h-full rounded-[50px] bg-cover bg-center overflow-hidden"
+                style={{
+                  backgroundImage:
+                    'url(https://images.unsplash.com/photo-1518611012118-696072aa579a?auto=format&fit=crop&w=1600&q=80)',
+                }}
+              />
             </div>
           </div>
         </div>
