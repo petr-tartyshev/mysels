@@ -2,9 +2,9 @@ import Link from 'next/link'
 
 export default function HomePage() {
   return (
-    <div className="min-h-screen flex overflow-hidden">
+    <div className="min-h-screen flex flex-col lg:flex-row overflow-hidden">
       {/* Левая секция - Синий фон */}
-      <div className="w-full lg:w-[40%] bg-[#2F80ED] relative flex flex-col justify-between p-8 lg:p-12 text-white min-h-screen">
+      <div className="w-full lg:w-[40%] bg-[#2F80ED] relative flex flex-col justify-between p-8 lg:p-12 text-white min-h-screen lg:min-h-0">
         {/* Логотип */}
         <div className="flex items-center gap-3 mb-12">
           <div className="w-8 h-8 flex flex-wrap">
@@ -18,7 +18,7 @@ export default function HomePage() {
 
         {/* Заголовок */}
         <div className="flex-1 flex flex-col justify-center">
-          <h2 className="text-6xl font-bold leading-tight mb-8">
+          <h2 className="text-4xl lg:text-6xl font-bold leading-tight mb-6 lg:mb-8">
             Когда<br />
             хочется<br />
             спорта,<br />
@@ -26,7 +26,7 @@ export default function HomePage() {
             начать
           </h2>
           
-          <p className="text-xl leading-relaxed mb-8 text-white/90">
+          <p className="text-lg lg:text-xl leading-relaxed mb-6 lg:mb-8 text-white/90">
             Мы убрали всё лишнее между тобой и движением:
             поиск, сомнения, выбор. Подскажем, куда пойти,
             с чего начать и с кем играть.
