@@ -2,7 +2,7 @@ import Link from 'next/link'
 
 export default function HomePage() {
   return (
-    <div className="relative w-full min-h-screen bg-white" style={{ width: '1920px', height: '3716px' }}>
+    <div className="relative w-full min-h-screen bg-white overflow-x-hidden" style={{ minWidth: '1920px', minHeight: '3716px' }}>
       {/* Rectangle 16 - Синий фон с закруглением */}
       <div 
         className="absolute bg-[#006FFD] rounded-[100px]"
@@ -155,7 +155,9 @@ export default function HomePage() {
               height: '903px',
               left: '1144px',
               top: '0px',
-              backgroundImage: 'url(https://images.unsplash.com/photo-1518611012118-696072aa579a?w=776&h=903&fit=crop)',
+              backgroundImage: 'url(https://images.unsplash.com/photo-1518611012118-696072aa579a?w=776&h=903&fit=crop&q=80)',
+              backgroundSize: 'cover',
+              backgroundPosition: 'center',
             }}
           />
 
@@ -387,7 +389,7 @@ export default function HomePage() {
                 lineHeight: '50px',
               }}
             >
-              исследованиями
+              Попробовать бесплатно
             </span>
           </Link>
         </div>
@@ -487,7 +489,9 @@ export default function HomePage() {
             height: '626px',
             left: '970px',
             top: '476px',
-            backgroundImage: 'url(https://images.unsplash.com/photo-1518611012118-696072aa579a?w=572&h=626&fit=crop)',
+            backgroundImage: 'url(https://images.unsplash.com/photo-1518611012118-696072aa579a?w=572&h=626&fit=crop&q=80)',
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
             transform: 'rotate(-90deg)',
           }}
         />
