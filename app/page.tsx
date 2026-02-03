@@ -39,7 +39,7 @@ export default function HomePage() {
             <div className="flex-1 bg-[#006FFD] rounded-l-[50px] h-[1053px] flex flex-col px-[100px] pt-[60px] pb-[40px] relative z-0" style={{ marginRight: '-100px' }}>
               {/* Контент с резиновой версткой через gap - поднят вверх для одного скролла */}
               <div className="flex flex-col gap-5">
-                {/* Заголовок - максимум 5 строк, уменьшен шрифт */}
+                {/* Заголовок - ровно 5 строк */}
                 <h1
                   className="font-[700] text-white leading-[0.7]"
                   style={{
@@ -53,9 +53,7 @@ export default function HomePage() {
                   <br />
                   спорта,
                   <br />
-                  НО сложно
-                  <br />
-                  начать
+                  но сложно начать
                 </h1>
 
                 {/* Подзаголовок */}
