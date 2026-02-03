@@ -36,7 +36,7 @@ export default function HomePage() {
           {/* Центральный синий блок - gap 50px от логотипа, продлен на 100px после фотографии, скругление только слева */}
           <div className="flex-1 flex items-stretch relative ml-[50px] overflow-visible">
             {/* Синий блок - скругление только слева, продлен на 100px вправо после фотографии */}
-            <div className="flex-1 bg-[#006FFD] rounded-l-[50px] h-[903px] flex flex-col px-[100px] pt-[60px] pb-[40px] relative z-0" style={{ marginRight: '-100px' }}>
+            <div className="flex-1 bg-[#006FFD] rounded-l-[50px] h-[1053px] flex flex-col px-[100px] pt-[60px] pb-[40px] relative z-0" style={{ marginRight: '-100px' }}>
               {/* Контент с резиновой версткой через gap - поднят вверх для одного скролла */}
               <div className="flex flex-col gap-5">
                 {/* Заголовок - максимум 5 строк, уменьшен шрифт */}
@@ -44,7 +44,7 @@ export default function HomePage() {
                   className="font-[700] text-white leading-[0.7]"
                   style={{
                     fontFamily: 'Aeroport, system-ui, -apple-system, BlinkMacSystemFont',
-                    fontSize: '85px',
+                    fontSize: '78px',
                   }}
                 >
                   Когда
@@ -82,7 +82,7 @@ export default function HomePage() {
             </div>
 
             {/* Правая картинка с радиусом 50 - поверх синего блока */}
-            <div className="w-[800px] h-[903px] ml-[40px] relative z-10 flex-shrink-0">
+            <div className="w-[800px] h-[1053px] ml-[40px] relative z-10 flex-shrink-0">
               {/* Навигация поверх картинки - правая кнопка с отступом 50px от правого края */}
               <div className="absolute top-[24px] right-[50px] z-20 flex items-center gap-8 text-[20px] font-bold text-black">
                 <button className="flex items-center gap-2 hover:opacity-80 transition">
