@@ -4,7 +4,7 @@ export default function HomePage() {
   return (
     <div className="min-h-screen flex overflow-hidden">
       {/* Левая секция - Синий фон */}
-      <div className="w-[40%] bg-[#2F80ED] relative flex flex-col justify-between p-12 text-white">
+      <div className="w-full lg:w-[40%] bg-[#2F80ED] relative flex flex-col justify-between p-8 lg:p-12 text-white min-h-screen">
         {/* Логотип */}
         <div className="flex items-center gap-3 mb-12">
           <div className="w-8 h-8 flex flex-wrap">
@@ -46,7 +46,7 @@ export default function HomePage() {
       </div>
 
       {/* Правая секция - Светло-голубой фон с иллюстрацией */}
-      <div className="flex-1 bg-[#E8F4FD] relative overflow-hidden">
+      <div className="hidden lg:flex flex-1 bg-[#E8F4FD] relative overflow-hidden">
         {/* Навигация сверху */}
         <div className="absolute top-0 right-0 left-0 z-20 p-6 flex items-center justify-end gap-6">
           <button className="flex items-center gap-2 text-gray-700 hover:text-[#2F80ED] transition">
@@ -83,114 +83,126 @@ export default function HomePage() {
         </div>
 
         {/* Иллюстрация баскетбольной площадки */}
-        <div className="absolute inset-0 flex items-center justify-center p-12">
-          <div className="relative w-full h-full max-w-4xl">
+        <div className="absolute inset-0 flex items-center justify-center p-8 lg:p-12">
+          <div className="relative w-full h-full max-w-5xl">
             {/* Баскетбольная площадка */}
             <svg
-              viewBox="0 0 800 600"
+              viewBox="0 0 1000 750"
               className="w-full h-full"
-              style={{ filter: 'drop-shadow(0 4px 6px rgba(0,0,0,0.1))' }}
+              style={{ filter: 'drop-shadow(0 8px 16px rgba(0,0,0,0.15))' }}
             >
-              {/* Фон площадки */}
-              <rect x="0" y="0" width="800" height="600" fill="#B3E5FC" />
+              {/* Фон площадки с текстурой */}
+              <defs>
+                <pattern id="courtTexture" patternUnits="userSpaceOnUse" width="4" height="4">
+                  <rect width="4" height="4" fill="#B3E5FC" />
+                  <circle cx="2" cy="2" r="0.5" fill="#90CAF9" opacity="0.3" />
+                </pattern>
+              </defs>
+              <rect x="0" y="0" width="1000" height="750" fill="url(#courtTexture)" />
               
               {/* Линии площадки */}
-              <rect x="0" y="0" width="800" height="600" fill="none" stroke="#FFFFFF" strokeWidth="8" />
+              <rect x="0" y="0" width="1000" height="750" fill="none" stroke="#FFFFFF" strokeWidth="10" />
               
               {/* Центральный круг */}
-              <circle cx="400" cy="300" r="80" fill="none" stroke="#FFFFFF" strokeWidth="6" />
-              <line x1="400" y1="0" x2="400" y2="600" stroke="#FFFFFF" strokeWidth="6" />
+              <circle cx="500" cy="375" r="100" fill="none" stroke="#FFFFFF" strokeWidth="8" />
+              <line x1="500" y1="0" x2="500" y2="750" stroke="#FFFFFF" strokeWidth="8" />
               
               {/* Трехочковая линия справа */}
               <path
-                d="M 800 0 Q 600 150 600 300 Q 600 450 800 600"
+                d="M 1000 0 Q 750 200 750 375 Q 750 550 1000 750"
                 fill="none"
                 stroke="#FFFFFF"
-                strokeWidth="6"
+                strokeWidth="8"
               />
               
               {/* Штрафная зона справа */}
-              <rect x="600" y="200" width="200" height="200" fill="none" stroke="#FFFFFF" strokeWidth="6" />
+              <rect x="750" y="250" width="250" height="250" fill="none" stroke="#FFFFFF" strokeWidth="8" />
               <path
-                d="M 600 250 Q 650 300 600 350"
+                d="M 750 300 Q 800 375 750 450"
                 fill="none"
                 stroke="#FFFFFF"
-                strokeWidth="6"
+                strokeWidth="8"
               />
               
               {/* Кольцо и щит */}
-              <rect x="750" y="280" width="50" height="40" fill="#FFFFFF" stroke="#000000" strokeWidth="2" />
-              <circle cx="775" cy="300" r="20" fill="none" stroke="#FF6B35" strokeWidth="4" />
-              <circle cx="775" cy="300" r="18" fill="none" stroke="#FFFFFF" strokeWidth="2" />
+              <rect x="920" y="350" width="60" height="50" fill="#FFFFFF" stroke="#1A1A1A" strokeWidth="3" rx="2" />
+              <circle cx="950" cy="375" r="25" fill="none" stroke="#FF6B35" strokeWidth="5" />
+              <circle cx="950" cy="375" r="22" fill="none" stroke="#FFFFFF" strokeWidth="3" />
               
               {/* Мяч в кольце */}
-              <circle cx="775" cy="300" r="12" fill="#FF6B35" />
+              <circle cx="950" cy="375" r="15" fill="#FF6B35" />
               <path
-                d="M 775 288 Q 775 300 775 312"
+                d="M 950 360 Q 950 375 950 390"
+                stroke="#FFFFFF"
+                strokeWidth="2"
+                fill="none"
+              />
+              <path
+                d="M 940 375 Q 950 380 960 375"
                 stroke="#FFFFFF"
                 strokeWidth="1.5"
                 fill="none"
               />
               
-              {/* Игроки с тенями */}
-              {/* Игрок 1 - верх слева */}
-              <g transform="translate(150, 100)">
-                <ellipse cx="0" cy="0" rx="20" ry="30" fill="#FFD700" />
-                <ellipse cx="0" cy="25" rx="30" ry="15" fill="#1A1A1A" />
-                <ellipse cx="-25" cy="0" rx="15" ry="25" fill="#4A90E2" />
-                <ellipse cx="25" cy="0" rx="15" ry="25" fill="#4A90E2" />
-                {/* Тень */}
-                <ellipse cx="-30" cy="50" rx="40" ry="15" fill="#1976D2" opacity="0.4" />
+              {/* Игроки с тенями - улучшенная версия */}
+              {/* Игрок 1 - верх слева (желтая майка) */}
+              <g transform="translate(200, 120)">
+                <ellipse cx="0" cy="0" rx="25" ry="35" fill="#FFD700" />
+                <ellipse cx="0" cy="30" rx="35" ry="18" fill="#1A1A1A" />
+                <ellipse cx="-28" cy="0" rx="18" ry="30" fill="#4A90E2" />
+                <ellipse cx="28" cy="0" rx="18" ry="30" fill="#4A90E2" />
+                {/* Тень - длинная и темная */}
+                <ellipse cx="-40" cy="60" rx="50" ry="20" fill="#1565C0" opacity="0.5" />
               </g>
               
-              {/* Игрок 2 - центр слева */}
-              <g transform="translate(200, 250)">
-                <ellipse cx="0" cy="0" rx="20" ry="30" fill="#FFFFFF" />
-                <ellipse cx="0" cy="25" rx="30" ry="15" fill="#1A1A1A" />
-                <ellipse cx="-25" cy="0" rx="15" ry="25" fill="#4A90E2" />
-                <ellipse cx="25" cy="0" rx="15" ry="25" fill="#4A90E2" />
+              {/* Игрок 2 - центр слева (белая майка) */}
+              <g transform="translate(250, 320)">
+                <ellipse cx="0" cy="0" rx="25" ry="35" fill="#FFFFFF" />
+                <ellipse cx="0" cy="30" rx="35" ry="18" fill="#1A1A1A" />
+                <ellipse cx="-28" cy="0" rx="18" ry="30" fill="#4A90E2" />
+                <ellipse cx="28" cy="0" rx="18" ry="30" fill="#4A90E2" />
                 {/* Тень */}
-                <ellipse cx="-30" cy="50" rx="40" ry="15" fill="#1976D2" opacity="0.4" />
+                <ellipse cx="-40" cy="60" rx="50" ry="20" fill="#1565C0" opacity="0.5" />
               </g>
               
-              {/* Игрок 3 - центр площадки (маленький) */}
-              <g transform="translate(400, 200)">
-                <ellipse cx="0" cy="0" rx="15" ry="22" fill="#FF6B6B" />
-                <ellipse cx="0" cy="18" rx="22" ry="12" fill="#FFD700" />
-                <ellipse cx="-18" cy="0" rx="12" ry="20" fill="#4A90E2" />
-                <ellipse cx="18" cy="0" rx="12" ry="20" fill="#4A90E2" />
+              {/* Игрок 3 - центр площадки (маленький, красная майка) */}
+              <g transform="translate(500, 240)">
+                <ellipse cx="0" cy="0" rx="18" ry="26" fill="#FF6B6B" />
+                <ellipse cx="0" cy="22" rx="26" ry="14" fill="#FFD700" />
+                <ellipse cx="-22" cy="0" rx="14" ry="24" fill="#4A90E2" />
+                <ellipse cx="22" cy="0" rx="14" ry="24" fill="#4A90E2" />
                 {/* Тень */}
-                <ellipse cx="-25" cy="40" rx="30" ry="12" fill="#1976D2" opacity="0.4" />
+                <ellipse cx="-30" cy="45" rx="35" ry="15" fill="#1565C0" opacity="0.5" />
               </g>
               
-              {/* Игрок 4 - центр справа, у штрафной */}
-              <g transform="translate(550, 280)">
-                <ellipse cx="0" cy="0" rx="20" ry="30" fill="#FFFFFF" />
-                <ellipse cx="0" cy="25" rx="30" ry="15" fill="#1A1A1A" />
-                <ellipse cx="-25" cy="0" rx="15" ry="25" fill="#4A90E2" />
-                <ellipse cx="25" cy="0" rx="15" ry="25" fill="#4A90E2" />
+              {/* Игрок 4 - центр справа, у штрафной (белая майка) */}
+              <g transform="translate(700, 360)">
+                <ellipse cx="0" cy="0" rx="25" ry="35" fill="#FFFFFF" />
+                <ellipse cx="0" cy="30" rx="35" ry="18" fill="#1A1A1A" />
+                <ellipse cx="-28" cy="0" rx="18" ry="30" fill="#4A90E2" />
+                <ellipse cx="28" cy="0" rx="18" ry="30" fill="#4A90E2" />
                 {/* Тень */}
-                <ellipse cx="-30" cy="50" rx="40" ry="15" fill="#1976D2" opacity="0.4" />
+                <ellipse cx="-40" cy="60" rx="50" ry="20" fill="#1565C0" opacity="0.5" />
               </g>
               
-              {/* Игрок 5 - справа, у кольца */}
-              <g transform="translate(680, 300)">
-                <ellipse cx="0" cy="0" rx="20" ry="30" fill="#FFFFFF" />
-                <ellipse cx="0" cy="25" rx="30" ry="15" fill="#1A1A1A" />
-                <ellipse cx="-25" cy="0" rx="15" ry="25" fill="#4A90E2" />
-                <ellipse cx="25" cy="0" rx="15" ry="25" fill="#4A90E2" />
+              {/* Игрок 5 - справа, у кольца (белая майка) */}
+              <g transform="translate(850, 380)">
+                <ellipse cx="0" cy="0" rx="25" ry="35" fill="#FFFFFF" />
+                <ellipse cx="0" cy="30" rx="35" ry="18" fill="#1A1A1A" />
+                <ellipse cx="-28" cy="0" rx="18" ry="30" fill="#4A90E2" />
+                <ellipse cx="28" cy="0" rx="18" ry="30" fill="#4A90E2" />
                 {/* Тень */}
-                <ellipse cx="-30" cy="50" rx="40" ry="15" fill="#1976D2" opacity="0.4" />
+                <ellipse cx="-40" cy="60" rx="50" ry="20" fill="#1565C0" opacity="0.5" />
               </g>
               
-              {/* Игрок 6 - низ справа, у трехочковой */}
-              <g transform="translate(650, 450)">
-                <ellipse cx="0" cy="0" rx="20" ry="30" fill="#FFD700" />
-                <ellipse cx="0" cy="25" rx="30" ry="15" fill="#1A1A1A" />
-                <ellipse cx="-25" cy="0" rx="15" ry="25" fill="#4A90E2" />
-                <ellipse cx="25" cy="0" rx="15" ry="25" fill="#4A90E2" />
+              {/* Игрок 6 - низ справа, у трехочковой (желтая майка) */}
+              <g transform="translate(820, 560)">
+                <ellipse cx="0" cy="0" rx="25" ry="35" fill="#FFD700" />
+                <ellipse cx="0" cy="30" rx="35" ry="18" fill="#1A1A1A" />
+                <ellipse cx="-28" cy="0" rx="18" ry="30" fill="#4A90E2" />
+                <ellipse cx="28" cy="0" rx="18" ry="30" fill="#4A90E2" />
                 {/* Тень */}
-                <ellipse cx="-30" cy="50" rx="40" ry="15" fill="#1976D2" opacity="0.4" />
+                <ellipse cx="-40" cy="60" rx="50" ry="20" fill="#1565C0" opacity="0.5" />
               </g>
             </svg>
           </div>
