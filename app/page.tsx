@@ -44,7 +44,7 @@ export default function HomePage() {
                   className="font-[700] text-white leading-[0.7]"
                   style={{
                     fontFamily: 'Aeroport, system-ui, -apple-system, BlinkMacSystemFont',
-                    fontSize: '80px',
+                    fontSize: '70px',
                   }}
                 >
                   Когда
