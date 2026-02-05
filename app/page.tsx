@@ -106,12 +106,11 @@ export default function HomePage() {
               </Link>
             </div>
 
-            <div
-              className="w-full h-full rounded-[50px] bg-cover bg-center overflow-hidden"
-              style={{
-                backgroundImage:
-                  'url(https://images.unsplash.com/photo-1518611012118-696072aa579a?auto=format&fit=crop&w=1600&q=80)',
-              }}
+            {/* Изображение с сохранением пропорций (не растягиваем) */}
+            <img
+              src="/hero-court.png"
+              alt="Люди на спортивной площадке сверху"
+              className="w-full h-full rounded-[50px] object-contain bg-[#2F80ED]"
             />
           </div>
         </div>
