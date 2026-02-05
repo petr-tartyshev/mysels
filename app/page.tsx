@@ -33,10 +33,13 @@ export default function HomePage() {
             </div>
           </div>
 
-          {/* Центральный синий блок - gap 50px от логотипа, продлен на 100px после фотографии, скругление только слева */}
+          {/* Центральный синий блок - gap 50px от логотипа, продлен под картинку до красной линии, скругление только слева */}
           <div className="flex-1 flex items-stretch relative ml-[50px] overflow-visible">
-            {/* Синий блок - скругление только слева, продлен на 100px вправо после фотографии */}
-            <div className="flex-1 bg-[#006FFD] rounded-l-[50px] h-[1053px] flex flex-col px-[100px] pt-[60px] pb-[40px] relative z-0" style={{ marginRight: '-100px' }}>
+            {/* Синий блок - скругление только слева, уходит под картинку глубже внутрь до красной линии */}
+            <div
+              className="flex-1 bg-[#006FFD] rounded-l-[50px] h-[1053px] flex flex-col px-[100px] pt-[60px] pb-[40px] relative z-0"
+              style={{ marginRight: '-260px' }}
+            >
               {/* Контент с резиновой версткой через gap - поднят вверх для одного скролла */}
               <div className="flex flex-col gap-5">
                 {/* Заголовок - ровно 5 строк */}
