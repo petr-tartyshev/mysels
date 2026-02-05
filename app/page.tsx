@@ -106,12 +106,12 @@ export default function HomePage() {
               </Link>
             </div>
 
-            {/* Изображение: заполняет весь блок, привязано верхом к верху, без искажений */}
+            {/* Изображение: заполняет весь блок, кадрировано как в макете (сдвиг вправо, верх привязан к верху) */}
             <img
               src="/hero-court.png"
               alt="Люди на спортивной площадке сверху"
               className="w-full h-full rounded-[50px] object-cover"
-              style={{ objectPosition: 'center top' }}
+              style={{ objectPosition: 'right top' }}
             />
           </div>
         </div>
