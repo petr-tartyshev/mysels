@@ -106,11 +106,12 @@ export default function HomePage() {
               </Link>
             </div>
 
-            {/* Изображение с сохранением пропорций (не растягиваем) */}
+            {/* Изображение: заполняет весь блок, привязано верхом к верху, без искажений */}
             <img
               src="/hero-court.png"
               alt="Люди на спортивной площадке сверху"
-              className="w-full h-full rounded-[50px] object-contain bg-[#2F80ED]"
+              className="w-full h-full rounded-[50px] object-cover"
+              style={{ objectPosition: 'center top' }}
             />
           </div>
         </div>
