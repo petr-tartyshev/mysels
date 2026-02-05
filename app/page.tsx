@@ -19,30 +19,27 @@ export default function HomePage() {
     <div className="min-h-screen w-full bg-white text-black">
       {/* HERO */}
       <section className="w-full bg-white flex justify-center">
-        <div className="w-full max-w-[1920px] flex relative">
-          {/* Левая белая колонка с логотипом - отступ 50px от левого края */}
-          <div className="bg-white flex items-start pt-10 pl-[50px]">
-            <div className="flex items-center gap-2">
-              <div className="w-7 h-7 flex flex-wrap rotate-[-45deg]">
-                <div className="w-3 h-3 bg-[#006FFD] rounded-[2px]" />
-                <div className="w-3 h-3 bg-[#006FFD] rounded-[2px]" />
-                <div className="w-3 h-3 bg-[#006FFD] rounded-[2px]" />
-                <div className="w-3 h-3 bg-[#006FFD] rounded-[2px]" />
+        <div className="w-full max-w-[1920px] flex">
+          {/* Левая половина: логотип + синий блок */}
+          <div className="w-1/2 flex relative">
+            {/* Левая белая колонка с логотипом - отступ 50px от левого края */}
+            <div className="bg-white flex items-start pt-10 pl-[50px] pr-[24px]">
+              <div className="flex items-center gap-2">
+                <div className="w-7 h-7 flex flex-wrap rotate-[-45deg]">
+                  <div className="w-3 h-3 bg-[#006FFD] rounded-[2px]" />
+                  <div className="w-3 h-3 bg-[#006FFD] rounded-[2px]" />
+                  <div className="w-3 h-3 bg-[#006FFD] rounded-[2px]" />
+                  <div className="w-3 h-3 bg-[#006FFD] rounded-[2px]" />
+                </div>
+                <span className="text-[20px] font-bold text-[#006FFD]">SELS</span>
               </div>
-              <span className="text-[20px] font-bold text-[#006FFD]">SELS</span>
             </div>
-          </div>
 
-          {/* Центральный синий блок - gap 50px от логотипа, продлен под картинку, скругление только слева */}
-          <div className="flex-1 flex items-stretch relative ml-[50px] overflow-visible">
-            {/* Синий блок - скругление только слева, уходит под картинку глубже вправо */}
-            <div
-              className="flex-1 bg-[#006FFD] rounded-l-[50px] h-[1053px] flex flex-col px-[100px] pt-[60px] pb-[40px] relative z-0"
-              style={{ marginRight: '-460px' }}
-            >
-              {/* Контент с резиновой версткой через gap - поднят вверх для одного скролла */}
+            {/* Центральный синий блок - занимает оставшееся место левой половины, заканчивается по центру экрана */}
+            <div className="flex-1 bg-[#006FFD] rounded-l-[50px] h-[1053px] flex flex-col px-[80px] pt-[60px] pb-[40px]">
+              {/* Контент с резиновой версткой через gap */}
               <div className="flex flex-col gap-5">
-                {/* Заголовок - ровно 5 строк */}
+                {/* Заголовок - 5 строк: Когда / хочется / спорта, / но сложно / начать */}
                 <h1
                   className="font-[700] text-white leading-[0.7]"
                   style={{
@@ -56,7 +53,9 @@ export default function HomePage() {
                   <br />
                   спорта,
                   <br />
-                  но сложно начать
+                  но сложно
+                  <br />
+                  начать
                 </h1>
 
                 {/* Подзаголовок */}
@@ -81,39 +80,39 @@ export default function HomePage() {
                 </div>
               </div>
             </div>
+          </div>
 
-            {/* Правая картинка с радиусом 50 - поверх синего блока */}
-            <div className="w-[800px] h-[1053px] ml-[40px] relative z-10 flex-shrink-0">
-              {/* Навигация поверх картинки - правая кнопка с отступом 50px от правого края */}
-              <div className="absolute top-[24px] right-[50px] z-20 flex items-center gap-8 text-[20px] font-bold text-black">
-                <button className="flex items-center gap-2 hover:opacity-80 transition">
-                  <span className="text-[16px]">🎾</span>
-                  <span>О проекте</span>
-                </button>
-                <button className="flex items-center gap-2 hover:opacity-80 transition">
-                  <span className="text-[16px]">🔍</span>
-                  <span>Карта локаций</span>
-                </button>
-                <button className="flex items-center gap-2 hover:opacity-80 transition">
-                  <span className="text-[16px]">❓</span>
-                  <span>FAQ</span>
-                </button>
-                <Link
-                  href="/login"
-                  className="inline-flex items-center justify-center bg-[#006FFD] text-white rounded-[20px] px-5 py-2 text-[15px] font-medium hover:bg-[#0055cc] transition"
-                >
-                  🏓 Войти
-                </Link>
-              </div>
-
-              <div
-                className="w-full h-full rounded-[50px] bg-cover bg-center overflow-hidden"
-                style={{
-                  backgroundImage:
-                    'url(https://images.unsplash.com/photo-1518611012118-696072aa579a?auto=format&fit=crop&w=1600&q=80)',
-                }}
-              />
+          {/* Правая половина: фотография */}
+          <div className="w-1/2 h-[1053px] relative">
+            {/* Навигация поверх картинки - правая кнопка с отступом 50px от правого края */}
+            <div className="absolute top-[24px] right-[50px] z-20 flex items-center gap-8 text-[20px] font-bold text-black">
+              <button className="flex items-center gap-2 hover:opacity-80 transition">
+                <span className="text-[16px]">🎾</span>
+                <span>О проекте</span>
+              </button>
+              <button className="flex items-center gap-2 hover:opacity-80 transition">
+                <span className="text-[16px]">🔍</span>
+                <span>Карта локаций</span>
+              </button>
+              <button className="flex items-center gap-2 hover:opacity-80 transition">
+                <span className="text-[16px]">❓</span>
+                <span>FAQ</span>
+              </button>
+              <Link
+                href="/login"
+                className="inline-flex items-center justify-center bg-[#006FFD] text-white rounded-[20px] px-5 py-2 text-[15px] font-medium hover:bg-[#0055cc] transition"
+              >
+                🏓 Войти
+              </Link>
             </div>
+
+            <div
+              className="w-full h-full rounded-[50px] bg-cover bg-center overflow-hidden"
+              style={{
+                backgroundImage:
+                  'url(https://images.unsplash.com/photo-1518611012118-696072aa579a?auto=format&fit=crop&w=1600&q=80)',
+              }}
+            />
           </div>
         </div>
       </section>
