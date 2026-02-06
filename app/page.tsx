@@ -87,7 +87,7 @@ export default function HomePage() {
           </div>
 
           {/* Правая половина: фотография, скругление только слева, справа прямая линия */}
-          <div className="w-1/2 relative h-full rounded-l-[50px] overflow-hidden">
+          <div className="w-1/2 relative h-full rounded-l-[50px] overflow-hidden bg-[#006FFD]">
             {/* Навигация поверх картинки - правая кнопка с отступом 50px от правого края */}
             <div className="absolute top-[24px] right-[50px] z-20 flex items-center gap-8 text-[20px] font-bold text-black">
               <button className="flex items-center gap-2 hover:opacity-80 transition">
@@ -110,7 +110,7 @@ export default function HomePage() {
               </Link>
             </div>
 
-            {/* Картинка заполняет правую половину, края режутся скруглением слева */}
+            {/* Картинка заполняет правую половину, всё вне прямоугольника — того же синего цвета */}
             <div className="absolute inset-0">
               <img
                 src="/hero-court.png"
@@ -119,10 +119,6 @@ export default function HomePage() {
                 style={{ objectPosition: 'right 30%' }}
               />
             </div>
-
-            {/* Синие патчи под скруглением, чтобы не было белых "щелей" между синим блоком и картинкой */}
-            <div className="pointer-events-none absolute left-0 top-0 w-[100px] h-[100px] bg-[#006FFD] rounded-br-[50px]" />
-            <div className="pointer-events-none absolute left-0 bottom-0 w-[100px] h-[100px] bg-[#006FFD] rounded-tr-[50px]" />
           </div>
         </div>
       </section>
