@@ -41,7 +41,9 @@ COPY --from=builder /app/next.config.js ./next.config.js
 COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
 COPY --from=builder /app/prisma ./prisma
 COPY --from=builder /app/scripts ./scripts
-COPY --from=builder /app/public ./public
+# Папку public копируем напрямую из контекста сборки, чтобы взять актуальные файлы,
+# а не возможные артефакты из builder-слоя
+COPY public ./public
 
 EXPOSE 3000
 
