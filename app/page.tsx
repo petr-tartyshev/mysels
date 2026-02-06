@@ -18,7 +18,7 @@ export default function HomePage() {
   return (
     <div className="min-h-screen w-full bg-white text-black">
       {/* HERO */}
-      <section className="w-full bg-white flex justify-center">
+      <section className="w-full bg-white flex justify-center min-h-screen">
         <div className="w-full max-w-[1920px] flex">
           {/* Левая половина: логотип + синий блок */}
           <div className="w-1/2 flex relative">
@@ -36,8 +36,8 @@ export default function HomePage() {
             </div>
 
             {/* Центральный синий блок - занимает оставшееся место левой половины, заканчивается по центру экрана */}
-            <div className="flex-1 bg-[#006FFD] rounded-l-[50px] h-[1053px] flex flex-col px-[80px] pt-[60px] pb-[40px]">
-              {/* Контент с резиновой версткой через gap */}
+            <div className="flex-1 bg-[#006FFD] rounded-l-[50px] h-full flex flex-col px-[80px] pt-[60px] pb-[50px]">
+              {/* Верхний контент: заголовок + текст */}
               <div className="flex flex-col gap-5">
                 {/* Заголовок - 5 строк: Когда / хочется / спорта, / но сложно / начать */}
                 <h1
@@ -66,24 +66,24 @@ export default function HomePage() {
                   Мы убрали всё лишнее между тобой и движением: поиск, сомнения, выбор. Подскажем,
                   куда пойти, с чего начать и с кем играть.
                 </p>
+              </div>
 
-                {/* Кнопка */}
-                <div className="flex">
-                  <Link
-                    href="/register"
-                    className="inline-flex items-center justify-center gap-2 w-[360px] h-[56px] border border-white rounded-[28px] text-white text-[16px] font-medium hover:bg-white/10 transition"
-                    style={{ fontFamily: 'Aeroport, system-ui, -apple-system, BlinkMacSystemFont' }}
-                  >
-                    <span className="text-[18px] leading-none">🏓</span>
-                    <span>Попробовать бесплатно</span>
-                  </Link>
-                </div>
+              {/* Кнопка: привязана к нижнему краю, отступ 50px от текста и ~50px от низа */}
+              <div className="mt-[50px] flex">
+                <Link
+                  href="/register"
+                  className="inline-flex items-center justify-center gap-2 w-[360px] h-[56px] border border-white rounded-[28px] text-white text-[16px] font-medium hover:bg-white/10 transition"
+                  style={{ fontFamily: 'Aeroport, system-ui, -apple-system, BlinkMacSystemFont' }}
+                >
+                  <span className="text-[18px] leading-none">🏓</span>
+                  <span>Попробовать бесплатно</span>
+                </Link>
               </div>
             </div>
           </div>
 
           {/* Правая половина: фотография */}
-          <div className="w-1/2 h-[1053px] relative">
+          <div className="w-1/2 relative min-h-screen">
             {/* Навигация поверх картинки - правая кнопка с отступом 50px от правого края */}
             <div className="absolute top-[24px] right-[50px] z-20 flex items-center gap-8 text-[20px] font-bold text-black">
               <button className="flex items-center gap-2 hover:opacity-80 transition">
@@ -106,12 +106,12 @@ export default function HomePage() {
               </Link>
             </div>
 
-            {/* Изображение: заполняет весь блок, кадрировано как в макете (сдвиг вправо, верх привязан к верху) */}
+            {/* Изображение: заполняет весь блок, кадрировано так, чтобы основная часть была в пределах экрана */}
             <img
               src="/hero-court.png"
               alt="Люди на спортивной площадке сверху"
               className="w-full h-full rounded-[50px] object-cover"
-              style={{ objectPosition: 'right top' }}
+              style={{ objectPosition: 'right 30%' }}
             />
           </div>
         </div>
