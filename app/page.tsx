@@ -18,10 +18,10 @@ export default function HomePage() {
   return (
     <div className="min-h-screen w-full bg-white text-black">
       {/* HERO */}
-      <section className="w-full bg-white flex justify-center min-h-screen">
-        <div className="w-full max-w-[1920px] flex">
+      <section className="w-full bg-white flex justify-center h-screen">
+        <div className="w-full max-w-[1920px] flex h-full">
           {/* Левая половина: логотип + синий блок */}
-          <div className="w-1/2 flex relative">
+          <div className="w-1/2 flex h-full relative">
             {/* Левая белая колонка с логотипом - отступ 50px от левого края */}
             <div className="bg-white flex items-start pt-10 pl-[50px] pr-[24px]">
               <div className="flex items-center gap-2">
@@ -36,7 +36,7 @@ export default function HomePage() {
             </div>
 
             {/* Центральный синий блок - занимает оставшееся место левой половины, заканчивается по центру экрана */}
-            <div className="flex-1 bg-[#006FFD] rounded-l-[50px] h-full flex flex-col px-[80px] pt-[60px] pb-[50px]">
+            <div className="flex-1 bg-[#006FFD] rounded-l-[50px] h-full flex flex-col px-[80px] pt-[60px] pb-[50px] justify-between">
               {/* Верхний контент: заголовок + текст */}
               <div className="flex flex-col gap-5">
                 {/* Заголовок - 5 строк: Когда / хочется / спорта, / но сложно / начать */}
@@ -68,7 +68,7 @@ export default function HomePage() {
                 </p>
               </div>
 
-              {/* Кнопка: привязана к нижнему краю, отступ 50px от текста и ~50px от низа */}
+              {/* Кнопка: фиксированный отступ от текста и прижим к нижнему краю экрана */}
               <div className="mt-[50px] flex">
                 <Link
                   href="/register"
@@ -83,7 +83,7 @@ export default function HomePage() {
           </div>
 
           {/* Правая половина: фотография */}
-          <div className="w-1/2 relative min-h-screen">
+          <div className="w-1/2 relative h-full">
             {/* Навигация поверх картинки - правая кнопка с отступом 50px от правого края */}
             <div className="absolute top-[24px] right-[50px] z-20 flex items-center gap-8 text-[20px] font-bold text-black">
               <button className="flex items-center gap-2 hover:opacity-80 transition">
