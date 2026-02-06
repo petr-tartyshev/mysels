@@ -19,9 +19,10 @@ export default function HomePage() {
     <div className="min-h-screen w-full bg-white text-black">
       {/* HERO */}
       <section className="w-full bg-white flex justify-center h-screen">
-        <div className="w-full max-w-[1920px] flex h-full">
+        {/* Общий фрейм с единым скруглением по референсу */}
+        <div className="w-full max-w-[1920px] flex h-full rounded-[50px] overflow-hidden bg-[#006FFD]">
           {/* Левая половина: логотип + синий блок */}
-          <div className="w-1/2 flex h-full relative">
+          <div className="w-1/2 flex h-full relative bg-transparent">
             {/* Левая белая колонка с логотипом - отступ 50px от левого края */}
             <div className="bg-white flex items-start pt-10 pl-[50px] pr-[24px]">
               <div className="flex items-center gap-2">
@@ -38,8 +39,8 @@ export default function HomePage() {
               </div>
             </div>
 
-            {/* Центральный синий блок - заголовок сверху, текст и кнопка внизу, между ними ~50px */}
-            <div className="flex-1 bg-[#006FFD] rounded-l-[50px] h-full flex flex-col px-[80px] pt-[60px] pb-[50px]">
+            {/* Центральный синий блок - фон берём от общего фрейма, без собственного скругления */}
+            <div className="flex-1 h-full flex flex-col px-[80px] pt-[60px] pb-[50px]">
               {/* Заголовок - 5 строк: Когда / хочется / спорта, / но сложно / начать */}
               <h1
                 className="font-[700] text-white leading-[0.7]"
@@ -85,9 +86,8 @@ export default function HomePage() {
             </div>
           </div>
 
-          {/* Правая половина: фотография */}
-          {/* Внешний контейнер со скруглёнными углами и синим фоном (скругление и справа, и слева) */}
-          <div className="w-1/2 relative h-full bg-[#006FFD] rounded-[50px] overflow-hidden">
+          {/* Правая половина: фотография, без своих скруглений — их даёт общий фрейм */}
+          <div className="w-1/2 relative h-full">
             {/* Навигация поверх картинки - правая кнопка с отступом 50px от правого края */}
             <div className="absolute top-[24px] right-[50px] z-20 flex items-center gap-8 text-[20px] font-bold text-black">
               <button className="flex items-center gap-2 hover:opacity-80 transition">
@@ -110,22 +110,15 @@ export default function HomePage() {
               </Link>
             </div>
 
-            {/* Внутренний прямоугольный блок: картинка обрезается внутри,
-                внешние скругления остаются залиты синим цветом */}
-            <div className="absolute inset-0 overflow-hidden">
-              <div className="w-full h-full overflow-hidden">
-                <img
-                  src="/hero-court.png"
-                  alt="Люди на спортивной площадке сверху"
-                  className="w-full h-full object-cover"
-                  style={{ objectPosition: 'right 30%' }}
-                />
-              </div>
+            {/* Картинка заполняет правую половину, края режутся общим скруглением контейнера */}
+            <div className="absolute inset-0">
+              <img
+                src="/hero-court.png"
+                alt="Люди на спортивной площадке сверху"
+                className="w-full h-full object-cover"
+                style={{ objectPosition: 'right 30%' }}
+              />
             </div>
-
-            {/* Синие оверлеи, которые дорисовывают скругления слева поверх картинки */}
-            <div className="pointer-events-none absolute left-0 top-0 w-[100px] h-[100px] bg-[#006FFD] rounded-br-[50px]" />
-            <div className="pointer-events-none absolute left-0 bottom-0 w-[100px] h-[100px] bg-[#006FFD] rounded-tr-[50px]" />
           </div>
         </div>
       </section>
