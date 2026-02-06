@@ -110,7 +110,7 @@ export default function HomePage() {
               </Link>
             </div>
 
-            {/* Картинка заполняет правую половину, края режутся общим скруглением контейнера */}
+            {/* Картинка заполняет правую половину, края режутся скруглением слева */}
             <div className="absolute inset-0">
               <img
                 src="/hero-court.png"
@@ -119,6 +119,10 @@ export default function HomePage() {
                 style={{ objectPosition: 'right 30%' }}
               />
             </div>
+
+            {/* Синие патчи под скруглением, чтобы не было белых "щелей" между синим блоком и картинкой */}
+            <div className="pointer-events-none absolute left-0 top-0 w-[100px] h-[100px] bg-[#006FFD] rounded-br-[50px]" />
+            <div className="pointer-events-none absolute left-0 bottom-0 w-[100px] h-[100px] bg-[#006FFD] rounded-tr-[50px]" />
           </div>
         </div>
       </section>
