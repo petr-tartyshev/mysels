@@ -1,4 +1,7 @@
+'use client'
+
 import Link from 'next/link'
+import { useEffect, useState } from 'react'
 
 /**
  * Главная страница.
@@ -15,6 +18,20 @@ import Link from 'next/link'
  */
 
 export default function HomePage() {
+  // Лёгкое движение логотипа вниз при скролле
+  const [logoOffset, setLogoOffset] = useState(0)
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const y = window.scrollY || 0
+      // Ограничиваем смещение ~40px, чтобы не "уезжало"
+      const offset = Math.min(40, y * 0.1)
+      setLogoOffset(offset)
+    }
+
+    window.addEventListener('scroll', handleScroll)
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [])
   return (
     <div className="min-h-screen w-full bg-white text-black">
       {/* HERO */}
@@ -24,7 +41,10 @@ export default function HomePage() {
           {/* Левая половина: логотип + синий блок */}
           <div className="w-1/2 flex h-full relative bg-[#006FFD] rounded-l-[50px] overflow-hidden">
             {/* Левая белая колонка с логотипом - отступ 50px от левого края */}
-            <div className="bg-white flex items-start pt-10 pl-[50px] pr-[24px]">
+            <div
+              className="bg-white flex items-start pt-10 pl-[50px] pr-[24px] transition-transform duration-300 ease-out"
+              style={{ transform: `translateY(${logoOffset}px)` }}
+            >
               <div className="flex items-center gap-2">
                 {/* Логотип в виде ровного ромба из четырёх квадратов */}
                 <div className="w-7 h-7 flex items-center justify-center">
