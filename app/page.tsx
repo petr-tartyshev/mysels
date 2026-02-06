@@ -130,7 +130,7 @@ export default function HomePage() {
               </Link>
             </div>
 
-            {/* Картинка заполняет правую половину, всё вне прямоугольника — того же синего цвета */}
+            {/* Картинка заполняет правую половину, фон под прозрачными участками — синий */}
             <div className="absolute inset-0">
               <img
                 src="/hero-court.png"
@@ -139,10 +139,6 @@ export default function HomePage() {
                 style={{ objectPosition: 'right 30%' }}
               />
             </div>
-
-            {/* Синие «заплатки» под прозрачными участками PNG, чтобы не было белых пустот слева */}
-            <div className="pointer-events-none absolute left-0 top-0 w-[140px] h-[140px] bg-[#006FFD] rounded-br-[50px]" />
-            <div className="pointer-events-none absolute left-0 bottom-0 w-[140px] h-[140px] bg-[#006FFD] rounded-tr-[50px]" />
           </div>
         </div>
       </section>
