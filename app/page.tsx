@@ -87,7 +87,7 @@ export default function HomePage() {
 
           {/* Правая половина: фотография */}
           {/* Внешний контейнер со скруглёнными углами и синим фоном (скругление и справа, и слева) */}
-          <div className="w-1/2 relative h-full bg-[#006FFD] rounded-[50px]">
+          <div className="w-1/2 relative h-full bg-[#006FFD] rounded-[50px] overflow-hidden">
             {/* Навигация поверх картинки - правая кнопка с отступом 50px от правого края */}
             <div className="absolute top-[24px] right-[50px] z-20 flex items-center gap-8 text-[20px] font-bold text-black">
               <button className="flex items-center gap-2 hover:opacity-80 transition">
@@ -110,18 +110,22 @@ export default function HomePage() {
               </Link>
             </div>
 
-            {/* Внутренний прямоугольный блок без скругления: картинка обрезается внутри,
-                а внешние скругления остаются залиты синим цветом */}
+            {/* Внутренний прямоугольный блок: картинка обрезается внутри,
+                внешние скругления остаются залиты синим цветом */}
             <div className="absolute inset-0 overflow-hidden">
               <div className="w-full h-full overflow-hidden">
                 <img
                   src="/hero-court.png"
                   alt="Люди на спортивной площадке сверху"
-                  className="w-full h-full object-cover rounded-l-[50px]"
+                  className="w-full h-full object-cover"
                   style={{ objectPosition: 'right 30%' }}
                 />
               </div>
             </div>
+
+            {/* Синие оверлеи, которые дорисовывают скругления слева поверх картинки */}
+            <div className="pointer-events-none absolute left-0 top-0 w-[100px] h-[100px] bg-[#006FFD] rounded-br-[50px]" />
+            <div className="pointer-events-none absolute left-0 bottom-0 w-[100px] h-[100px] bg-[#006FFD] rounded-tr-[50px]" />
           </div>
         </div>
       </section>
