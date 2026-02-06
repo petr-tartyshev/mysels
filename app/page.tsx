@@ -86,8 +86,8 @@ export default function HomePage() {
           </div>
 
           {/* Правая половина: фотография */}
-          {/* Внешний контейнер со скруглёнными углами и синим фоном */}
-          <div className="w-1/2 relative h-full bg-[#006FFD] rounded-r-[50px]">
+          {/* Внешний контейнер со скруглёнными углами и синим фоном (скругление и справа, и слева) */}
+          <div className="w-1/2 relative h-full bg-[#006FFD] rounded-[50px]">
             {/* Навигация поверх картинки - правая кнопка с отступом 50px от правого края */}
             <div className="absolute top-[24px] right-[50px] z-20 flex items-center gap-8 text-[20px] font-bold text-black">
               <button className="flex items-center gap-2 hover:opacity-80 transition">
