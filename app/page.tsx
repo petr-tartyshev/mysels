@@ -117,7 +117,7 @@ export default function HomePage() {
                 <img
                   src="/hero-court.png"
                   alt="Люди на спортивной площадке сверху"
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-cover rounded-l-[50px]"
                   style={{ objectPosition: 'right 30%' }}
                 />
               </div>
