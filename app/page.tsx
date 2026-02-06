@@ -19,10 +19,10 @@ export default function HomePage() {
     <div className="min-h-screen w-full bg-white text-black">
       {/* HERO */}
       <section className="w-full bg-white flex justify-center h-screen">
-        {/* Общий фрейм с единым скруглением по референсу */}
-        <div className="w-full max-w-[1920px] flex h-full rounded-[50px] overflow-hidden bg-[#006FFD]">
+        {/* Общий фрейм без скруглений, скругления управляются только самими блоками */}
+        <div className="w-full max-w-[1920px] flex h-full">
           {/* Левая половина: логотип + синий блок */}
-          <div className="w-1/2 flex h-full relative bg-transparent">
+          <div className="w-1/2 flex h-full relative bg-[#006FFD] rounded-l-[50px] overflow-hidden">
             {/* Левая белая колонка с логотипом - отступ 50px от левого края */}
             <div className="bg-white flex items-start pt-10 pl-[50px] pr-[24px]">
               <div className="flex items-center gap-2">
@@ -39,7 +39,7 @@ export default function HomePage() {
               </div>
             </div>
 
-            {/* Центральный синий блок - фон берём от общего фрейма, без собственного скругления */}
+            {/* Центральный синий блок - фон уже задан родителем */}
             <div className="flex-1 h-full flex flex-col px-[80px] pt-[60px] pb-[50px]">
               {/* Заголовок - 5 строк: Когда / хочется / спорта, / но сложно / начать */}
               <h1
@@ -86,8 +86,8 @@ export default function HomePage() {
             </div>
           </div>
 
-          {/* Правая половина: фотография, без своих скруглений — их даёт общий фрейм */}
-          <div className="w-1/2 relative h-full">
+          {/* Правая половина: фотография, скругление только слева, справа прямая линия */}
+          <div className="w-1/2 relative h-full rounded-l-[50px] overflow-hidden">
             {/* Навигация поверх картинки - правая кнопка с отступом 50px от правого края */}
             <div className="absolute top-[24px] right-[50px] z-20 flex items-center gap-8 text-[20px] font-bold text-black">
               <button className="flex items-center gap-2 hover:opacity-80 transition">
