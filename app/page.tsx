@@ -18,9 +18,9 @@ export default function HomePage() {
   return (
     <div className="min-h-screen w-full bg-white text-black">
       {/* HERO */}
-      <section className="w-full bg-white flex justify-center h-screen">
-        {/* Общий фрейм без скруглений, скругления управляются только самими блоками */}
-        <div className="w-full max-w-[1920px] flex h-full">
+      <section className="w-full bg-white flex h-screen">
+        {/* Общий фрейм на всю ширину, без внешних белых полей */}
+        <div className="w-full flex h-full">
           {/* Левая половина: логотип + синий блок */}
           <div className="w-1/2 flex h-full relative bg-[#006FFD] rounded-l-[50px] overflow-hidden">
             {/* Левая белая колонка с логотипом - отступ 50px от левого края */}
