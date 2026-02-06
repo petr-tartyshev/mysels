@@ -4,17 +4,8 @@ import Link from 'next/link'
 import { useEffect, useState } from 'react'
 
 /**
- * Главная страница.
- *
- * Цели:
- * - На экране 1920×1080 выглядеть максимально близко к макету из Figma и скринам.
- * - При этом не использовать жёсткую обёртку 1920px и кучу absolute‑позиционирования,
- *   чтобы страница оставалась адаптивной.
- *
- * Подход:
- * - Строим лэйаут через flex / grid.
- * - Ограничиваем контент контейнером max-w-[1920px] и центрируем его.
- * - Размеры и скругления оставляем «пиксельными», как в макете.
+ * Главная страница - точная реализация по Figma CSS
+ * Desktop - 1: 1440px × 1024px
  */
 
 export default function HomePage() {
@@ -24,7 +15,6 @@ export default function HomePage() {
   useEffect(() => {
     const handleScroll = () => {
       const y = window.scrollY || 0
-      // Ограничиваем смещение ~40px, чтобы не "уезжало"
       const offset = Math.min(40, y * 0.1)
       setLogoOffset(offset)
     }
@@ -32,114 +22,220 @@ export default function HomePage() {
     window.addEventListener('scroll', handleScroll)
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
+
   return (
     <div className="min-h-screen w-full bg-white text-black">
-      {/* HERO */}
-      <section className="w-full bg-white flex h-screen">
-        {/* Общий фрейм на всю ширину, без внешних белых полей */}
-        <div className="w-full flex h-full">
-          {/* Левая половина: логотип + синий блок */}
-          <div className="w-1/2 flex h-full relative bg-[#006FFD] rounded-l-[50px] overflow-hidden">
-            {/* Левая белая колонка с логотипом - отступ 50px от левого края */}
-            <div
-              className="bg-white flex items-start pt-10 pl-[50px] pr-[24px] transition-transform duration-300 ease-out"
-              style={{ transform: `translateY(${logoOffset}px)` }}
-            >
-              <div className="flex items-center gap-2">
-                {/* Логотип в виде ровного ромба из четырёх квадратов */}
-                <div className="w-7 h-7 flex items-center justify-center">
-                  <div className="w-5 h-5 rotate-45 grid grid-cols-2 grid-rows-2 gap-[2px]">
-                    <div className="w-2.5 h-2.5 bg-[#006FFD] rounded-[2px]" />
-                    <div className="w-2.5 h-2.5 bg-[#006FFD] rounded-[2px]" />
-                    <div className="w-2.5 h-2.5 bg-[#006FFD] rounded-[2px]" />
-                    <div className="w-2.5 h-2.5 bg-[#006FFD] rounded-[2px]" />
-                  </div>
-                </div>
-                <span className="text-[20px] font-bold text-[#006FFD]">SELS</span>
-              </div>
-            </div>
+      {/* Desktop - 1: 1440px × 1024px, position: relative, background: #FFFFFF */}
+      <section
+        className="relative bg-white"
+        style={{ width: '1440px', height: '1024px', margin: '0 auto' }}
+      >
+        {/* Rectangle 18: 1296px × 903px, left: 144px, top: 0px, background: #006FFD, border-radius: 100px */}
+        <div
+          className="absolute bg-[#006FFD]"
+          style={{
+            width: '1296px',
+            height: '903px',
+            left: '144px',
+            top: '0px',
+            borderRadius: '100px',
+          }}
+        />
 
-            {/* Центральный синий блок - фон уже задан родителем */}
-            <div className="flex-1 h-full flex flex-col px-[80px] pt-[60px] pb-[50px]">
-              {/* Заголовок - 5 строк: Когда / хочется / спорта, / но сложно / начать */}
-              <h1
-                className="font-[700] text-white leading-[0.7]"
-                style={{
-                  fontFamily: 'Aeroport, system-ui, -apple-system, BlinkMacSystemFont',
-                  fontSize: '70px',
-                }}
-              >
-                Когда
-                <br />
-                хочется
-                <br />
-                спорта,
-                <br />
-                но сложно
-                <br />
-                начать
-              </h1>
+        {/* Rectangle 19: 628px × 903px, left: 812px, top: 0px, background: #006FFD */}
+        <div
+          className="absolute bg-[#006FFD]"
+          style={{
+            width: '628px',
+            height: '903px',
+            left: '812px',
+            top: '0px',
+          }}
+        />
 
-              {/* Блок с текстом и кнопкой прижат к нижнему краю */}
-              <div className="mt-auto flex flex-col gap-[50px]">
-                {/* Подзаголовок */}
-                <p
-                  className="max-w-[547px] text-white text-[20px] leading-[20px]"
-                  style={{ fontFamily: 'Aeroport, system-ui, -apple-system, BlinkMacSystemFont' }}
-                >
-                  Мы убрали всё лишнее между тобой и движением: поиск, сомнения, выбор. Подскажем,
-                  куда пойти, с чего начать и с кем играть.
-                </p>
-
-                {/* Кнопка: ровно 50px ниже текста */}
-                <div className="flex">
-                  <Link
-                    href="/register"
-                    className="inline-flex items-center justify-center gap-2 w-[360px] h-[56px] border border-white rounded-[28px] text-white text-[16px] font-medium hover:bg-white/10 transition"
-                    style={{ fontFamily: 'Aeroport, system-ui, -apple-system, BlinkMacSystemFont' }}
-                  >
-                    <span className="text-[18px] leading-none">🏓</span>
-                    <span>Попробовать бесплатно</span>
-                  </Link>
-                </div>
-              </div>
+        {/* Container: left: 144px, right: 586px, top: 0px, bottom: 121px */}
+        <div
+          className="absolute"
+          style={{
+            left: '144px',
+            right: '586px',
+            top: '0px',
+            bottom: '121px',
+          }}
+        >
+          {/* Логотип: 22.61px × 23.16px, left: 29px, top: 65px, rotate(-45deg) */}
+          <div
+            className="absolute"
+            style={{
+              width: '22.61px',
+              height: '23.16px',
+              left: '29px',
+              top: `${65 + logoOffset}px`,
+              transform: 'rotate(-45deg)',
+            }}
+          >
+            <div className="w-full h-full grid grid-cols-2 grid-rows-2 gap-[2px]">
+              <div className="bg-[#006FFD] rounded-[2px]" />
+              <div className="bg-[#006FFD] rounded-[2px]" />
+              <div className="bg-[#006FFD] rounded-[2px]" />
+              <div className="bg-[#006FFD] rounded-[2px]" />
             </div>
           </div>
 
-          {/* Правая половина: фотография, скругление только слева, справа прямая линия */}
-          <div className="w-1/2 relative h-full rounded-l-[50px] overflow-hidden bg-[#006FFD]">
-            {/* Навигация поверх картинки - правая кнопка с отступом 50px от правого края */}
-            <div className="absolute top-[24px] right-[50px] z-20 flex items-center gap-8 text-[20px] font-bold text-black">
-              <button className="flex items-center gap-2 hover:opacity-80 transition">
-                <span className="text-[16px]">🎾</span>
-                <span>О проекте</span>
-              </button>
-              <button className="flex items-center gap-2 hover:opacity-80 transition">
-                <span className="text-[16px]">🔍</span>
-                <span>Карта локаций</span>
-              </button>
-              <button className="flex items-center gap-2 hover:opacity-80 transition">
-                <span className="text-[16px]">❓</span>
-                <span>FAQ</span>
-              </button>
-              <Link
-                href="/login"
-                className="inline-flex items-center justify-center bg-[#006FFD] text-white rounded-[20px] px-5 py-2 text-[15px] font-medium hover:bg-[#0055cc] transition"
-              >
-                🏓 Войти
-              </Link>
-            </div>
-
-            {/* Картинка заполняет правую половину, фон под прозрачными участками — синий */}
-            <div className="absolute inset-0">
-              <img
-                src="/hero-court.png"
-                alt="Люди на спортивной площадке сверху"
-                className="w-full h-full object-cover"
-                style={{ objectPosition: 'right 30%' }}
-              />
-            </div>
+          {/* Текст "SELS": 50px × 20px, left: 71px, top: 71.09px */}
+          <div
+            className="absolute font-[700] text-[20px] leading-[20px] text-[#006FFD] flex items-center"
+            style={{
+              width: '50px',
+              height: '20px',
+              left: '71px',
+              top: `${71.09 + logoOffset}px`,
+            }}
+          >
+            SELS
           </div>
+
+          {/* Heading 1: 586px × 351px, left: 62px, top: 65px, font-size: 100px, line-height: 70px */}
+          <h1
+            className="absolute font-[700] text-white flex items-center"
+            style={{
+              width: '586px',
+              height: '351px',
+              left: '62px',
+              top: '65px',
+              fontFamily: 'Aeroport, system-ui, -apple-system, BlinkMacSystemFont',
+              fontSize: '100px',
+              lineHeight: '70px',
+            }}
+          >
+            Когда
+            <br />
+            хочется
+            <br />
+            спорта,
+            <br />
+            но сложно
+            <br />
+            начать
+          </h1>
+
+          {/* Heading 2: 547px × 60px, left: 62px, top: 671px, font-size: 20px, line-height: 20px */}
+          <p
+            className="absolute font-[300] text-white flex items-center"
+            style={{
+              width: '547px',
+              height: '60px',
+              left: '62px',
+              top: '671px',
+              fontFamily: 'Aeroport, system-ui, -apple-system, BlinkMacSystemFont',
+              fontSize: '20px',
+              lineHeight: '20px',
+            }}
+          >
+            Мы убрали всё лишнее между тобой и движением: поиск, сомнения, выбор. Подскажем, куда
+            пойти, с чего начать и с кем играть.
+          </p>
+
+          {/* Link (кнопка): 262px × 48px, left: 62px, top: calc(50% - 48px/2 + 369.5px), border-radius: 20px */}
+          <Link
+            href="/register"
+            className="absolute box-border border border-white rounded-[20px] flex items-center justify-center text-white hover:bg-white/10 transition"
+            style={{
+              width: '262px',
+              height: '48px',
+              left: '62px',
+              top: 'calc(50% - 24px + 369.5px)',
+              fontFamily: 'Aeroport, system-ui, -apple-system, BlinkMacSystemFont',
+              fontSize: '15.3px',
+              lineHeight: '21px',
+            }}
+          >
+            <span className="mr-2">🏓</span>
+            Попробовать бесплатно
+          </Link>
+        </div>
+
+        {/* Картинка 1: 687px × 903px, left: 753px, top: 0px, border-radius: 100px */}
+        <div
+          className="absolute overflow-hidden"
+          style={{
+            width: '687px',
+            height: '903px',
+            left: '753px',
+            top: '0px',
+            borderRadius: '100px',
+          }}
+        >
+          <img
+            src="/hero-court.png"
+            alt="Люди на спортивной площадке сверху"
+            className="w-full h-full object-cover"
+            style={{ objectPosition: 'right 30%' }}
+          />
+        </div>
+
+        {/* Картинка 2: 422px × 903px, left: 1018px, top: 0px (без скругления) */}
+        <div
+          className="absolute overflow-hidden"
+          style={{
+            width: '422px',
+            height: '903px',
+            left: '1018px',
+            top: '0px',
+          }}
+        >
+          <img
+            src="/hero-court.png"
+            alt="Люди на спортивной площадке сверху"
+            className="w-full h-full object-cover"
+            style={{ objectPosition: 'right 30%' }}
+          />
+        </div>
+
+        {/* Group 422 (Навигация): 599px × 39px, left: 816px, top: 13px, gap: 58px 30px */}
+        <div
+          className="absolute flex flex-row items-center"
+          style={{
+            width: '599px',
+            height: '39px',
+            left: '816px',
+            top: '13px',
+            gap: '30px',
+            padding: '0px',
+          }}
+        >
+          {/* О проекте */}
+          <button className="flex items-center gap-2 font-[700] text-[20px] leading-[20px] text-black hover:opacity-80 transition">
+            <span className="text-[16px]">🎾</span>
+            <span>О проекте</span>
+          </button>
+
+          {/* Карта локаций */}
+          <button className="flex items-center gap-2 font-[700] text-[20px] leading-[20px] text-black hover:opacity-80 transition">
+            <span className="text-[16px]">🔍</span>
+            <span>Карта локаций</span>
+          </button>
+
+          {/* FAQ */}
+          <button className="flex items-center gap-2 font-[700] text-[20px] leading-[20px] text-black hover:opacity-80 transition">
+            <span className="text-[16px]">❓</span>
+            <span>FAQ</span>
+          </button>
+
+          {/* Link: Войти */}
+          <Link
+            href="/login"
+            className="box-border bg-[#006FFD] border border-[#006FFD] rounded-[20px] flex items-center justify-center text-white hover:bg-[#0055cc] transition"
+            style={{
+              width: '116px',
+              height: '39px',
+              fontFamily: 'Inter, system-ui, -apple-system, BlinkMacSystemFont',
+              fontSize: '15.3px',
+              lineHeight: '21px',
+            }}
+          >
+            🏓 Войти
+          </Link>
         </div>
       </section>
 
