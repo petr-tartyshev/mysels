@@ -25,39 +25,42 @@ export default function HomePage() {
             {/* Левая белая колонка с логотипом - отступ 50px от левого края */}
             <div className="bg-white flex items-start pt-10 pl-[50px] pr-[24px]">
               <div className="flex items-center gap-2">
-                <div className="w-7 h-7 flex flex-wrap rotate-[-45deg]">
-                  <div className="w-3 h-3 bg-[#006FFD] rounded-[2px]" />
-                  <div className="w-3 h-3 bg-[#006FFD] rounded-[2px]" />
-                  <div className="w-3 h-3 bg-[#006FFD] rounded-[2px]" />
-                  <div className="w-3 h-3 bg-[#006FFD] rounded-[2px]" />
+                {/* Логотип в виде ровного ромба из четырёх квадратов */}
+                <div className="w-7 h-7 flex items-center justify-center">
+                  <div className="w-5 h-5 rotate-45 grid grid-cols-2 grid-rows-2 gap-[2px]">
+                    <div className="w-2.5 h-2.5 bg-[#006FFD] rounded-[2px]" />
+                    <div className="w-2.5 h-2.5 bg-[#006FFD] rounded-[2px]" />
+                    <div className="w-2.5 h-2.5 bg-[#006FFD] rounded-[2px]" />
+                    <div className="w-2.5 h-2.5 bg-[#006FFD] rounded-[2px]" />
+                  </div>
                 </div>
                 <span className="text-[20px] font-bold text-[#006FFD]">SELS</span>
               </div>
             </div>
 
-            {/* Центральный синий блок - занимает оставшееся место левой половины, заканчивается по центру экрана */}
-            <div className="flex-1 bg-[#006FFD] rounded-l-[50px] h-full flex flex-col px-[80px] pt-[60px] pb-[50px] justify-between">
-              {/* Верхний контент: заголовок + текст */}
-              <div className="flex flex-col gap-5">
-                {/* Заголовок - 5 строк: Когда / хочется / спорта, / но сложно / начать */}
-                <h1
-                  className="font-[700] text-white leading-[0.7]"
-                  style={{
-                    fontFamily: 'Aeroport, system-ui, -apple-system, BlinkMacSystemFont',
-                    fontSize: '70px',
-                  }}
-                >
-                  Когда
-                  <br />
-                  хочется
-                  <br />
-                  спорта,
-                  <br />
-                  но сложно
-                  <br />
-                  начать
-                </h1>
+            {/* Центральный синий блок - заголовок сверху, текст и кнопка внизу, между ними ~50px */}
+            <div className="flex-1 bg-[#006FFD] rounded-l-[50px] h-full flex flex-col px-[80px] pt-[60px] pb-[50px]">
+              {/* Заголовок - 5 строк: Когда / хочется / спорта, / но сложно / начать */}
+              <h1
+                className="font-[700] text-white leading-[0.7]"
+                style={{
+                  fontFamily: 'Aeroport, system-ui, -apple-system, BlinkMacSystemFont',
+                  fontSize: '70px',
+                }}
+              >
+                Когда
+                <br />
+                хочется
+                <br />
+                спорта,
+                <br />
+                но сложно
+                <br />
+                начать
+              </h1>
 
+              {/* Блок с текстом и кнопкой прижат к нижнему краю */}
+              <div className="mt-auto flex flex-col gap-[50px]">
                 {/* Подзаголовок */}
                 <p
                   className="max-w-[547px] text-white text-[20px] leading-[20px]"
@@ -66,24 +69,24 @@ export default function HomePage() {
                   Мы убрали всё лишнее между тобой и движением: поиск, сомнения, выбор. Подскажем,
                   куда пойти, с чего начать и с кем играть.
                 </p>
-              </div>
 
-              {/* Кнопка: фиксированный отступ от текста и прижим к нижнему краю экрана */}
-              <div className="mt-[50px] flex">
-                <Link
-                  href="/register"
-                  className="inline-flex items-center justify-center gap-2 w-[360px] h-[56px] border border-white rounded-[28px] text-white text-[16px] font-medium hover:bg-white/10 transition"
-                  style={{ fontFamily: 'Aeroport, system-ui, -apple-system, BlinkMacSystemFont' }}
-                >
-                  <span className="text-[18px] leading-none">🏓</span>
-                  <span>Попробовать бесплатно</span>
-                </Link>
+                {/* Кнопка: ровно 50px ниже текста */}
+                <div className="flex">
+                  <Link
+                    href="/register"
+                    className="inline-flex items-center justify-center gap-2 w-[360px] h-[56px] border border-white rounded-[28px] text-white text-[16px] font-medium hover:bg-white/10 transition"
+                    style={{ fontFamily: 'Aeroport, system-ui, -apple-system, BlinkMacSystemFont' }}
+                  >
+                    <span className="text-[18px] leading-none">🏓</span>
+                    <span>Попробовать бесплатно</span>
+                  </Link>
+                </div>
               </div>
             </div>
           </div>
 
           {/* Правая половина: фотография */}
-          <div className="w-1/2 relative h-full">
+          <div className="w-1/2 relative h-full bg-[#006FFD] rounded-r-[50px] overflow-hidden">
             {/* Навигация поверх картинки - правая кнопка с отступом 50px от правого края */}
             <div className="absolute top-[24px] right-[50px] z-20 flex items-center gap-8 text-[20px] font-bold text-black">
               <button className="flex items-center gap-2 hover:opacity-80 transition">
@@ -106,11 +109,11 @@ export default function HomePage() {
               </Link>
             </div>
 
-            {/* Изображение: заполняет весь блок, кадрировано так, чтобы основная часть была в пределах экрана */}
+            {/* Изображение: заполняет весь блок, без собственного скругления, поверх синего фона */}
             <img
               src="/hero-court.png"
               alt="Люди на спортивной площадке сверху"
-              className="w-full h-full rounded-[50px] object-cover"
+              className="w-full h-full object-cover"
               style={{ objectPosition: 'right 30%' }}
             />
           </div>
