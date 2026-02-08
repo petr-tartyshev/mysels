@@ -5,7 +5,8 @@ import { useEffect, useState } from 'react'
 
 /**
  * Главная страница - точная реализация по Figma CSS
- * Desktop - 1: 1440px × 1024px
+ * Desktop - 1: 1440px × 1827px
+ * Все элементы с абсолютным позиционированием строго по Figma
  */
 
 export default function HomePage() {
@@ -25,10 +26,10 @@ export default function HomePage() {
 
   return (
     <div className="min-h-screen w-full bg-white text-black">
-      {/* Desktop - 1: 1440px × 1024px, position: relative, background: #FFFFFF */}
+      {/* Desktop - 1: 1440px × 903px, position: relative, background: #FFFFFF */}
       <section
         className="relative bg-white"
-        style={{ width: '1440px', height: '1024px', margin: '0 auto' }}
+        style={{ width: '1440px', height: '903px', margin: '0 auto' }}
       >
         {/* Rectangle 18: 1296px × 903px, left: 144px, top: 0px, background: #006FFD, border-radius: 100px */}
         <div
@@ -53,57 +54,73 @@ export default function HomePage() {
           }}
         />
 
-        {/* Container: left: 144px, right: 586px, top: 0px, bottom: 121px */}
+        {/* Container: left: 144px, right: 586px, top: 0px, bottom: 0px */}
         <div
           className="absolute"
           style={{
             left: '144px',
             right: '586px',
             top: '0px',
-            bottom: '121px',
+            bottom: '0px',
           }}
         >
-          {/* Логотип: 22.61px × 23.16px, left: 29px, top: 65px, rotate(-45deg) */}
+          {/* Component 1: width: 92.36px, height: 32.36px, left: 23px, top: 65px */}
           <div
-            className="absolute"
+            className="absolute flex flex-row items-center"
             style={{
-              width: '22.61px',
-              height: '23.16px',
-              left: '29px',
+              width: '92.36px',
+              height: '32.36px',
+              left: '23px',
               top: `${65 + logoOffset}px`,
-              transform: 'rotate(-45deg)',
+              gap: '10px',
+              padding: '0px',
             }}
           >
-            <div className="w-full h-full grid grid-cols-2 grid-rows-2 gap-[2px]">
-              <div className="bg-[#006FFD] rounded-[2px]" />
-              <div className="bg-[#006FFD] rounded-[2px]" />
-              <div className="bg-[#006FFD] rounded-[2px]" />
-              <div className="bg-[#006FFD] rounded-[2px]" />
+            {/* Categories: width: 22.61px, height: 23.16px, transform: rotate(-45deg) */}
+            <div
+              className="flex-none"
+              style={{
+                width: '22.61px',
+                height: '23.16px',
+                transform: 'rotate(-45deg)',
+              }}
+            >
+              <div className="w-full h-full grid grid-cols-2 grid-rows-2 gap-[2px]">
+                <div className="bg-[#006FFD] rounded-[2px]" />
+                <div className="bg-[#006FFD] rounded-[2px]" />
+                <div className="bg-[#006FFD] rounded-[2px]" />
+                <div className="bg-[#006FFD] rounded-[2px]" />
+              </div>
             </div>
-          </div>
 
-          {/* Текст "SELS": 50px × 20px, left: 71px, top: 71.09px */}
-          <div
-            className="absolute font-[700] text-[20px] leading-[20px] text-[#006FFD] flex items-center"
-            style={{
-              width: '50px',
-              height: '20px',
-              left: '71px',
-              top: `${71.09 + logoOffset}px`,
-            }}
-          >
-            SELS
+            {/* SELS text: width: 50px, height: 20px */}
+            <span
+              className="flex-none flex items-center text-[#006FFD]"
+              style={{
+                width: '50px',
+                height: '20px',
+                fontFamily: 'Inter, system-ui, -apple-system, BlinkMacSystemFont',
+                fontStyle: 'normal',
+                fontWeight: 700,
+                fontSize: '20px',
+                lineHeight: '20px',
+              }}
+            >
+              SELS
+            </span>
           </div>
 
           {/* Heading 1: 586px × 351px, left: 62px, top: 65px, font-size: 100px, line-height: 70px */}
           <h1
-            className="absolute font-[700] text-white flex items-center"
+            className="absolute flex items-center text-white"
             style={{
               width: '586px',
               height: '351px',
               left: '62px',
               top: '65px',
               fontFamily: 'Aeroport, system-ui, -apple-system, BlinkMacSystemFont',
+              fontStyle: 'normal',
+              fontWeight: 700,
               fontSize: '100px',
               lineHeight: '70px',
             }}
@@ -121,13 +138,15 @@ export default function HomePage() {
 
           {/* Heading 2: 547px × 60px, left: 62px, top: 671px, font-size: 20px, line-height: 20px */}
           <p
-            className="absolute font-[300] text-white flex items-center"
+            className="absolute flex items-center text-white"
             style={{
               width: '547px',
               height: '60px',
               left: '62px',
               top: '671px',
               fontFamily: 'Aeroport, system-ui, -apple-system, BlinkMacSystemFont',
+              fontStyle: 'normal',
+              fontWeight: 300,
               fontSize: '20px',
               lineHeight: '20px',
             }}
@@ -136,7 +155,7 @@ export default function HomePage() {
             пойти, с чего начать и с кем играть.
           </p>
 
-          {/* Link (кнопка): 262px × 48px, left: 62px, top: calc(50% - 48px/2 + 369.5px), border-radius: 20px */}
+          {/* Link (кнопка): 262px × 48px, left: 62px, top: calc(50% - 48px/2 + 620.5px), border-radius: 20px */}
           <Link
             href="/register"
             className="absolute box-border border border-white rounded-[20px] flex items-center justify-center text-white hover:bg-white/10 transition"
@@ -144,57 +163,74 @@ export default function HomePage() {
               width: '262px',
               height: '48px',
               left: '62px',
-              top: 'calc(50% - 24px + 369.5px)',
+              top: 'calc(50% - 24px + 620.5px)',
+              background: '#006FFD',
               fontFamily: 'Aeroport, system-ui, -apple-system, BlinkMacSystemFont',
+              fontStyle: 'normal',
+              fontWeight: 500,
               fontSize: '15.3px',
               lineHeight: '21px',
             }}
           >
-            <span className="mr-2">🏓</span>
-            Попробовать бесплатно
+            {/* 🏓 Попробовать бесплатно: width: 205px, height: 21px, left: calc(50% - 205px/2 - 0.5px), top: calc(50% - 21px/2 - 0.5px) */}
+            <span
+              className="flex items-center text-center"
+              style={{
+                width: '205px',
+                height: '21px',
+                left: 'calc(50% - 102.5px - 0.5px)',
+                top: 'calc(50% - 10.5px - 0.5px)',
+                position: 'relative',
+              }}
+            >
+              🏓 Попробовать бесплатно
+            </span>
           </Link>
         </div>
 
-        {/* Картинка 1: 687px × 903px, left: 753px, top: 0px, border-radius: 100px */}
+        {/* Group 424: width: 687px, height: 903px, left: 753px, top: 0px */}
         <div
-          className="absolute overflow-hidden"
+          className="absolute"
           style={{
             width: '687px',
             height: '903px',
             left: '753px',
             top: '0px',
-            borderRadius: '100px',
           }}
         >
-          <img
-            src="/hero-court.png"
-            alt="Люди на спортивной площадке сверху"
-            className="w-full h-full object-cover"
-            style={{ objectPosition: 'right 30%' }}
+          {/* hero-court 2: width: 687px, height: 903px, left: 753px, top: 0px, border-radius: 100px */}
+          <div
+            className="absolute overflow-hidden"
+            style={{
+              width: '687px',
+              height: '903px',
+              left: '0px',
+              top: '0px',
+              borderRadius: '100px',
+              backgroundImage: 'url(/hero-court.png)',
+              backgroundSize: 'cover',
+              backgroundPosition: 'center top',
+            }}
+          />
+
+          {/* hero-court 3: width: 529px, height: 903px, left: 911px, top: 0px */}
+          <div
+            className="absolute overflow-hidden"
+            style={{
+              width: '529px',
+              height: '903px',
+              left: '158px',
+              top: '0px',
+              backgroundImage: 'url(/hero-court.png)',
+              backgroundSize: 'cover',
+              backgroundPosition: 'center top',
+            }}
           />
         </div>
 
-        {/* Картинка 2: 422px × 903px, left: 1018px, top: 0px (без скругления) */}
+        {/* Group 422 (Навигация): width: 599px, height: 39px, left: 816px, top: 13px, gap: 58px 30px */}
         <div
-          className="absolute overflow-hidden"
-          style={{
-            width: '422px',
-            height: '903px',
-            left: '1018px',
-            top: '0px',
-          }}
-        >
-          <img
-            src="/hero-court.png"
-            alt="Люди на спортивной площадке сверху"
-            className="w-full h-full object-cover"
-            style={{ objectPosition: 'right 30%' }}
-          />
-        </div>
-
-        {/* Group 422 (Навигация): 599px × 39px, left: 816px, top: 13px, gap: 58px 30px */}
-        <div
-          className="absolute flex flex-row items-center"
+          className="absolute flex flex-row flex-wrap items-center justify-center"
           style={{
             width: '599px',
             height: '39px',
@@ -204,115 +240,446 @@ export default function HomePage() {
             padding: '0px',
           }}
         >
-          {/* О проекте */}
-          <button className="flex items-center gap-2 font-[700] text-[20px] leading-[20px] text-black hover:opacity-80 transition">
-            <span className="text-[16px]">🎾</span>
-            <span>О проекте</span>
-          </button>
+          {/* Group 415: width: 142px, height: 21px */}
+          <div className="flex-none relative" style={{ width: '142px', height: '21px' }}>
+            {/* 🎾: left: 0%, right: 97.33%, top: 23.08%, bottom: 23.08% */}
+            <span
+              className="absolute flex items-center"
+              style={{
+                left: '0%',
+                right: '97.33%',
+                top: '23.08%',
+                bottom: '23.08%',
+                fontFamily: 'Inter, system-ui, -apple-system, BlinkMacSystemFont',
+                fontStyle: 'normal',
+                fontWeight: 700,
+                fontSize: '16px',
+                lineHeight: '65px',
+                color: '#000000',
+              }}
+            >
+              🎾
+            </span>
+            {/* О проекте: left: 4.17%, right: 76.29%, top: 23.08%, bottom: 23.08% */}
+            <span
+              className="absolute flex items-center"
+              style={{
+                left: '4.17%',
+                right: '76.29%',
+                top: '23.08%',
+                bottom: '23.08%',
+                fontFamily: 'Inter, system-ui, -apple-system, BlinkMacSystemFont',
+                fontStyle: 'normal',
+                fontWeight: 700,
+                fontSize: '20px',
+                lineHeight: '20px',
+                color: '#000000',
+              }}
+            >
+              О проекте
+            </span>
+          </div>
 
-          {/* Карта локаций */}
-          <button className="flex items-center gap-2 font-[700] text-[20px] leading-[20px] text-black hover:opacity-80 transition">
-            <span className="text-[16px]">🔍</span>
-            <span>Карта локаций</span>
-          </button>
+          {/* Group 416: width: 185px, height: 21px */}
+          <div className="flex-none relative" style={{ width: '185px', height: '21px' }}>
+            {/* 🔍: left: 28.71%, right: 68.61%, top: 23.08%, bottom: 23.08% */}
+            <span
+              className="absolute flex items-center"
+              style={{
+                left: '28.71%',
+                right: '68.61%',
+                top: '23.08%',
+                bottom: '23.08%',
+                fontFamily: 'Inter, system-ui, -apple-system, BlinkMacSystemFont',
+                fontStyle: 'normal',
+                fontWeight: 700,
+                fontSize: '16px',
+                lineHeight: '65px',
+                color: '#000000',
+              }}
+            >
+              🔍
+            </span>
+            {/* Карта локаций: left: 32.89%, right: 40.4%, top: 23.08%, bottom: 23.08% */}
+            <span
+              className="absolute flex items-center"
+              style={{
+                left: '32.89%',
+                right: '40.4%',
+                top: '23.08%',
+                bottom: '23.08%',
+                fontFamily: 'Inter, system-ui, -apple-system, BlinkMacSystemFont',
+                fontStyle: 'normal',
+                fontWeight: 700,
+                fontSize: '20px',
+                lineHeight: '20px',
+                color: '#000000',
+              }}
+            >
+              Карта локаций
+            </span>
+          </div>
 
-          {/* FAQ */}
-          <button className="flex items-center gap-2 font-[700] text-[20px] leading-[20px] text-black hover:opacity-80 transition">
-            <span className="text-[16px]">❓</span>
-            <span>FAQ</span>
-          </button>
+          {/* Group 417: width: 66px, height: 21px */}
+          <div className="flex-none relative" style={{ width: '66px', height: '21px' }}>
+            {/* ❓: left: 64.61%, right: 32.72%, top: 23.08%, bottom: 23.08% */}
+            <span
+              className="absolute flex items-center"
+              style={{
+                left: '64.61%',
+                right: '32.72%',
+                top: '23.08%',
+                bottom: '23.08%',
+                fontFamily: 'Inter, system-ui, -apple-system, BlinkMacSystemFont',
+                fontStyle: 'normal',
+                fontWeight: 700,
+                fontSize: '16px',
+                lineHeight: '65px',
+                color: '#000000',
+              }}
+            >
+              ❓
+            </span>
+            {/* FAQ: left: 68.78%, right: 24.37%, top: 23.08%, bottom: 23.08% */}
+            <span
+              className="absolute flex items-center"
+              style={{
+                left: '68.78%',
+                right: '24.37%',
+                top: '23.08%',
+                bottom: '23.08%',
+                fontFamily: 'Inter, system-ui, -apple-system, BlinkMacSystemFont',
+                fontStyle: 'normal',
+                fontWeight: 700,
+                fontSize: '20px',
+                lineHeight: '20px',
+                color: '#000000',
+              }}
+            >
+              FAQ
+            </span>
+          </div>
 
-          {/* Link: Войти */}
+          {/* Link: width: 116px, height: 39px, background: #006FFD, border-radius: 20px */}
           <Link
             href="/login"
-            className="box-border bg-[#006FFD] border border-[#006FFD] rounded-[20px] flex items-center justify-center text-white hover:bg-[#0055cc] transition"
+            className="flex-none box-border bg-[#006FFD] border border-[#006FFD] rounded-[20px] flex items-center justify-center text-white hover:bg-[#0055cc] transition relative"
             style={{
               width: '116px',
               height: '39px',
-              fontFamily: 'Inter, system-ui, -apple-system, BlinkMacSystemFont',
-              fontSize: '15.3px',
-              lineHeight: '21px',
             }}
           >
-            🏓 Войти
+            {/* 🏓 Войти: width: 88px, height: 21px, left: calc(50% - 88px/2), top: calc(50% - 21px/2) */}
+            <span
+              className="absolute flex items-center text-center"
+              style={{
+                width: '88px',
+                height: '21px',
+                left: 'calc(50% - 44px)',
+                top: 'calc(50% - 10.5px)',
+                fontFamily: 'Inter, system-ui, -apple-system, BlinkMacSystemFont',
+                fontStyle: 'normal',
+                fontWeight: 500,
+                fontSize: '15.3px',
+                lineHeight: '21px',
+                color: '#FFFFFF',
+              }}
+            >
+              🏓 Войти
+            </span>
           </Link>
         </div>
+
       </section>
 
-      {/* СЕКЦИЯ 2 — Улучшение качества жизни */}
-      <section className="w-full flex justify-center px-4 py-20 lg:py-28">
-        <div className="w-full max-w-[1920px]">
-          <div className="grid grid-cols-1 xl:grid-cols-[minmax(0,1.2fr)_minmax(0,1.8fr)] gap-10 xl:gap-20 mb-16">
-            {/* Заголовок слева */}
-            <div>
-              <h2
-                className="text-[40px] lg:text-[72px] font-[700] leading-[0.9] mb-4"
-                style={{ fontFamily: 'Aeroport, system-ui, -apple-system, BlinkMacSystemFont' }}
-              >
-                Улучшение
-                <br />
-                качества
-                <br />
-                жизни
-              </h2>
+      {/* Desktop - 2: 1440px × 871px, position: relative, background: #FFFFFF */}
+      <section
+        className="relative bg-white"
+        style={{ width: '1440px', height: '871px', margin: '0 auto' }}
+      >
+        {/* Container для выравнивания с первым блоком: left: 144px */}
+        <div
+          className="absolute"
+          style={{
+            left: '144px',
+            right: '0px',
+            top: '0px',
+            bottom: '0px',
+          }}
+        >
+          {/* Component 1: width: 92.36px, height: 32.36px, left: 23px, top: 69px */}
+          <div
+            className="absolute flex flex-row items-center"
+            style={{
+              width: '92.36px',
+              height: '32.36px',
+              left: '23px',
+              top: `${69 + logoOffset}px`,
+              gap: '10px',
+              padding: '0px',
+            }}
+          >
+            {/* Categories: width: 22.61px, height: 23.16px, transform: rotate(-45deg) */}
+            <div
+              className="flex-none"
+              style={{
+                width: '22.61px',
+                height: '23.16px',
+                transform: 'rotate(-45deg)',
+              }}
+            >
+              <div className="w-full h-full grid grid-cols-2 grid-rows-2 gap-[2px]">
+                <div className="bg-[#006FFD] rounded-[2px]" />
+                <div className="bg-[#006FFD] rounded-[2px]" />
+                <div className="bg-[#006FFD] rounded-[2px]" />
+                <div className="bg-[#006FFD] rounded-[2px]" />
+              </div>
             </div>
 
-            {/* Текст справа */}
-            <div className="flex flex-col justify-center">
-              <p
-                className="text-[20px] lg:text-[28px] leading-[1.25] mb-4"
-                style={{ fontFamily: 'Aeroport, system-ui, -apple-system, BlinkMacSystemFont' }}
-              >
-                при регулярном занятии командным спортом подтверждаются международными{' '}
-                <span className="inline-block px-3 py-1 rounded-full bg-[#006FFD] text-white underline">
-                  исследованиями
-                </span>
-              </p>
-            </div>
+            {/* SELS text: width: 50px, height: 20px */}
+            <span
+              className="flex-none flex items-center text-[#006FFD]"
+              style={{
+                width: '50px',
+                height: '20px',
+                fontFamily: 'Inter, system-ui, -apple-system, BlinkMacSystemFont',
+                fontStyle: 'normal',
+                fontWeight: 700,
+                fontSize: '20px',
+                lineHeight: '20px',
+              }}
+            >
+              SELS
+            </span>
           </div>
+        </div>
 
-          {/* Три карточки снизу */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-10">
-            {/* Карточка 1 */}
-            <div className="bg-[#006FFD] rounded-[40px] lg:rounded-[50px] text-white px-8 pt-8 pb-10 flex flex-col justify-between min-h-[320px]">
-              <p className="text-[14px] lg:text-[16px] leading-[1.4] mb-6 max-w-[360px]">
-                Участие в командных видах спорта связано с более низкими показателями тревоги и
-                депрессии — примерно на 40% реже по сравнению с теми, кто спортом не занимается или
-                занимается соло.
-              </p>
-              <p
-                className="text-[64px] lg:text-[96px] font-[500] mt-auto"
-                style={{ fontFamily: 'Aeroport, system-ui, -apple-system, BlinkMacSystemFont' }}
-              >
-                40%
-              </p>
-            </div>
+        {/* Heading 1: width: 767px, height: 210px, left: 144px, top: 69px */}
+        <h2
+          className="absolute flex items-center text-black"
+          style={{
+            width: '767px',
+            height: '210px',
+            left: '144px',
+            top: '69px',
+            fontFamily: 'Aeroport, system-ui, -apple-system, BlinkMacSystemFont',
+            fontStyle: 'normal',
+            fontWeight: 700,
+            fontSize: '100px',
+            lineHeight: '70px',
+            color: '#000000',
+          }}
+        >
+          Улучшение
+          <br />
+          качества
+          <br />
+          жизни
+        </h2>
 
-            {/* Карточка 2 */}
-            <div className="bg-[#4587FF] rounded-[40px] lg:rounded-[50px] text-white px-8 pt-8 pb-10 flex flex-col justify-between min-h-[320px]">
-              <p className="text-[14px] lg:text-[16px] leading-[1.4] mb-6 max-w-[360px]">
-                Люди, участвующие в командном спорте, на 27–28% реже имеют вредные привычки, такие
-                как курение и злоупотребление алкоголем.
-              </p>
-              <p
-                className="text-[64px] lg:text-[96px] font-[500] mt-auto"
-                style={{ fontFamily: 'Aeroport, system-ui, -apple-system, BlinkMacSystemFont' }}
-              >
-                27%
-              </p>
-            </div>
+        {/* Heading 1: width: 572px, height: 90px, left: 704px, top: 179px */}
+        <p
+          className="absolute flex items-center text-black"
+          style={{
+            width: '572px',
+            height: '90px',
+            left: '704px',
+            top: '179px',
+            fontFamily: 'Aeroport, system-ui, -apple-system, BlinkMacSystemFont',
+            fontStyle: 'normal',
+            fontWeight: 400,
+            fontSize: '30px',
+            lineHeight: '30px',
+            color: '#000000',
+          }}
+        >
+          при регулярном занятии командным спортом подтверждаются международными
+        </p>
 
-            {/* Карточка 3 — изображение */}
-            <div className="bg-[#B3E5FC] rounded-[40px] lg:rounded-[50px] overflow-hidden flex items-center justify-center min-h-[320px]">
-              <div
-                className="w-full h-full bg-cover bg-center"
-                style={{
-                  backgroundImage:
-                    'url(https://images.unsplash.com/photo-1601000938259-9e4b8532a4bb?auto=format&fit=crop&w=1200&q=80)',
-                }}
-              />
-            </div>
-          </div>
+        {/* Link (кнопка "исследованиями"): width: 264px, height: 34px, left: 969px, top: calc(50% - 34px/2 - 175.5px), border-radius: 30px */}
+        <div
+          className="absolute box-border bg-[#006FFD] border border-[#006FFD] rounded-[30px] flex items-center justify-center"
+          style={{
+            width: '264px',
+            height: '34px',
+            left: '969px',
+            top: 'calc(50% - 17px - 175.5px)',
+          }}
+        >
+          {/* исследованиями: width: 247px, height: 0px, left: calc(50% - 247px/2 - 0.5px), top: calc(50% - 0px/2 - 6px) */}
+          <span
+            className="absolute flex items-center text-center underline text-white"
+            style={{
+              width: '247px',
+              height: 'auto',
+              left: 'calc(50% - 123.5px - 0.5px)',
+              top: 'calc(50% - 6px)',
+              fontFamily: 'Aeroport, system-ui, -apple-system, BlinkMacSystemFont',
+              fontStyle: 'normal',
+              fontWeight: 400,
+              fontSize: '30px',
+              lineHeight: '0px',
+              textDecorationLine: 'underline',
+              color: '#FFFFFF',
+            }}
+          >
+            исследованиями
+          </span>
+        </div>
+
+        {/* Frame 142: width: 360px, height: 450px, left: 144px, top: 352px, background: #005BFF, border-radius: 50px */}
+        <div
+          className="absolute"
+          style={{
+            width: '360px',
+            height: '450px',
+            left: '144px',
+            top: '352px',
+            background: '#005BFF',
+            borderRadius: '50px',
+          }}
+        >
+          {/* Heading 2: width: 308px, height: 160px, left: 26px, top: 64px */}
+          <p
+            className="absolute flex items-center text-white"
+            style={{
+              width: '308px',
+              height: '160px',
+              left: '26px',
+              top: '64px',
+              fontFamily: 'Aeroport, system-ui, -apple-system, BlinkMacSystemFont',
+              fontStyle: 'normal',
+              fontWeight: 300,
+              fontSize: '20px',
+              lineHeight: '20px',
+              color: '#FFFFFF',
+            }}
+          >
+            Участие в командных видах спорта связано с более низкими показателями тревоги и депрессии
+            — примерно на 40% реже по сравнению с теми, кто спортом не занимается или занимается
+            соло.
+          </p>
+        </div>
+
+        {/* Frame 143: width: 360px, height: 450px, left: 528px, top: 352px, background: #4587FF, border-radius: 50px */}
+        <div
+          className="absolute"
+          style={{
+            width: '360px',
+            height: '450px',
+            left: '528px',
+            top: '352px',
+            background: '#4587FF',
+            borderRadius: '50px',
+          }}
+        >
+          {/* Heading 2: width: 308px, height: 160px, left: 26px, top: 64px */}
+          <p
+            className="absolute flex items-center text-white"
+            style={{
+              width: '308px',
+              height: '160px',
+              left: '26px',
+              top: '64px',
+              fontFamily: 'Aeroport, system-ui, -apple-system, BlinkMacSystemFont',
+              fontStyle: 'normal',
+              fontWeight: 300,
+              fontSize: '20px',
+              lineHeight: '20px',
+              color: '#FFFFFF',
+            }}
+          >
+            Люди, участвующие в командном спорте, на 27–28% реже имеют вредные привычки, такие как
+            курение и злоупотребление алкоголем.
+          </p>
+        </div>
+
+        {/* Frame 144: width: 360px, height: 450px, left: 916px, top: 352px, background: #4587FF, border-radius: 50px */}
+        <div
+          className="absolute overflow-hidden"
+          style={{
+            width: '360px',
+            height: '450px',
+            left: '916px',
+            top: '352px',
+            background: '#4587FF',
+            borderRadius: '50px',
+          }}
+        >
+          {/* Heading 2: visibility: hidden */}
+          <p
+            className="absolute flex items-center text-white"
+            style={{
+              width: '308px',
+              height: '160px',
+              left: '26px',
+              top: '64px',
+              visibility: 'hidden',
+              fontFamily: 'Aeroport, system-ui, -apple-system, BlinkMacSystemFont',
+              fontStyle: 'normal',
+              fontWeight: 300,
+              fontSize: '20px',
+              lineHeight: '20px',
+              color: '#FFFFFF',
+            }}
+          >
+            Hidden text
+          </p>
+
+          {/* hero-court 1: width: 450px, height: 360px, left: 916px, top: 352px, border-radius: 50px, transform: rotate(-90deg) */}
+          <div
+            className="absolute"
+            style={{
+              width: '450px',
+              height: '360px',
+              left: '-45px',
+              top: '45px',
+              borderRadius: '50px',
+              backgroundImage: 'url(/hero-court2.jpg)',
+              backgroundSize: 'cover',
+              backgroundPosition: 'center',
+              transform: 'rotate(-90deg)',
+              transformOrigin: 'center',
+            }}
+          />
+        </div>
+
+        {/* Heading 1 (40%): width: 341px, height: 100px, left: 157px, top: 693px */}
+        <div
+          className="absolute flex items-center text-white"
+          style={{
+            width: '341px',
+            height: '100px',
+            left: '157px',
+            top: '693px',
+            fontFamily: 'Aeroport, system-ui, -apple-system, BlinkMacSystemFont',
+            fontStyle: 'normal',
+            fontWeight: 500,
+            fontSize: '160px',
+            lineHeight: '100px',
+            color: '#FFFFFF',
+          }}
+        >
+          40%
+        </div>
+
+        {/* Heading 1 (27%): width: 320px, height: 100px, left: 548px, top: 693px */}
+        <div
+          className="absolute flex items-center text-white"
+          style={{
+            width: '320px',
+            height: '100px',
+            left: '548px',
+            top: '693px',
+            fontFamily: 'Aeroport, system-ui, -apple-system, BlinkMacSystemFont',
+            fontStyle: 'normal',
+            fontWeight: 500,
+            fontSize: '160px',
+            lineHeight: '100px',
+            color: '#FFFFFF',
+          }}
+        >
+          27%
         </div>
       </section>
     </div>
