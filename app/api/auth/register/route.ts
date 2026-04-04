@@ -29,15 +29,14 @@ export async function POST(request: NextRequest) {
     const username = rawUsername.trim()
 
     // Валидация
-    if (!email || !firstName || !lastName || !username) {
+    if (!email || !password || !firstName || !lastName || !username) {
       return NextResponse.json(
-        { error: 'Email, имя, фамилия и username обязательны' },
+        { error: 'Email, пароль, имя, фамилия и username обязательны' },
         { status: 400 }
       )
     }
 
-    // Пароль опционален (если используется OAuth)
-    if (password && password.length < 6) {
+    if (password.length < 6) {
       return NextResponse.json(
         { error: 'Пароль должен быть не менее 6 символов' },
         { status: 400 }
@@ -71,8 +70,8 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Хешировать пароль (если указан)
-    const hashedPassword = password ? await bcrypt.hash(password, 10) : null
+    // Хешировать пароль
+    const hashedPassword = await bcrypt.hash(password, 10)
 
     // Создать пользователя
     const user = await prisma.user.create({
