@@ -13,3 +13,7 @@ Current behavior:
 Restore options:
 
 - Use git history for `app/map/page.tsx` and `app/news/page.tsx` to recover previous implementations.
+
+Deployment note:
+
+- A follow-up push was made to force production redeploy after archive changes.
