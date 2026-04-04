@@ -103,51 +103,50 @@ export default function LoginPage() {
         </div>
 
         <div className="mt-8 pt-6 border-t border-gray-200">
-          <p className="text-sm text-gray-500 text-center mb-4">Быстрый вход (тестовые аккаунты):</p>
-          <div className="space-y-2 text-sm">
-            <button
-              onClick={async () => {
-                setEmail('petr@sels.com')
-                setPassword('password123')
-                // Автоматический вход
-                setTimeout(async () => {
-                  const response = await fetch('/api/auth/login', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email: 'petr@sels.com', password: 'password123' }),
-                  })
-                  if (response.ok) {
-                    router.push('/profile')
-                    router.refresh()
-                  }
-                }, 100)
-              }}
-              className="w-full text-left px-4 py-2 bg-gray-50 hover:bg-blue-50 hover:border-blue-200 border border-transparent rounded-lg transition"
+          <p className="text-sm text-gray-500 text-center mb-4">Войти через:</p>
+          <div className="space-y-3">
+            <a
+              href="/api/auth/oauth/yandex"
+              className="flex items-center justify-center gap-3 w-full px-4 py-3 bg-[#FC3F1D] text-white rounded-xl font-semibold hover:bg-[#E02E0F] transition"
             >
-              <div className="font-medium text-gray-900">Petr Tartyshev</div>
-              <div className="text-gray-600 text-xs">petr@sels.com</div>
-            </button>
-            <button
-              onClick={async () => {
-                setEmail('sergey@sels.com')
-                setPassword('password123')
-                // Автоматический вход
-                setTimeout(async () => {
-                  const response = await fetch('/api/auth/login', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email: 'sergey@sels.com', password: 'password123' }),
-                  })
-                  if (response.ok) {
-                    router.push('/profile')
-                    router.refresh()
-                  }
-                }, 100)
-              }}
-              className="w-full text-left px-4 py-2 bg-gray-50 hover:bg-blue-50 hover:border-blue-200 border border-transparent rounded-lg transition"
+              <span className="text-xl">Я</span>
+              <span>Яндекс</span>
+            </a>
+            <a
+              href="/api/auth/oauth/vk"
+              className="flex items-center justify-center gap-3 w-full px-4 py-3 bg-[#0077FF] text-white rounded-xl font-semibold hover:bg-[#0066DD] transition"
             >
-              <div className="font-medium text-gray-900">Сергей Иванов</div>
-              <div className="text-gray-600 text-xs">sergey@sels.com</div>
+              <span className="text-xl">VK</span>
+              <span>ВКонтакте</span>
+            </a>
+            <button
+              onClick={() => {
+                const telegram = (window as any).Telegram
+                // Telegram использует виджет, нужно будет добавить скрипт
+                if (telegram && telegram.Login) {
+                  telegram.Login.auth(
+                    { bot_id: process.env.NEXT_PUBLIC_TELEGRAM_BOT_ID, request_access: true },
+                    (data: any) => {
+                      fetch('/api/auth/oauth/telegram', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(data),
+                      }).then((res) => {
+                        if (res.ok) {
+                          router.push('/profile')
+                          router.refresh()
+                        }
+                      })
+                    }
+                  )
+                } else {
+                  alert('Telegram виджет не загружен. Установите NEXT_PUBLIC_TELEGRAM_BOT_ID')
+                }
+              }}
+              className="flex items-center justify-center gap-3 w-full px-4 py-3 bg-[#0088CC] text-white rounded-xl font-semibold hover:bg-[#0077BB] transition"
+            >
+              <span className="text-xl">✈️</span>
+              <span>Telegram</span>
             </button>
           </div>
         </div>

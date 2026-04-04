@@ -16,17 +16,28 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json()
-    const { email, password, firstName, lastName, username } = body
+    const rawEmail = typeof body.email === 'string' ? body.email : ''
+    const rawPassword = typeof body.password === 'string' ? body.password : ''
+    const rawFirstName = typeof body.firstName === 'string' ? body.firstName : ''
+    const rawLastName = typeof body.lastName === 'string' ? body.lastName : ''
+    const rawUsername = typeof body.username === 'string' ? body.username : ''
+
+    const email = rawEmail.trim().toLowerCase()
+    const password = rawPassword
+    const firstName = rawFirstName.trim()
+    const lastName = rawLastName.trim()
+    const username = rawUsername.trim()
 
     // Валидация
-    if (!email || !password || !firstName || !lastName || !username) {
+    if (!email || !firstName || !lastName || !username) {
       return NextResponse.json(
-        { error: 'Все поля обязательны' },
+        { error: 'Email, имя, фамилия и username обязательны' },
         { status: 400 }
       )
     }
 
-    if (password.length < 6) {
+    // Пароль опционален (если используется OAuth)
+    if (password && password.length < 6) {
       return NextResponse.json(
         { error: 'Пароль должен быть не менее 6 символов' },
         { status: 400 }
@@ -36,7 +47,20 @@ export async function POST(request: NextRequest) {
     // Проверить, существует ли пользователь
     const existingUser = await prisma.user.findFirst({
       where: {
-        OR: [{ email }, { username }],
+        OR: [
+          {
+            email: {
+              equals: email,
+              mode: 'insensitive',
+            },
+          },
+          {
+            username: {
+              equals: username,
+              mode: 'insensitive',
+            },
+          },
+        ],
       },
     })
 
@@ -47,8 +71,8 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Хешировать пароль
-    const hashedPassword = await bcrypt.hash(password, 10)
+    // Хешировать пароль (если указан)
+    const hashedPassword = password ? await bcrypt.hash(password, 10) : null
 
     // Создать пользователя
     const user = await prisma.user.create({
