@@ -6,18 +6,14 @@ import { useEffect, useState } from 'react'
 /**
  * Главная страница - точная реализация по Figma CSS
  * Desktop - 1: 1440px × 1827px
- * Все элементы с абсолютным позиционированием строго по Figma
  */
 
 export default function HomePage() {
-  // Лёгкое движение логотипа вниз при скролле
-  const [logoOffset, setLogoOffset] = useState(0)
+  const [scrollY, setScrollY] = useState(0)
 
   useEffect(() => {
     const handleScroll = () => {
-      const y = window.scrollY || 0
-      const offset = Math.min(40, y * 0.1)
-      setLogoOffset(offset)
+      setScrollY(window.scrollY)
     }
 
     window.addEventListener('scroll', handleScroll)
@@ -26,10 +22,12 @@ export default function HomePage() {
 
   return (
     <div className="min-h-screen w-full bg-white text-black">
-      {/* Desktop - 1: 1440px × 903px, position: relative, background: #FFFFFF */}
+      {/* Контейнер для обоих блоков */}
+      <div className="relative" style={{ width: '1440px', margin: '0 auto' }}>
+      {/* Desktop - 1: 1440px × 1827px, position: relative, background: #FFFFFF */}
       <section
         className="relative bg-white"
-        style={{ width: '1440px', height: '903px', margin: '0 auto' }}
+        style={{ width: '1440px', height: '1827px' }}
       >
         {/* Rectangle 18: 1296px × 903px, left: 144px, top: 0px, background: #006FFD, border-radius: 100px */}
         <div
@@ -54,73 +52,58 @@ export default function HomePage() {
           }}
         />
 
-        {/* Container: left: 144px, right: 586px, top: 0px, bottom: 0px */}
+        {/* Логотип SELS - фиксированный, слева от синего блока на 100px, двигается при скролле */}
+        <div
+          className="fixed z-50 flex items-center gap-[10px]"
+          style={{
+            left: '44px', // 144px (начало синего блока) - 100px (отступ) = 44px
+            top: `${65 + scrollY * 0.1}px`, // движение при скролле
+            width: 'fit-content',
+          }}
+        >
+          {/* Ромбики: 22.61px × 23.16px, rotate(-45deg) */}
+          <div
+            className="w-[22.61px] h-[23.16px] grid grid-cols-2 grid-rows-2 gap-[2px]"
+            style={{ transform: 'rotate(-45deg)' }}
+          >
+            <div className="bg-[#006FFD] rounded-[2px]" />
+            <div className="bg-[#006FFD] rounded-[2px]" />
+            <div className="bg-[#006FFD] rounded-[2px]" />
+            <div className="bg-[#006FFD] rounded-[2px]" />
+          </div>
+
+          {/* Текст "SELS": 50px × 20px */}
+          <span
+            className="font-[700] text-[20px] leading-[20px] text-[#006FFD] flex items-center"
+            style={{
+              width: '50px',
+              height: '20px',
+              fontFamily: 'Inter, system-ui, -apple-system, BlinkMacSystemFont',
+            }}
+          >
+            SELS
+          </span>
+        </div>
+
+        {/* Container: left: 144px, right: 586px, top: 0px, bottom: 1430px */}
         <div
           className="absolute"
           style={{
             left: '144px',
             right: '586px',
             top: '0px',
-            bottom: '0px',
+            bottom: '1430px',
           }}
         >
-          {/* Component 1: width: 92.36px, height: 32.36px, left: 23px, top: 65px */}
-          <div
-            className="absolute flex flex-row items-center"
-            style={{
-              width: '92.36px',
-              height: '32.36px',
-              left: '23px',
-              top: `${65 + logoOffset}px`,
-              gap: '10px',
-              padding: '0px',
-            }}
-          >
-            {/* Categories: width: 22.61px, height: 23.16px, transform: rotate(-45deg) */}
-            <div
-              className="flex-none"
-              style={{
-                width: '22.61px',
-                height: '23.16px',
-                transform: 'rotate(-45deg)',
-              }}
-            >
-              <div className="w-full h-full grid grid-cols-2 grid-rows-2 gap-[2px]">
-                <div className="bg-[#006FFD] rounded-[2px]" />
-                <div className="bg-[#006FFD] rounded-[2px]" />
-                <div className="bg-[#006FFD] rounded-[2px]" />
-                <div className="bg-[#006FFD] rounded-[2px]" />
-              </div>
-            </div>
-
-            {/* SELS text: width: 50px, height: 20px */}
-            <span
-              className="flex-none flex items-center text-[#006FFD]"
-              style={{
-                width: '50px',
-                height: '20px',
-                fontFamily: 'Inter, system-ui, -apple-system, BlinkMacSystemFont',
-                fontStyle: 'normal',
-                fontWeight: 700,
-                fontSize: '20px',
-                lineHeight: '20px',
-              }}
-            >
-              SELS
-            </span>
-          </div>
-
           {/* Heading 1: 586px × 351px, left: 62px, top: 65px, font-size: 100px, line-height: 70px */}
           <h1
-            className="absolute flex items-center text-white"
+            className="absolute font-[700] text-white flex items-center"
             style={{
               width: '586px',
               height: '351px',
               left: '62px',
               top: '65px',
               fontFamily: 'Aeroport, system-ui, -apple-system, BlinkMacSystemFont',
-              fontStyle: 'normal',
-              fontWeight: 700,
               fontSize: '100px',
               lineHeight: '70px',
             }}
@@ -136,17 +119,15 @@ export default function HomePage() {
             начать
           </h1>
 
-          {/* Heading 2: 547px × 60px, left: 62px, top: 671px, font-size: 20px, line-height: 20px */}
+          {/* Heading 2: 497px × 60px, left: 62px, top: 671px, font-size: 20px, line-height: 20px */}
           <p
-            className="absolute flex items-center text-white"
+            className="absolute font-[300] text-white flex items-center"
             style={{
-              width: '547px',
+              width: '497px',
               height: '60px',
               left: '62px',
               top: '671px',
               fontFamily: 'Aeroport, system-ui, -apple-system, BlinkMacSystemFont',
-              fontStyle: 'normal',
-              fontWeight: 300,
               fontSize: '20px',
               lineHeight: '20px',
             }}
@@ -164,73 +145,56 @@ export default function HomePage() {
               height: '48px',
               left: '62px',
               top: 'calc(50% - 24px + 620.5px)',
-              background: '#006FFD',
               fontFamily: 'Aeroport, system-ui, -apple-system, BlinkMacSystemFont',
-              fontStyle: 'normal',
-              fontWeight: 500,
               fontSize: '15.3px',
               lineHeight: '21px',
             }}
           >
-            {/* 🏓 Попробовать бесплатно: width: 205px, height: 21px, left: calc(50% - 205px/2 - 0.5px), top: calc(50% - 21px/2 - 0.5px) */}
-            <span
-              className="flex items-center text-center"
-              style={{
-                width: '205px',
-                height: '21px',
-                left: 'calc(50% - 102.5px - 0.5px)',
-                top: 'calc(50% - 10.5px - 0.5px)',
-                position: 'relative',
-              }}
-            >
-              🏓 Попробовать бесплатно
-            </span>
+            <span className="mr-2">🏓</span>
+            Попробовать бесплатно
           </Link>
         </div>
 
-        {/* Group 424: width: 687px, height: 903px, left: 753px, top: 0px */}
+        {/* Картинка 1: 687px × 903px, left: 753px, top: 0px, border-radius: 100px */}
         <div
-          className="absolute"
+          className="absolute overflow-hidden"
           style={{
             width: '687px',
             height: '903px',
             left: '753px',
             top: '0px',
+            borderRadius: '100px',
           }}
         >
-          {/* hero-court 2: width: 687px, height: 903px, left: 753px, top: 0px, border-radius: 100px */}
-          <div
-            className="absolute overflow-hidden"
-            style={{
-              width: '687px',
-              height: '903px',
-              left: '0px',
-              top: '0px',
-              borderRadius: '100px',
-              backgroundImage: 'url(/hero-court.png)',
-              backgroundSize: 'cover',
-              backgroundPosition: 'center top',
-            }}
-          />
-
-          {/* hero-court 3: width: 529px, height: 903px, left: 911px, top: 0px */}
-          <div
-            className="absolute overflow-hidden"
-            style={{
-              width: '529px',
-              height: '903px',
-              left: '158px',
-              top: '0px',
-              backgroundImage: 'url(/hero-court.png)',
-              backgroundSize: 'cover',
-              backgroundPosition: 'center top',
-            }}
+          <img
+            src="/hero-court.png"
+            alt="Люди на спортивной площадке сверху"
+            className="w-full h-full object-cover"
+            style={{ objectPosition: 'right 30%' }}
           />
         </div>
 
-        {/* Group 422 (Навигация): width: 599px, height: 39px, left: 816px, top: 13px, gap: 58px 30px */}
+        {/* Картинка 2: 422px × 903px, left: 1018px, top: 0px (без скругления) */}
         <div
-          className="absolute flex flex-row flex-wrap items-center justify-center"
+          className="absolute overflow-hidden"
+          style={{
+            width: '422px',
+            height: '903px',
+            left: '1018px',
+            top: '0px',
+          }}
+        >
+          <img
+            src="/hero-court.png"
+            alt="Люди на спортивной площадке сверху"
+            className="w-full h-full object-cover"
+            style={{ objectPosition: 'right 30%' }}
+          />
+        </div>
+
+        {/* Group 422 (Навигация): 599px × 39px, left: 816px, top: 13px, gap: 58px 30px */}
+        <div
+          className="absolute flex flex-row items-center"
           style={{
             width: '599px',
             height: '39px',
@@ -240,220 +204,41 @@ export default function HomePage() {
             padding: '0px',
           }}
         >
-          {/* Group 415: width: 142px, height: 21px */}
-          <div className="flex-none relative" style={{ width: '142px', height: '21px' }}>
-            {/* 🎾: left: 0%, right: 97.33%, top: 23.08%, bottom: 23.08% */}
-            <span
-              className="absolute flex items-center"
-              style={{
-                left: '0%',
-                right: '97.33%',
-                top: '23.08%',
-                bottom: '23.08%',
-                fontFamily: 'Inter, system-ui, -apple-system, BlinkMacSystemFont',
-                fontStyle: 'normal',
-                fontWeight: 700,
-                fontSize: '16px',
-                lineHeight: '65px',
-                color: '#000000',
-              }}
-            >
-              🎾
-            </span>
-            {/* О проекте: left: 4.17%, right: 76.29%, top: 23.08%, bottom: 23.08% */}
-            <span
-              className="absolute flex items-center"
-              style={{
-                left: '4.17%',
-                right: '76.29%',
-                top: '23.08%',
-                bottom: '23.08%',
-                fontFamily: 'Inter, system-ui, -apple-system, BlinkMacSystemFont',
-                fontStyle: 'normal',
-                fontWeight: 700,
-                fontSize: '20px',
-                lineHeight: '20px',
-                color: '#000000',
-              }}
-            >
-              О проекте
-            </span>
-          </div>
+          {/* О проекте */}
+          <button className="flex items-center gap-2 font-[700] text-[20px] leading-[20px] text-black hover:opacity-80 transition">
+            <span className="text-[16px]">🎾</span>
+            <span>О проекте</span>
+          </button>
 
-          {/* Group 416: width: 185px, height: 21px */}
-          <div className="flex-none relative" style={{ width: '185px', height: '21px' }}>
-            {/* 🔍: left: 28.71%, right: 68.61%, top: 23.08%, bottom: 23.08% */}
-            <span
-              className="absolute flex items-center"
-              style={{
-                left: '28.71%',
-                right: '68.61%',
-                top: '23.08%',
-                bottom: '23.08%',
-                fontFamily: 'Inter, system-ui, -apple-system, BlinkMacSystemFont',
-                fontStyle: 'normal',
-                fontWeight: 700,
-                fontSize: '16px',
-                lineHeight: '65px',
-                color: '#000000',
-              }}
-            >
-              🔍
-            </span>
-            {/* Карта локаций: left: 32.89%, right: 40.4%, top: 23.08%, bottom: 23.08% */}
-            <span
-              className="absolute flex items-center"
-              style={{
-                left: '32.89%',
-                right: '40.4%',
-                top: '23.08%',
-                bottom: '23.08%',
-                fontFamily: 'Inter, system-ui, -apple-system, BlinkMacSystemFont',
-                fontStyle: 'normal',
-                fontWeight: 700,
-                fontSize: '20px',
-                lineHeight: '20px',
-                color: '#000000',
-              }}
-            >
-              Карта локаций
-            </span>
-          </div>
+          {/* FAQ */}
+          <button className="flex items-center gap-2 font-[700] text-[20px] leading-[20px] text-black hover:opacity-80 transition">
+            <span className="text-[16px]">❓</span>
+            <span>FAQ</span>
+          </button>
 
-          {/* Group 417: width: 66px, height: 21px */}
-          <div className="flex-none relative" style={{ width: '66px', height: '21px' }}>
-            {/* ❓: left: 64.61%, right: 32.72%, top: 23.08%, bottom: 23.08% */}
-            <span
-              className="absolute flex items-center"
-              style={{
-                left: '64.61%',
-                right: '32.72%',
-                top: '23.08%',
-                bottom: '23.08%',
-                fontFamily: 'Inter, system-ui, -apple-system, BlinkMacSystemFont',
-                fontStyle: 'normal',
-                fontWeight: 700,
-                fontSize: '16px',
-                lineHeight: '65px',
-                color: '#000000',
-              }}
-            >
-              ❓
-            </span>
-            {/* FAQ: left: 68.78%, right: 24.37%, top: 23.08%, bottom: 23.08% */}
-            <span
-              className="absolute flex items-center"
-              style={{
-                left: '68.78%',
-                right: '24.37%',
-                top: '23.08%',
-                bottom: '23.08%',
-                fontFamily: 'Inter, system-ui, -apple-system, BlinkMacSystemFont',
-                fontStyle: 'normal',
-                fontWeight: 700,
-                fontSize: '20px',
-                lineHeight: '20px',
-                color: '#000000',
-              }}
-            >
-              FAQ
-            </span>
-          </div>
-
-          {/* Link: width: 116px, height: 39px, background: #006FFD, border-radius: 20px */}
+          {/* Link: Войти */}
           <Link
             href="/login"
-            className="flex-none box-border bg-[#006FFD] border border-[#006FFD] rounded-[20px] flex items-center justify-center text-white hover:bg-[#0055cc] transition relative"
+            className="box-border bg-[#006FFD] border border-[#006FFD] rounded-[20px] flex items-center justify-center text-white hover:bg-[#0055cc] transition"
             style={{
               width: '116px',
               height: '39px',
+              fontFamily: 'Inter, system-ui, -apple-system, BlinkMacSystemFont',
+              fontSize: '15.3px',
+              lineHeight: '21px',
             }}
           >
-            {/* 🏓 Войти: width: 88px, height: 21px, left: calc(50% - 88px/2), top: calc(50% - 21px/2) */}
-            <span
-              className="absolute flex items-center text-center"
-              style={{
-                width: '88px',
-                height: '21px',
-                left: 'calc(50% - 44px)',
-                top: 'calc(50% - 10.5px)',
-                fontFamily: 'Inter, system-ui, -apple-system, BlinkMacSystemFont',
-                fontStyle: 'normal',
-                fontWeight: 500,
-                fontSize: '15.3px',
-                lineHeight: '21px',
-                color: '#FFFFFF',
-              }}
-            >
-              🏓 Войти
-            </span>
+            🏓 Войти
           </Link>
         </div>
-
       </section>
 
-      {/* Desktop - 2: 1440px × 871px, position: relative, background: #FFFFFF */}
+      {/* Desktop - 2: 1440px × 871px, position: absolute, background: #FFFFFF */}
+      {/* Расстояние 100px от конца синего фрейма (903px) = 1003px от начала контейнера */}
       <section
-        className="relative bg-white"
-        style={{ width: '1440px', height: '871px', margin: '0 auto' }}
+        className="absolute bg-white"
+        style={{ width: '1440px', height: '871px', top: '1003px', left: '0' }}
       >
-        {/* Container для выравнивания с первым блоком: left: 144px */}
-        <div
-          className="absolute"
-          style={{
-            left: '144px',
-            right: '0px',
-            top: '0px',
-            bottom: '0px',
-          }}
-        >
-          {/* Component 1: width: 92.36px, height: 32.36px, left: 23px, top: 69px */}
-          <div
-            className="absolute flex flex-row items-center"
-            style={{
-              width: '92.36px',
-              height: '32.36px',
-              left: '23px',
-              top: `${69 + logoOffset}px`,
-              gap: '10px',
-              padding: '0px',
-            }}
-          >
-            {/* Categories: width: 22.61px, height: 23.16px, transform: rotate(-45deg) */}
-            <div
-              className="flex-none"
-              style={{
-                width: '22.61px',
-                height: '23.16px',
-                transform: 'rotate(-45deg)',
-              }}
-            >
-              <div className="w-full h-full grid grid-cols-2 grid-rows-2 gap-[2px]">
-                <div className="bg-[#006FFD] rounded-[2px]" />
-                <div className="bg-[#006FFD] rounded-[2px]" />
-                <div className="bg-[#006FFD] rounded-[2px]" />
-                <div className="bg-[#006FFD] rounded-[2px]" />
-              </div>
-            </div>
-
-            {/* SELS text: width: 50px, height: 20px */}
-            <span
-              className="flex-none flex items-center text-[#006FFD]"
-              style={{
-                width: '50px',
-                height: '20px',
-                fontFamily: 'Inter, system-ui, -apple-system, BlinkMacSystemFont',
-                fontStyle: 'normal',
-                fontWeight: 700,
-                fontSize: '20px',
-                lineHeight: '20px',
-              }}
-            >
-              SELS
-            </span>
-          </div>
-        </div>
-
         {/* Heading 1: width: 767px, height: 210px, left: 144px, top: 69px */}
         <h2
           className="absolute flex items-center text-black"
@@ -541,7 +326,7 @@ export default function HomePage() {
         >
           {/* Heading 2: width: 308px, height: 160px, left: 26px, top: 64px */}
           <p
-            className="absolute flex items-center text-white"
+            className="absolute text-white"
             style={{
               width: '308px',
               height: '160px',
@@ -575,7 +360,7 @@ export default function HomePage() {
         >
           {/* Heading 2: width: 308px, height: 160px, left: 26px, top: 64px */}
           <p
-            className="absolute flex items-center text-white"
+            className="absolute text-white"
             style={{
               width: '308px',
               height: '160px',
@@ -587,6 +372,9 @@ export default function HomePage() {
               fontSize: '20px',
               lineHeight: '20px',
               color: '#FFFFFF',
+              display: 'block',
+              verticalAlign: 'top',
+              textAlign: 'left',
             }}
           >
             Люди, участвующие в командном спорте, на 27–28% реже имеют вредные привычки, такие как
@@ -644,14 +432,14 @@ export default function HomePage() {
           />
         </div>
 
-        {/* Heading 1 (40%): width: 341px, height: 100px, left: 157px, top: 693px */}
+        {/* Heading 1 (40%): width: 341px, height: 100px, left: 157px, top: 702px (нижний край карточки) */}
         <div
           className="absolute flex items-center text-white"
           style={{
             width: '341px',
             height: '100px',
             left: '157px',
-            top: '693px',
+            top: '702px', // 352px (top карточки) + 450px (height карточки) - 100px (height цифры) = 702px
             fontFamily: 'Aeroport, system-ui, -apple-system, BlinkMacSystemFont',
             fontStyle: 'normal',
             fontWeight: 500,
@@ -663,14 +451,14 @@ export default function HomePage() {
           40%
         </div>
 
-        {/* Heading 1 (27%): width: 320px, height: 100px, left: 548px, top: 693px */}
+        {/* Heading 1 (27%): width: 320px, height: 100px, left: 548px, top: 702px (нижний край карточки) */}
         <div
           className="absolute flex items-center text-white"
           style={{
             width: '320px',
             height: '100px',
             left: '548px',
-            top: '693px',
+            top: '702px', // 352px (top карточки) + 450px (height карточки) - 100px (height цифры) = 702px
             fontFamily: 'Aeroport, system-ui, -apple-system, BlinkMacSystemFont',
             fontStyle: 'normal',
             fontWeight: 500,
@@ -682,6 +470,7 @@ export default function HomePage() {
           27%
         </div>
       </section>
+      </div>
     </div>
   )
 }
