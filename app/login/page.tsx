@@ -102,54 +102,6 @@ export default function LoginPage() {
           </p>
         </div>
 
-        <div className="mt-8 pt-6 border-t border-gray-200">
-          <p className="text-sm text-gray-500 text-center mb-4">Войти через:</p>
-          <div className="space-y-3">
-            <a
-              href="/api/auth/oauth/yandex"
-              className="flex items-center justify-center gap-3 w-full px-4 py-3 bg-[#FC3F1D] text-white rounded-xl font-semibold hover:bg-[#E02E0F] transition"
-            >
-              <span className="text-xl">Я</span>
-              <span>Яндекс</span>
-            </a>
-            <a
-              href="/api/auth/oauth/vk"
-              className="flex items-center justify-center gap-3 w-full px-4 py-3 bg-[#0077FF] text-white rounded-xl font-semibold hover:bg-[#0066DD] transition"
-            >
-              <span className="text-xl">VK</span>
-              <span>ВКонтакте</span>
-            </a>
-            <button
-              onClick={() => {
-                const telegram = (window as any).Telegram
-                // Telegram использует виджет, нужно будет добавить скрипт
-                if (telegram && telegram.Login) {
-                  telegram.Login.auth(
-                    { bot_id: process.env.NEXT_PUBLIC_TELEGRAM_BOT_ID, request_access: true },
-                    (data: any) => {
-                      fetch('/api/auth/oauth/telegram', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(data),
-                      }).then((res) => {
-                        if (res.ok) {
-                          router.push('/profile')
-                          router.refresh()
-                        }
-                      })
-                    }
-                  )
-                } else {
-                  alert('Telegram виджет не загружен. Установите NEXT_PUBLIC_TELEGRAM_BOT_ID')
-                }
-              }}
-              className="flex items-center justify-center gap-3 w-full px-4 py-3 bg-[#0088CC] text-white rounded-xl font-semibold hover:bg-[#0077BB] transition"
-            >
-              <span className="text-xl">✈️</span>
-              <span>Telegram</span>
-            </button>
-          </div>
-        </div>
       </div>
     </div>
   )
