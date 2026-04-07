@@ -1,48 +1,16 @@
 'use client'
 
 import { Search } from 'lucide-react'
-import Link from 'next/link'
+import AppNavigation from '@/components/AppNavigation'
 
 export default function SearchPage() {
   return (
-    <div className="min-h-screen bg-gray-50 flex">
-      {/* Left Sidebar Menu */}
-      <div className="w-64 bg-white border-r border-gray-200 p-6 sticky top-0 h-screen">
-        <h2 className="text-2xl font-bold text-gray-900 mb-8">SELS</h2>
-        <nav className="space-y-2">
-          <Link
-            href="/profile"
-            className="flex items-center gap-3 px-4 py-3 text-gray-600 hover:bg-gray-50 rounded-xl font-medium transition"
-          >
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
-            </svg>
-            Мой профиль
-          </Link>
-          <Link
-            href="/search"
-            className="flex items-center gap-3 px-4 py-3 bg-blue-50 text-[#2F80ED] rounded-xl font-medium"
-          >
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z" />
-            </svg>
-            Поиск
-          </Link>
-          <Link
-            href="/chats"
-            className="flex items-center gap-3 px-4 py-3 text-gray-600 hover:bg-gray-50 rounded-xl font-medium transition"
-          >
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z" />
-            </svg>
-            Чаты
-          </Link>
-        </nav>
-      </div>
+    <div className="min-h-screen bg-gray-50 md:flex">
+      <AppNavigation mobileTitle="Поиск" />
 
       {/* Main Content */}
-      <div className="flex-1 max-w-4xl mx-auto p-8">
-        <div className="bg-white rounded-2xl p-8 shadow-sm">
+      <div className="flex-1 w-full max-w-4xl mx-auto p-4 md:p-8 pb-24 md:pb-8">
+        <div className="bg-white rounded-2xl p-5 md:p-8 shadow-sm">
           <h1 className="text-3xl font-bold text-gray-900 mb-6">Поиск</h1>
           
           <div className="relative mb-8">

@@ -2,9 +2,10 @@
 
 import { useState, useEffect, Suspense } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
-import { Settings, Calendar, BarChart3, Plus, X, Upload, MapPin, List, Map as MapIcon, LogOut, Trash2 } from 'lucide-react'
+import { Calendar, BarChart3, Plus, X, Upload, MapPin, List, Map as MapIcon, LogOut, Trash2 } from 'lucide-react'
 import Link from 'next/link'
 import dynamic from 'next/dynamic'
+import AppNavigation from '@/components/AppNavigation'
 import 'maplibre-gl/dist/maplibre-gl.css'
 
 const Map = dynamic(() => import('react-map-gl/maplibre'), {
@@ -583,60 +584,11 @@ function ProfilePageContent() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 flex">
-      {/* Left Sidebar Menu */}
-      <div className="w-64 bg-white border-r border-gray-200 p-6 sticky top-0 h-screen flex flex-col">
-        <h2 className="text-2xl font-bold text-gray-900 mb-8">SELS</h2>
-        <nav className="space-y-2 flex-1">
-          <Link
-            href="/profile"
-            className="flex items-center gap-3 px-4 py-3 bg-blue-50 text-[#2F80ED] rounded-xl font-medium"
-          >
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
-            </svg>
-            Мой профиль
-          </Link>
-          <Link
-            href="/search"
-            className="flex items-center gap-3 px-4 py-3 text-gray-600 hover:bg-gray-50 rounded-xl font-medium transition"
-          >
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z" />
-            </svg>
-            Поиск
-          </Link>
-          <Link
-            href="/chats"
-            className="flex items-center gap-3 px-4 py-3 text-gray-600 hover:bg-gray-50 rounded-xl font-medium transition"
-          >
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z" />
-            </svg>
-            Чаты
-          </Link>
-        </nav>
-
-        {/* Settings and Logout buttons at the bottom */}
-        {isOwnProfile && currentUser && (
-          <div className="mt-auto pt-6 border-t border-gray-200 space-y-2">
-            <button className="w-full flex items-center gap-3 px-4 py-3 text-gray-600 hover:bg-gray-50 rounded-xl font-medium transition">
-              <Settings size={20} className="text-gray-600" />
-              Настройки
-            </button>
-            <button
-              onClick={handleLogout}
-              className="w-full flex items-center gap-3 px-4 py-3 text-gray-600 hover:bg-gray-50 rounded-xl font-medium transition"
-            >
-              <LogOut size={20} className="text-gray-600" />
-              Выйти
-            </button>
-          </div>
-        )}
-      </div>
+    <div className="min-h-screen bg-gray-50 md:flex">
+      <AppNavigation mobileTitle="Профиль" />
 
       {/* Main Content */}
-      <div className="flex-1 max-w-4xl mx-auto p-8">
+      <div className="flex-1 w-full max-w-4xl mx-auto p-4 md:p-8 pb-24 md:pb-8">
         {/* Loading State */}
         {loading ? (
           <div className="flex items-center justify-center py-20">
@@ -667,7 +619,7 @@ function ProfilePageContent() {
         ) : (
           <>
             {/* Profile Header */}
-            <div className="bg-white rounded-2xl p-8 mb-6 shadow-sm">
+            <div className="bg-white rounded-2xl p-5 md:p-8 mb-6 shadow-sm">
               <div className="flex items-start justify-between mb-6">
                 <div className="flex items-center gap-4">
                   <div className="w-24 h-24 bg-blue-400 rounded-full flex items-center justify-center overflow-hidden">
@@ -695,6 +647,15 @@ function ProfilePageContent() {
                     )}
                   </div>
                 </div>
+                {isOwnProfile && currentUser && (
+                  <button
+                    onClick={handleLogout}
+                    className="px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-xl text-gray-700 text-sm font-medium transition flex items-center gap-2"
+                  >
+                    <LogOut size={16} />
+                    Выйти
+                  </button>
+                )}
               </div>
 
           {/* Tabs */}
@@ -961,14 +922,14 @@ function ProfilePageContent() {
           <>
             <button
               onClick={() => setShowCreateMenu(!showCreateMenu)}
-              className="fixed bottom-8 right-8 w-14 h-14 bg-[#2F80ED] text-white rounded-full shadow-lg hover:bg-blue-600 transition flex items-center justify-center z-40"
+              className="fixed bottom-24 md:bottom-8 right-4 md:right-8 w-14 h-14 bg-[#2F80ED] text-white rounded-full shadow-lg hover:bg-blue-600 transition flex items-center justify-center z-40"
             >
               <Plus size={28} />
             </button>
             
             {/* Menu for choosing post, event or location */}
             {showCreateMenu && (
-              <div className="fixed bottom-24 right-8 bg-white rounded-xl shadow-xl border border-gray-200 z-50 min-w-[200px]">
+              <div className="fixed bottom-40 md:bottom-24 right-4 md:right-8 bg-white rounded-xl shadow-xl border border-gray-200 z-50 min-w-[200px]">
                 <button
                   onClick={() => {
                     setShowCreateMenu(false)
