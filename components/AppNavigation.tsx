@@ -2,12 +2,11 @@
 
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
-import { Home, User, Search, MessageCircle, LogOut } from 'lucide-react'
+import { Home, User, MessageCircle, LogOut } from 'lucide-react'
 
 const navItems = [
   { href: '/feed', label: 'Лента', icon: Home },
   { href: '/profile', label: 'Профиль', icon: User },
-  { href: '/search', label: 'Поиск', icon: Search },
   { href: '/chats', label: 'Чаты', icon: MessageCircle },
 ]
 
@@ -18,6 +17,8 @@ interface AppNavigationProps {
 export default function AppNavigation({ mobileTitle = 'SELS' }: AppNavigationProps) {
   const pathname = usePathname()
   const router = useRouter()
+  const showDesktopRightColumn =
+    pathname?.startsWith('/feed') || pathname?.startsWith('/profile') || pathname?.startsWith('/chats')
 
   const handleLogout = async () => {
     try {
@@ -70,6 +71,46 @@ export default function AppNavigation({ mobileTitle = 'SELS' }: AppNavigationPro
         </button>
       </aside>
 
+      {/* Desktop right column — Twitter-like widgets */}
+      {showDesktopRightColumn && (
+        <aside className="hidden xl:block w-[320px] p-4 sticky top-0 h-screen overflow-y-auto">
+          <div className="space-y-4">
+            <div className="bg-white rounded-2xl border border-gray-200 p-4">
+              <h3 className="text-lg font-bold text-gray-900 mb-3">Что сейчас актуально</h3>
+              <div className="space-y-3 text-sm">
+                <div>
+                  <p className="font-semibold text-gray-900">Тренировки сегодня</p>
+                  <p className="text-gray-500">Найди ближайший эвент в ленте</p>
+                </div>
+                <div>
+                  <p className="font-semibold text-gray-900">Тренеры рядом</p>
+                  <p className="text-gray-500">Используй фильтр "Найти тренера"</p>
+                </div>
+                <div>
+                  <p className="font-semibold text-gray-900">Бронирование</p>
+                  <p className="text-gray-500">Свободные места в текущих событиях</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-white rounded-2xl border border-gray-200 p-4">
+              <h3 className="text-lg font-bold text-gray-900 mb-3">Быстрые переходы</h3>
+              <div className="space-y-2">
+                <Link href="/feed" className="block text-sm text-[#2F80ED] hover:underline">
+                  Главная лента
+                </Link>
+                <Link href="/profile" className="block text-sm text-[#2F80ED] hover:underline">
+                  Мой профиль
+                </Link>
+                <Link href="/chats" className="block text-sm text-[#2F80ED] hover:underline">
+                  Сообщения
+                </Link>
+              </div>
+            </div>
+          </div>
+        </aside>
+      )}
+
       {/* Mobile top header */}
       <div className="md:hidden sticky top-0 z-20 bg-white border-b border-gray-200 px-4 py-3">
         <h1 className="text-xl font-bold text-gray-900">{mobileTitle}</h1>
@@ -77,7 +118,7 @@ export default function AppNavigation({ mobileTitle = 'SELS' }: AppNavigationPro
 
       {/* Mobile bottom navigation */}
       <nav className="md:hidden fixed bottom-0 left-0 right-0 z-30 bg-white border-t border-gray-200 px-2 py-2">
-        <div className="grid grid-cols-4 gap-1">
+        <div className="grid grid-cols-3 gap-1">
           {navItems.map((item) => {
             const Icon = item.icon
             const isActive = pathname?.startsWith(item.href)

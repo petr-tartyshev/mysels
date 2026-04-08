@@ -402,14 +402,14 @@ export default function ChatsPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-[#F7F9FA] flex items-center justify-center">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#2F80ED]"></div>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen md:flex relative">
+    <div className="min-h-screen md:flex relative bg-[#F7F9FA]">
       {/* Minimalist Sports Pattern Background (Telegram-style) */}
       <div 
         className="absolute inset-0"
@@ -424,7 +424,7 @@ export default function ChatsPage() {
       <AppNavigation mobileTitle="Чаты" />
 
       {/* Main Content */}
-      <div className="flex-1 flex pb-16 md:pb-0">
+      <div className="flex-1 min-w-0 max-w-3xl border-x border-gray-200 bg-white flex pb-16 md:pb-0">
         {/* Conversations List */}
         <div className={`w-80 bg-white border-r border-gray-200 flex flex-col transition-all ${
           selectedConversation ? 'hidden lg:flex' : 'flex'

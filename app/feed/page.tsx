@@ -35,6 +35,8 @@ interface FeedEvent {
   location: EventLocation
 }
 
+type FeedFilter = 'all' | 'training' | 'coach' | 'booking'
+
 function formatEventDate(rawDate: string): string {
   const parsed = new Date(rawDate)
   if (Number.isNaN(parsed.getTime())) {
@@ -68,6 +70,7 @@ export default function FeedPage() {
   const router = useRouter()
   const [events, setEvents] = useState<FeedEvent[]>([])
   const [loading, setLoading] = useState(true)
+  const [activeFilter, setActiveFilter] = useState<FeedFilter>('all')
 
   useEffect(() => {
     const bootstrap = async () => {
@@ -102,28 +105,83 @@ export default function FeedPage() {
     return `Лента событий · ${events.length}`
   }, [events.length, loading])
 
+  const filteredEvents = useMemo(() => {
+    if (activeFilter === 'all') return events
+
+    return events.filter((event) => {
+      const source = `${event.title} ${event.description || ''} ${event.location?.name || ''}`.toLowerCase()
+
+      if (activeFilter === 'training') {
+        return source.includes('трениров') || source.includes('спарринг') || source.includes('practice')
+      }
+      if (activeFilter === 'coach') {
+        return source.includes('тренер') || source.includes('coach') || source.includes('наставник')
+      }
+      if (activeFilter === 'booking') {
+        return source.includes('бронир') || source.includes('аренда') || source.includes('корт')
+      }
+
+      return true
+    })
+  }, [events, activeFilter])
+
   return (
     <div className="min-h-screen bg-[#F7F9FA] md:flex">
       <AppNavigation mobileTitle="Лента" />
 
-      <main className="flex-1 w-full max-w-3xl mx-auto border-x border-gray-200 bg-white pb-24 md:pb-8">
+      <main className="flex-1 min-w-0 w-full max-w-3xl border-x border-gray-200 bg-white pb-24 md:pb-8">
         <header className="sticky top-0 z-10 bg-white/90 backdrop-blur border-b border-gray-200 px-4 md:px-6 py-4">
           <h1 className="text-xl md:text-2xl font-bold text-gray-900">{feedTitle}</h1>
           <p className="text-sm text-gray-500 mt-1">Новые спортивные эвенты от пользователей</p>
+
+          <div className="mt-4 flex flex-wrap gap-2">
+            <button
+              onClick={() => setActiveFilter('training')}
+              className={`px-4 py-2 rounded-full text-sm font-medium transition ${
+                activeFilter === 'training' ? 'bg-[#2F80ED] text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+              }`}
+            >
+              Найти тренировку
+            </button>
+            <button
+              onClick={() => setActiveFilter('coach')}
+              className={`px-4 py-2 rounded-full text-sm font-medium transition ${
+                activeFilter === 'coach' ? 'bg-[#2F80ED] text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+              }`}
+            >
+              Найти тренера
+            </button>
+            <button
+              onClick={() => setActiveFilter('booking')}
+              className={`px-4 py-2 rounded-full text-sm font-medium transition ${
+                activeFilter === 'booking' ? 'bg-[#2F80ED] text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+              }`}
+            >
+              Забронировать
+            </button>
+            <button
+              onClick={() => setActiveFilter('all')}
+              className={`px-4 py-2 rounded-full text-sm font-medium transition ${
+                activeFilter === 'all' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+              }`}
+            >
+              Все
+            </button>
+          </div>
         </header>
 
         {loading ? (
           <div className="flex items-center justify-center py-24">
             <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-[#2F80ED]" />
           </div>
-        ) : events.length === 0 ? (
+        ) : filteredEvents.length === 0 ? (
           <div className="px-4 md:px-6 py-16 text-center">
-            <h2 className="text-2xl font-bold text-gray-900 mb-3">Пока нет новых событий</h2>
-            <p className="text-gray-600">Создай первый эвент в профиле, и он появится в этой ленте.</p>
+            <h2 className="text-2xl font-bold text-gray-900 mb-3">По фильтру ничего не найдено</h2>
+            <p className="text-gray-600">Попробуй другой фильтр или переключись на "Все".</p>
           </div>
         ) : (
           <div>
-            {events.map((event) => {
+            {filteredEvents.map((event) => {
               const coverImage = Array.isArray(event.images) && event.images.length > 0 ? event.images[0] : null
               const freePlaces =
                 typeof event.capacity === 'number'
