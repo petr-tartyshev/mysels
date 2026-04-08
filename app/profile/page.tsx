@@ -2,7 +2,7 @@
 
 import { useState, useEffect, Suspense } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
-import { Calendar, BarChart3, Plus, X, Upload, MapPin, List, Map as MapIcon, LogOut, Trash2 } from 'lucide-react'
+import { Calendar, BarChart3, Plus, X, Upload, MapPin, List, Map as MapIcon, Trash2 } from 'lucide-react'
 import Link from 'next/link'
 import dynamic from 'next/dynamic'
 import AppNavigation from '@/components/AppNavigation'
@@ -647,15 +647,6 @@ function ProfilePageContent() {
                     )}
                   </div>
                 </div>
-                {isOwnProfile && currentUser && (
-                  <button
-                    onClick={handleLogout}
-                    className="px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-xl text-gray-700 text-sm font-medium transition flex items-center gap-2"
-                  >
-                    <LogOut size={16} />
-                    Выйти
-                  </button>
-                )}
               </div>
 
           {/* Tabs */}
