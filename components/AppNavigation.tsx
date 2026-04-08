@@ -73,38 +73,21 @@ export default function AppNavigation({ mobileTitle = 'SELS' }: AppNavigationPro
 
       {/* Desktop right column — Twitter-like widgets */}
       {showDesktopRightColumn && (
-        <aside className="hidden xl:block w-[320px] p-4 sticky top-0 h-screen overflow-y-auto">
-          <div className="space-y-4">
-            <div className="bg-white rounded-2xl border border-gray-200 p-4">
-              <h3 className="text-lg font-bold text-gray-900 mb-3">Что сейчас актуально</h3>
-              <div className="space-y-3 text-sm">
-                <div>
-                  <p className="font-semibold text-gray-900">Тренировки сегодня</p>
-                  <p className="text-gray-500">Найди ближайший эвент в ленте</p>
-                </div>
-                <div>
-                  <p className="font-semibold text-gray-900">Тренеры рядом</p>
-                  <p className="text-gray-500">Используй фильтр "Найти тренера"</p>
-                </div>
-                <div>
-                  <p className="font-semibold text-gray-900">Бронирование</p>
-                  <p className="text-gray-500">Свободные места в текущих событиях</p>
-                </div>
+        <aside className="hidden xl:block w-[320px] p-4 sticky top-0 h-screen overflow-y-auto order-3">
+          <div className="bg-white rounded-2xl border border-gray-200 p-4">
+            <h3 className="text-lg font-bold text-gray-900 mb-3">Что сейчас актуально</h3>
+            <div className="space-y-3 text-sm">
+              <div>
+                <p className="font-semibold text-gray-900">Тренировки сегодня</p>
+                <p className="text-gray-500">Найди ближайший эвент в ленте</p>
               </div>
-            </div>
-
-            <div className="bg-white rounded-2xl border border-gray-200 p-4">
-              <h3 className="text-lg font-bold text-gray-900 mb-3">Быстрые переходы</h3>
-              <div className="space-y-2">
-                <Link href="/feed" className="block text-sm text-[#2F80ED] hover:underline">
-                  Главная лента
-                </Link>
-                <Link href="/profile" className="block text-sm text-[#2F80ED] hover:underline">
-                  Мой профиль
-                </Link>
-                <Link href="/chats" className="block text-sm text-[#2F80ED] hover:underline">
-                  Сообщения
-                </Link>
+              <div>
+                <p className="font-semibold text-gray-900">Тренеры рядом</p>
+                <p className="text-gray-500">Используй фильтр "Найти тренера"</p>
+              </div>
+              <div>
+                <p className="font-semibold text-gray-900">Бронирование</p>
+                <p className="text-gray-500">Свободные места в текущих событиях</p>
               </div>
             </div>
           </div>
