@@ -57,8 +57,8 @@ export default function RegisterPage() {
       const data = await response.json()
 
       if (response.ok) {
-        // Перенаправить на профиль
-        router.push('/profile')
+        // Перенаправить в ленту после регистрации
+        router.push('/feed')
         router.refresh()
       } else {
         setError(data.error || 'Ошибка регистрации')
@@ -192,6 +192,26 @@ export default function RegisterPage() {
             {loading ? 'Регистрация...' : 'Зарегистрироваться'}
           </button>
         </form>
+
+        <div className="mt-6 pt-6 border-t border-gray-200">
+          <p className="text-sm text-gray-500 text-center mb-4">Или зарегистрироваться через:</p>
+          <div className="space-y-3">
+            <a
+              href="/api/auth/oauth/yandex"
+              className="flex items-center justify-center gap-3 w-full px-4 py-3 bg-[#FC3F1D] text-white rounded-xl font-semibold hover:bg-[#E02E0F] transition"
+            >
+              <span className="text-xl">Я</span>
+              <span>Яндекс</span>
+            </a>
+            <a
+              href="/api/auth/oauth/vk"
+              className="flex items-center justify-center gap-3 w-full px-4 py-3 bg-[#0077FF] text-white rounded-xl font-semibold hover:bg-[#0066DD] transition"
+            >
+              <span className="text-xl">VK</span>
+              <span>ВКонтакте</span>
+            </a>
+          </div>
+        </div>
 
         <div className="mt-6 text-center">
           <p className="text-gray-600">

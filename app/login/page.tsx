@@ -26,8 +26,8 @@ export default function LoginPage() {
       const data = await response.json()
 
       if (response.ok) {
-        // Перенаправить на профиль
-        router.push('/profile')
+        // Перенаправить в ленту после входа
+        router.push('/feed')
         router.refresh()
       } else {
         setError(data.error || 'Ошибка входа')

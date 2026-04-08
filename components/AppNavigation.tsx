@@ -2,9 +2,10 @@
 
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
-import { User, Search, MessageCircle, LogOut } from 'lucide-react'
+import { Home, User, Search, MessageCircle, LogOut } from 'lucide-react'
 
 const navItems = [
+  { href: '/feed', label: 'Лента', icon: Home },
   { href: '/profile', label: 'Профиль', icon: User },
   { href: '/search', label: 'Поиск', icon: Search },
   { href: '/chats', label: 'Чаты', icon: MessageCircle },
@@ -76,7 +77,7 @@ export default function AppNavigation({ mobileTitle = 'SELS' }: AppNavigationPro
 
       {/* Mobile bottom navigation */}
       <nav className="md:hidden fixed bottom-0 left-0 right-0 z-30 bg-white border-t border-gray-200 px-2 py-2">
-        <div className="grid grid-cols-3 gap-1">
+        <div className="grid grid-cols-4 gap-1">
           {navItems.map((item) => {
             const Icon = item.icon
             const isActive = pathname?.startsWith(item.href)
