@@ -78,16 +78,31 @@ export default function AppNavigation({ mobileTitle = 'SELS' }: AppNavigationPro
             <h3 className="text-lg font-bold text-gray-900 mb-3">Что сейчас актуально</h3>
             <div className="space-y-3 text-sm">
               <div>
-                <p className="font-semibold text-gray-900">Тренировки сегодня</p>
-                <p className="text-gray-500">Найди ближайший эвент в ленте</p>
+                <Link
+                  href="/feed?mode=training"
+                  className="font-semibold text-gray-900 hover:text-[#2F80ED] transition-colors"
+                >
+                  Найти тренировку
+                </Link>
+                <p className="text-gray-500">Фильтры по видам спорта</p>
               </div>
               <div>
-                <p className="font-semibold text-gray-900">Тренеры рядом</p>
-                <p className="text-gray-500">Используй фильтр "Найти тренера"</p>
+                <Link
+                  href="/feed?mode=coach"
+                  className="font-semibold text-gray-900 hover:text-[#2F80ED] transition-colors"
+                >
+                  Найти тренера
+                </Link>
+                <p className="text-gray-500">Фильтры по видам спорта</p>
               </div>
               <div>
-                <p className="font-semibold text-gray-900">Бронирование</p>
-                <p className="text-gray-500">Свободные места в текущих событиях</p>
+                <Link
+                  href="/feed?mode=booking"
+                  className="font-semibold text-gray-900 hover:text-[#2F80ED] transition-colors"
+                >
+                  Забронировать
+                </Link>
+                <p className="text-gray-500">Фильтры по видам спорта</p>
               </div>
             </div>
           </div>

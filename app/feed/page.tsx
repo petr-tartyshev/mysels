@@ -1,9 +1,10 @@
 'use client'
 
 import { useEffect, useMemo, useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { CalendarDays, Clock3, MapPin, Users } from 'lucide-react'
 import AppNavigation from '@/components/AppNavigation'
+import { Suspense } from 'react'
 
 interface EventAuthor {
   id: string
@@ -35,7 +36,16 @@ interface FeedEvent {
   location: EventLocation
 }
 
-type FeedFilter = 'all' | 'training' | 'coach' | 'booking'
+type FeedMode = 'training' | 'coach' | 'booking'
+
+const SPORT_FILTERS = [
+  { id: 'badminton', label: 'Бадминтон', keywords: ['бадминтон', 'badminton'] },
+  { id: 'tennis', label: 'Теннис', keywords: ['теннис', 'tennis'] },
+  { id: 'football', label: 'Футбол', keywords: ['футбол', 'football', 'soccer'] },
+  { id: 'volleyball', label: 'Волейбол', keywords: ['волейбол', 'volleyball'] },
+  { id: 'basketball', label: 'Баскетбол', keywords: ['баскетбол', 'basketball'] },
+  { id: 'running', label: 'Бег', keywords: ['бег', 'run', 'running'] },
+]
 
 function formatEventDate(rawDate: string): string {
   const parsed = new Date(rawDate)
@@ -66,11 +76,23 @@ function formatCreatedAt(rawDate: string): string {
   return `${diffDays} дн назад`
 }
 
-export default function FeedPage() {
+function FeedPageContent() {
   const router = useRouter()
+  const searchParams = useSearchParams()
   const [events, setEvents] = useState<FeedEvent[]>([])
   const [loading, setLoading] = useState(true)
-  const [activeFilter, setActiveFilter] = useState<FeedFilter>('all')
+  const [activeMode, setActiveMode] = useState<FeedMode | null>(null)
+  const [activeSport, setActiveSport] = useState<string | null>(null)
+
+  useEffect(() => {
+    const mode = searchParams.get('mode')
+    if (mode === 'training' || mode === 'coach' || mode === 'booking') {
+      setActiveMode(mode)
+    } else {
+      setActiveMode(null)
+    }
+    setActiveSport(null)
+  }, [searchParams])
 
   useEffect(() => {
     const bootstrap = async () => {
@@ -100,30 +122,39 @@ export default function FeedPage() {
     bootstrap()
   }, [router])
 
-  const feedTitle = useMemo(() => {
-    if (loading) return 'Загрузка ленты...'
-    return `Лента событий · ${events.length}`
-  }, [events.length, loading])
-
   const filteredEvents = useMemo(() => {
-    if (activeFilter === 'all') return events
+    let byMode = events
 
-    return events.filter((event) => {
+    if (activeMode) {
+      byMode = events.filter((event) => {
+        const source = `${event.title} ${event.description || ''} ${event.location?.name || ''}`.toLowerCase()
+
+        if (activeMode === 'training') {
+          return source.includes('трениров') || source.includes('спарринг') || source.includes('practice')
+        }
+        if (activeMode === 'coach') {
+          return source.includes('тренер') || source.includes('coach') || source.includes('наставник')
+        }
+        if (activeMode === 'booking') {
+          return source.includes('бронир') || source.includes('аренда') || source.includes('корт')
+        }
+
+        return true
+      })
+    }
+
+    if (!activeSport) {
+      return byMode
+    }
+
+    const selectedSport = SPORT_FILTERS.find((sport) => sport.id === activeSport)
+    if (!selectedSport) return byMode
+
+    return byMode.filter((event) => {
       const source = `${event.title} ${event.description || ''} ${event.location?.name || ''}`.toLowerCase()
-
-      if (activeFilter === 'training') {
-        return source.includes('трениров') || source.includes('спарринг') || source.includes('practice')
-      }
-      if (activeFilter === 'coach') {
-        return source.includes('тренер') || source.includes('coach') || source.includes('наставник')
-      }
-      if (activeFilter === 'booking') {
-        return source.includes('бронир') || source.includes('аренда') || source.includes('корт')
-      }
-
-      return true
+      return selectedSport.keywords.some((keyword) => source.includes(keyword))
     })
-  }, [events, activeFilter])
+  }, [events, activeMode, activeSport])
 
   return (
     <div className="min-h-screen bg-[#F7F9FA] md:flex">
@@ -131,43 +162,59 @@ export default function FeedPage() {
 
       <main className="flex-1 min-w-0 w-full max-w-3xl border-x border-gray-200 bg-white pb-24 md:pb-8">
         <header className="sticky top-0 z-10 bg-white/90 backdrop-blur border-b border-gray-200 px-4 md:px-6 py-4">
-          <h1 className="text-xl md:text-2xl font-bold text-gray-900">{feedTitle}</h1>
-          <p className="text-sm text-gray-500 mt-1">Новые спортивные эвенты от пользователей</p>
-
-          <div className="mt-4 flex flex-wrap gap-2">
+          <div className="flex flex-wrap gap-2">
             <button
-              onClick={() => setActiveFilter('training')}
+              onClick={() => {
+                setActiveMode((prev) => (prev === 'training' ? null : 'training'))
+                setActiveSport(null)
+              }}
               className={`px-4 py-2 rounded-full text-sm font-medium transition ${
-                activeFilter === 'training' ? 'bg-[#2F80ED] text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                activeMode === 'training' ? 'bg-[#2F80ED] text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
               }`}
             >
               Найти тренировку
             </button>
             <button
-              onClick={() => setActiveFilter('coach')}
+              onClick={() => {
+                setActiveMode((prev) => (prev === 'coach' ? null : 'coach'))
+                setActiveSport(null)
+              }}
               className={`px-4 py-2 rounded-full text-sm font-medium transition ${
-                activeFilter === 'coach' ? 'bg-[#2F80ED] text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                activeMode === 'coach' ? 'bg-[#2F80ED] text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
               }`}
             >
               Найти тренера
             </button>
             <button
-              onClick={() => setActiveFilter('booking')}
+              onClick={() => {
+                setActiveMode((prev) => (prev === 'booking' ? null : 'booking'))
+                setActiveSport(null)
+              }}
               className={`px-4 py-2 rounded-full text-sm font-medium transition ${
-                activeFilter === 'booking' ? 'bg-[#2F80ED] text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                activeMode === 'booking' ? 'bg-[#2F80ED] text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
               }`}
             >
               Забронировать
             </button>
-            <button
-              onClick={() => setActiveFilter('all')}
-              className={`px-4 py-2 rounded-full text-sm font-medium transition ${
-                activeFilter === 'all' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-              }`}
-            >
-              Все
-            </button>
           </div>
+
+          {activeMode && (
+            <div className="mt-3 flex flex-wrap gap-2">
+              {SPORT_FILTERS.map((sport) => (
+                <button
+                  key={sport.id}
+                  onClick={() => setActiveSport((prev) => (prev === sport.id ? null : sport.id))}
+                  className={`px-3 py-1.5 rounded-full text-xs font-medium transition ${
+                    activeSport === sport.id
+                      ? 'bg-gray-900 text-white'
+                      : 'bg-white border border-gray-300 text-gray-700 hover:bg-gray-100'
+                  }`}
+                >
+                  {sport.label}
+                </button>
+              ))}
+            </div>
+          )}
         </header>
 
         {loading ? (
@@ -263,5 +310,13 @@ export default function FeedPage() {
         )}
       </main>
     </div>
+  )
+}
+
+export default function FeedPage() {
+  return (
+    <Suspense fallback={<div className="flex items-center justify-center h-screen">Загрузка ленты...</div>}>
+      <FeedPageContent />
+    </Suspense>
   )
 }
