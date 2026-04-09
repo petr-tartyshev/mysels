@@ -2,7 +2,7 @@
 
 import { useState, useEffect, Suspense } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
-import { Calendar, BarChart3, Plus, X, Upload, MapPin, List, Map as MapIcon, Trash2 } from 'lucide-react'
+import { Calendar, BarChart3, Plus, X, Upload, MapPin, List, Map as MapIcon, Trash2, Pencil, Users, UserPlus } from 'lucide-react'
 import Link from 'next/link'
 import dynamic from 'next/dynamic'
 import AppNavigation from '@/components/AppNavigation'
@@ -23,6 +23,15 @@ interface LocationOption {
   lng: number
   type?: 'outdoor' | 'bike' | 'water'
 }
+
+const SPORT_FILTERS = [
+  { id: 'badminton', label: 'Бадминтон', keywords: ['бадминтон', 'badminton'] },
+  { id: 'tennis', label: 'Теннис', keywords: ['теннис', 'tennis'] },
+  { id: 'football', label: 'Футбол', keywords: ['футбол', 'football', 'soccer'] },
+  { id: 'volleyball', label: 'Волейбол', keywords: ['волейбол', 'volleyball'] },
+  { id: 'basketball', label: 'Баскетбол', keywords: ['баскетбол', 'basketball'] },
+  { id: 'running', label: 'Бег', keywords: ['бег', 'run', 'running'] },
+]
 
 function ProfilePageContent() {
   const searchParams = useSearchParams()
@@ -45,6 +54,20 @@ function ProfilePageContent() {
   const [newPostLocation, setNewPostLocation] = useState<{ name: string; id: string } | null>(null)
   const [showLocationPicker, setShowLocationPicker] = useState(false)
   const [locationPickerMode, setLocationPickerMode] = useState<'map' | 'list'>('list')
+  const [showEditProfile, setShowEditProfile] = useState(false)
+  const [editLoading, setEditLoading] = useState(false)
+  const [editError, setEditError] = useState('')
+  const [editForm, setEditForm] = useState({
+    firstName: '',
+    lastName: '',
+    username: '',
+    bio: '',
+    avatar: '',
+  })
+  const [followersCount, setFollowersCount] = useState(0)
+  const [followingCount, setFollowingCount] = useState(0)
+  const [activeSport, setActiveSport] = useState<string | null>(null)
+  const [activitySports, setActivitySports] = useState<string[]>([])
   
   // Состояние для создания события
   const [newEventTitle, setNewEventTitle] = useState('')
@@ -189,6 +212,25 @@ function ProfilePageContent() {
             const eventsData = await eventsResponse.json()
             setEvents(eventsData)
           }
+
+          // Подписчики/Подписки: считаем по сетке контактов из бесед
+          const conversationsResponse = await fetch(`/api/conversations?userId=${userData.id}`)
+          if (conversationsResponse.ok) {
+            const conversationsData = await conversationsResponse.json()
+            const contacts = new Set<string>()
+            conversationsData.forEach((conversation: any) => {
+              conversation.participants?.forEach((participant: any) => {
+                if (participant?.user?.id && participant.user.id !== userData.id) {
+                  contacts.add(participant.user.id)
+                }
+              })
+            })
+            setFollowersCount(contacts.size)
+            setFollowingCount(contacts.size)
+          } else {
+            setFollowersCount(0)
+            setFollowingCount(0)
+          }
         } else {
           // Пользователь не найден
           setViewUser(null)
@@ -203,6 +245,41 @@ function ProfilePageContent() {
     fetchData()
   }, [currentUser, viewUsername])
 
+  useEffect(() => {
+    if (!viewUser) return
+
+    let pickedSports: string[] = []
+    try {
+      const scoped = localStorage.getItem(`sels:onboarding:sports:${viewUser.id}`)
+      const common = localStorage.getItem('sels:onboarding:sports')
+      const raw = scoped || common
+      if (raw) {
+        const parsed = JSON.parse(raw)
+        if (Array.isArray(parsed)) {
+          pickedSports = parsed.filter((sportId) =>
+            SPORT_FILTERS.some((sport) => sport.id === sportId)
+          )
+        }
+      }
+    } catch (error) {
+      console.error('Ошибка чтения спортивных предпочтений:', error)
+    }
+
+    if (pickedSports.length === 0) {
+      const source = `${JSON.stringify(posts)} ${JSON.stringify(events)}`.toLowerCase()
+      pickedSports = SPORT_FILTERS.filter((sport) =>
+        sport.keywords.some((keyword) => source.includes(keyword))
+      ).map((sport) => sport.id)
+    }
+
+    if (pickedSports.length === 0) {
+      pickedSports = SPORT_FILTERS.map((sport) => sport.id)
+    }
+
+    setActivitySports(pickedSports)
+    setActiveSport(pickedSports[0] || null)
+  }, [viewUser, posts, events])
+
   const handleLogout = async () => {
     try {
       await fetch('/api/auth/logout', { method: 'POST' })
@@ -210,6 +287,89 @@ function ProfilePageContent() {
       router.refresh()
     } catch (error) {
       console.error('Ошибка выхода:', error)
+    }
+  }
+
+  const startEditProfile = () => {
+    if (!viewUser) return
+    setEditForm({
+      firstName: viewUser.firstName || '',
+      lastName: viewUser.lastName || '',
+      username: viewUser.username || '',
+      bio: viewUser.bio || '',
+      avatar: viewUser.avatar || '',
+    })
+    setEditError('')
+    setShowEditProfile(true)
+  }
+
+  const handleSaveProfile = async () => {
+    if (!currentUser) return
+    setEditLoading(true)
+    setEditError('')
+    try {
+      const response = await fetch('/api/users', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          id: currentUser.id,
+          firstName: editForm.firstName.trim(),
+          lastName: editForm.lastName.trim(),
+          username: editForm.username.trim(),
+          bio: editForm.bio.trim(),
+          avatar: editForm.avatar.trim() || null,
+        }),
+      })
+
+      const data = await response.json()
+      if (!response.ok) {
+        setEditError(data?.error || 'Не удалось обновить профиль')
+        return
+      }
+
+      setCurrentUser(data)
+      setViewUser(data)
+      setShowEditProfile(false)
+      if (viewUsername && data.username) {
+        router.replace(`/profile?username=${data.username}`)
+      }
+    } catch (error) {
+      console.error('Ошибка обновления профиля:', error)
+      setEditError('Ошибка обновления профиля')
+    } finally {
+      setEditLoading(false)
+    }
+  }
+
+  const getSportStats = (sportId: string) => {
+    const sportConfig = SPORT_FILTERS.find((sport) => sport.id === sportId)
+    if (!sportConfig) {
+      return { gamesCount: 0, postsCount: 0, level: 'не указан' }
+    }
+
+    const sportEvents = events.filter((event: any) => {
+      const source = `${event.title || ''} ${event.description || ''} ${event.location?.name || ''}`.toLowerCase()
+      return sportConfig.keywords.some((keyword) => source.includes(keyword))
+    })
+
+    const sportPosts = posts.filter((post: any) => {
+      const source = `${post.text || ''} ${post.location || ''}`.toLowerCase()
+      return sportConfig.keywords.some((keyword) => source.includes(keyword))
+    })
+
+    const levelCounts = sportEvents.reduce((acc: Record<string, number>, event: any) => {
+      const level = event.level || 'не указан'
+      acc[level] = (acc[level] || 0) + 1
+      return acc
+    }, {})
+
+    const level =
+      Object.entries(levelCounts).sort((a, b) => b[1] - a[1])[0]?.[0] || 'не указан'
+
+    return {
+      gamesCount: sportEvents.length,
+      postsCount: sportPosts.length,
+      level,
     }
   }
 
@@ -647,10 +807,44 @@ function ProfilePageContent() {
                     )}
                   </div>
                 </div>
+                {isOwnProfile && (
+                  <button
+                    onClick={startEditProfile}
+                    className="px-4 py-2 rounded-full border border-gray-300 text-gray-900 font-medium hover:bg-gray-50 transition flex items-center gap-2"
+                  >
+                    <Pencil size={16} />
+                    Редактировать
+                  </button>
+                )}
+              </div>
+
+              <div className="flex items-center gap-6 text-sm text-gray-700 mb-5">
+                <div className="flex items-center gap-2">
+                  <UserPlus size={16} className="text-gray-500" />
+                  <span>
+                    <strong className="text-gray-900">{followingCount}</strong> Подписки
+                  </span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Users size={16} className="text-gray-500" />
+                  <span>
+                    <strong className="text-gray-900">{followersCount}</strong> Подписчики
+                  </span>
+                </div>
               </div>
 
           {/* Tabs */}
           <div className="flex gap-4 border-b border-gray-200">
+            <button
+              onClick={() => setActiveTab('activity')}
+              className={`pb-3 px-4 font-medium transition ${
+                activeTab === 'activity'
+                  ? 'text-[#2F80ED] border-b-2 border-[#2F80ED]'
+                  : 'text-gray-600'
+              }`}
+            >
+              Активность
+            </button>
             <button
               onClick={() => setActiveTab('publications')}
               className={`pb-3 px-4 font-medium transition ${
@@ -674,6 +868,58 @@ function ProfilePageContent() {
             </button>
           </div>
         </div>
+
+        {/* Activity */}
+        {activeTab === 'activity' && (
+          <div className="space-y-4">
+            <div className="bg-white rounded-2xl p-5 md:p-6 shadow-sm border border-gray-100">
+              <h3 className="text-lg font-bold text-gray-900 mb-4">Мои виды спорта</h3>
+              <div className="flex flex-wrap gap-2 mb-5">
+                {activitySports.map((sportId) => {
+                  const sport = SPORT_FILTERS.find((item) => item.id === sportId)
+                  if (!sport) return null
+                  return (
+                    <button
+                      key={sport.id}
+                      onClick={() => setActiveSport((prev) => (prev === sport.id ? null : sport.id))}
+                      className={`px-3 py-1.5 rounded-full text-sm font-medium transition ${
+                        activeSport === sport.id
+                          ? 'bg-[#2F80ED] text-white'
+                          : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                      }`}
+                    >
+                      {sport.label}
+                    </button>
+                  )
+                })}
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {(activeSport ? [activeSport] : activitySports).map((sportId) => {
+                  const sport = SPORT_FILTERS.find((item) => item.id === sportId)
+                  if (!sport) return null
+                  const stats = getSportStats(sportId)
+                  return (
+                    <div key={sportId} className="rounded-xl border border-gray-200 p-4 bg-[#F8FAFD]">
+                      <h4 className="font-semibold text-gray-900 mb-3">{sport.label}</h4>
+                      <div className="space-y-1 text-sm text-gray-700">
+                        <p>
+                          Уровень: <span className="font-medium text-gray-900">{stats.level}</span>
+                        </p>
+                        <p>
+                          Количество игр: <span className="font-medium text-gray-900">{stats.gamesCount}</span>
+                        </p>
+                        <p>
+                          Публикаций по виду: <span className="font-medium text-gray-900">{stats.postsCount}</span>
+                        </p>
+                      </div>
+                    </div>
+                  )
+                })}
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Publications */}
         {activeTab === 'publications' && (
@@ -905,6 +1151,80 @@ function ProfilePageContent() {
                 <p className="text-gray-600">Нет созданных событий</p>
               </div>
             )}
+          </div>
+        )}
+
+        {showEditProfile && (
+          <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+            <div className="w-full max-w-lg bg-white rounded-2xl shadow-2xl p-6">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-xl font-bold text-gray-900">Редактирование профиля</h3>
+                <button onClick={() => setShowEditProfile(false)} className="p-2 hover:bg-gray-100 rounded-lg">
+                  <X size={20} />
+                </button>
+              </div>
+
+              <div className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  <input
+                    value={editForm.firstName}
+                    onChange={(e) => setEditForm((prev) => ({ ...prev, firstName: e.target.value }))}
+                    placeholder="Имя"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:border-[#2F80ED]"
+                  />
+                  <input
+                    value={editForm.lastName}
+                    onChange={(e) => setEditForm((prev) => ({ ...prev, lastName: e.target.value }))}
+                    placeholder="Фамилия"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:border-[#2F80ED]"
+                  />
+                </div>
+
+                <input
+                  value={editForm.username}
+                  onChange={(e) => setEditForm((prev) => ({ ...prev, username: e.target.value }))}
+                  placeholder="Username"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:border-[#2F80ED]"
+                />
+
+                <input
+                  value={editForm.avatar}
+                  onChange={(e) => setEditForm((prev) => ({ ...prev, avatar: e.target.value }))}
+                  placeholder="Ссылка на аватар (https://...)"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:border-[#2F80ED]"
+                />
+
+                <textarea
+                  value={editForm.bio}
+                  onChange={(e) => setEditForm((prev) => ({ ...prev, bio: e.target.value }))}
+                  placeholder="О себе"
+                  rows={4}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:border-[#2F80ED] resize-none"
+                />
+
+                {editError && (
+                  <div className="text-sm text-red-600 bg-red-50 border border-red-200 px-3 py-2 rounded-lg">
+                    {editError}
+                  </div>
+                )}
+
+                <div className="flex items-center justify-end gap-3 pt-2">
+                  <button
+                    onClick={() => setShowEditProfile(false)}
+                    className="px-4 py-2 rounded-xl border border-gray-300 hover:bg-gray-50 transition"
+                  >
+                    Отмена
+                  </button>
+                  <button
+                    onClick={handleSaveProfile}
+                    disabled={editLoading}
+                    className="px-4 py-2 rounded-xl bg-[#2F80ED] text-white font-medium hover:bg-blue-600 transition disabled:opacity-50"
+                  >
+                    {editLoading ? 'Сохранение...' : 'Сохранить'}
+                  </button>
+                </div>
+              </div>
+            </div>
           </div>
         )}
 
